@@ -1,0 +1,310 @@
+.diagnosis-page {
+  min-height: 100vh;
+}
+
+.diagnosis-page .site-header {
+  padding: 12px 32px;
+}
+
+.diagnosis-page .site-footer {
+  padding: 14px 32px 20px;
+  font-size: 11.5px;
+}
+
+.diagnosis-main {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------------------------------------------- */
+/* Hero: left-aligned copy + step-flow panel, background inherited   */
+/* from body's shared gradient (see index.css)                       */
+/* ---------------------------------------------------------------- */
+
+.diagnosis-hero-band {
+  width: 100%;
+}
+
+.diagnosis-hero {
+  display: flex;
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: clamp(40px, 7vh, 72px) 32px;
+}
+
+.diagnosis-hero-copy {
+  flex: 1 1 56%;
+  max-width: 600px;
+}
+
+.diagnosis-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.diagnosis-hero-copy h1 {
+  margin: 18px 0 16px;
+  font-size: clamp(28px, 3.4vw, 40px);
+  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-text);
+}
+
+.diagnosis-hero-copy h1 .accent {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.diagnosis-hero-copy p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--color-text-muted);
+  margin: 0;
+  max-width: 480px;
+}
+
+.diagnosis-hero-copy .hero-actions {
+  justify-content: flex-start;
+  margin-top: 28px;
+}
+
+/* Step-flow panel replaces a generic icon/illustration with the same
+   numbered-badge language used by the case-study cards on the top page. */
+.diagnosis-hero-flow {
+  flex: 1 1 36%;
+  max-width: 300px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 32px 28px;
+}
+
+.flow-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 32px;
+}
+
+.flow-item:last-child {
+  padding-bottom: 0;
+}
+
+.flow-connector {
+  position: absolute;
+  left: 23px;
+  top: 48px;
+  width: 2px;
+  height: 32px;
+  background: var(--color-border);
+}
+
+.flow-node {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  z-index: 1;
+}
+
+.flow-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+/* ---------------------------------------------------------------- */
+/* Content                                                            */
+/* ---------------------------------------------------------------- */
+
+.diagnosis-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px 32px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.status-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 24px 28px;
+}
+
+.status-card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.status-card-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.status-chip {
+  background: var(--color-text);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 4px 9px;
+  border-radius: 5px;
+}
+
+.status-card-hint {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.7;
+}
+
+.status-card-hint code {
+  background: #f3f4f6;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12.5px;
+}
+
+/* Step cards: gradient banner + number, mirroring the top-page case-study
+   card pattern instead of using generic emoji/stock icons. */
+.step-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.step-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.step-card-banner {
+  flex: none;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-card-num {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.step-card-body {
+  padding: 20px 22px 24px;
+}
+
+.step-card-body h3 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.step-card-body p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--color-text-muted);
+}
+
+.step-soon-tag {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+/* ---------------------------------------------------------------- */
+/* Responsive                                                        */
+/* ---------------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .diagnosis-page .site-header {
+    padding: 12px 16px;
+  }
+}
+
+@media (max-width: 860px) {
+  .diagnosis-hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 40px 24px 8px;
+  }
+
+  .diagnosis-hero-copy {
+    max-width: none;
+  }
+
+  .diagnosis-hero-copy p {
+    margin: 0 auto;
+    max-width: none;
+  }
+
+  .diagnosis-hero-copy .hero-actions {
+    justify-content: center;
+  }
+
+  .diagnosis-hero-flow {
+    max-width: 360px;
+    width: 100%;
+    margin-top: 32px;
+  }
+
+  .diagnosis-content {
+    padding: 40px 20px 56px;
+  }
+
+  .step-grid {
+    grid-template-columns: 1fr;
+  }
+}

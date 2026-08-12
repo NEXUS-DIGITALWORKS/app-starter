@@ -1,0 +1,285 @@
+.tss-hero {
+  padding: 40px 32px 8px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.tss-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.tss-hero h1 {
+  margin: 10px 0 8px;
+  font-size: 28px;
+  line-height: 1.35;
+}
+
+.tss-hero p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+
+.tss-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 2px;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+.tss-inline-link:hover {
+  text-decoration: underline;
+}
+
+.tss-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 32px 48px;
+  align-items: start;
+}
+
+.tss-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+}
+
+.tss-category-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.tss-category-num {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.tss-category-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.tss-category-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.tss-element-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.tss-element-card {
+  appearance: none;
+  cursor: pointer;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.tss-element-card:hover {
+  border-color: var(--color-primary);
+}
+
+.tss-element-card.is-selected {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.tss-element-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.tss-element-desc {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* Summary sidebar */
+.tss-summary {
+  position: sticky;
+  top: 84px;
+}
+
+.tss-summary-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+.tss-summary-block h3 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: var(--color-text);
+}
+
+.tss-summary-empty {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.tss-pattern-list,
+.tss-selection-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tss-pattern-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.tss-pattern-item.is-perfect {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+button.tss-pattern-item {
+  appearance: none;
+  border: 1px solid transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+button.tss-pattern-item.is-clickable:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.tss-pattern-code {
+  font-weight: 700;
+  font-size: 11.5px;
+  flex-shrink: 0;
+}
+
+.tss-pattern-name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tss-pattern-score {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.tss-selection-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 12.5px;
+}
+
+.tss-selection-list li:last-child {
+  border-bottom: none;
+}
+
+.tss-selection-cat {
+  color: var(--color-text-muted);
+}
+
+.tss-selection-name {
+  font-weight: 600;
+  text-align: right;
+}
+
+.tss-summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tss-summary-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.tss-save-hint {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+@media (max-width: 960px) {
+  .tss-layout {
+    grid-template-columns: 1fr;
+    padding: 16px 16px 32px;
+  }
+
+  .tss-summary {
+    position: static;
+  }
+
+  .tss-summary-inner {
+    max-height: none;
+  }
+
+  .tss-hero {
+    padding: 28px 16px 8px;
+  }
+}

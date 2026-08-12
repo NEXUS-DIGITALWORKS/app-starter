@@ -1,0 +1,218 @@
+import type { StackProfile } from '../types'
+
+export const stackProfiles: StackProfile[] = [
+  {
+    id: 'SP-01',
+    name: '統合Web／中小業務システム',
+    appTypeIds: ['internal_ops'],
+    patternId: 'P1',
+    roles: {
+      frontend: 'Next.js単体',
+      backend: 'Next.js API Routes',
+      database: 'PostgreSQL',
+      auth: 'Supabase Auth',
+      hosting: 'Vercel',
+      monitoring: 'Vercel Analytics',
+    },
+  },
+  {
+    id: 'SP-02',
+    name: '統合Web／承認フロー',
+    appTypeIds: ['approval_workflow'],
+    patternId: 'P1',
+    roles: {
+      frontend: 'Laravel Blade',
+      backend: 'Laravel',
+      database: 'MySQL',
+      auth: 'Laravel標準認証',
+      hosting: 'AWS Lightsail',
+    },
+  },
+  {
+    id: 'SP-03',
+    name: 'API分離／顧客案件管理',
+    appTypeIds: ['crm_deals'],
+    patternId: 'P2',
+    roles: {
+      frontend: 'React',
+      backend: 'NestJS',
+      database: 'PostgreSQL',
+      auth: 'Supabase Auth',
+      hosting: 'AWS / GCP',
+      monitoring: 'Sentry',
+    },
+  },
+  {
+    id: 'SP-04',
+    name: 'API分離／予約受付',
+    appTypeIds: ['reservation'],
+    patternId: 'P2',
+    roles: {
+      frontend: 'Next.js',
+      backend: 'FastAPI',
+      database: 'PostgreSQL',
+      auth: 'Supabase Auth',
+      hosting: 'Vercel＋Cloud Run',
+    },
+  },
+  {
+    id: 'SP-05',
+    name: 'BaaS中心／MVP業務システム',
+    appTypeIds: ['internal_ops', 'crm_deals', 'dashboard_analytics'],
+    patternId: 'P3',
+    roles: {
+      frontend: 'React',
+      database: 'Supabase (Postgres)',
+      auth: 'Supabase Auth',
+      storage: 'Supabase Storage',
+      hosting: 'Vercel',
+    },
+  },
+  {
+    id: 'SP-06',
+    name: 'BaaS中心／モバイル同期重視',
+    appTypeIds: ['reservation', 'saas_integration'],
+    patternId: 'P3',
+    roles: {
+      frontend: 'Flutter',
+      database: 'Firestore',
+      auth: 'Firebase Auth',
+      hosting: 'Firebase Hosting',
+    },
+  },
+  {
+    id: 'SP-07',
+    name: 'Microsoft統合／M365企業業務',
+    appTypeIds: ['internal_ops', 'approval_workflow'],
+    patternId: 'P4',
+    roles: {
+      frontend: 'Blazor Server',
+      backend: 'ASP.NET Core',
+      database: 'Azure SQL',
+      auth: 'Entra ID',
+      hosting: 'Azure App Service',
+      monitoring: 'Azure Monitor',
+    },
+  },
+  {
+    id: 'SP-08',
+    name: 'Microsoft統合／Power Platform連携',
+    appTypeIds: ['approval_workflow'],
+    patternId: 'P4',
+    roles: {
+      frontend: 'Power Apps',
+      automation: 'Power Automate',
+      database: 'Dataverse / Azure SQL',
+      auth: 'Entra ID',
+      hosting: 'Microsoft 365 / Azure',
+    },
+  },
+  {
+    id: 'SP-09',
+    name: 'Python業務AI／ナレッジ検索RAG',
+    appTypeIds: ['knowledge_ai_search'],
+    patternId: 'P5',
+    roles: {
+      frontend: 'Next.js（軽量）',
+      backend: 'FastAPI',
+      database: 'PostgreSQL',
+      search: 'pgvector',
+      ai: 'RAGパイプライン（Python）',
+      auth: 'Supabase Auth',
+      hosting: 'Cloud Run',
+    },
+  },
+  {
+    id: 'SP-10',
+    name: 'Python業務AI／帳票・Excel自動化',
+    appTypeIds: ['internal_ops', 'saas_integration'],
+    patternId: 'P5',
+    roles: {
+      frontend: 'Streamlit',
+      backend: 'Django',
+      database: 'PostgreSQL',
+      automation: 'Celery',
+      hosting: 'Cloud Run',
+    },
+  },
+  {
+    id: 'SP-11',
+    name: 'SaaS連携自動化／n8n中心',
+    appTypeIds: ['saas_integration'],
+    patternId: 'P6',
+    roles: {
+      automation: 'n8n',
+      database: 'n8n内蔵DB＋連携先',
+      auth: 'n8n Basic Auth',
+      hosting: 'Docker（自社/Cloud Run）',
+    },
+  },
+  {
+    id: 'SP-12',
+    name: 'SaaS連携自動化／Power Automate',
+    appTypeIds: ['saas_integration'],
+    patternId: 'P6',
+    roles: {
+      automation: 'Power Automate',
+      database: 'Dataverse',
+      auth: 'Entra ID',
+      hosting: 'Microsoft 365',
+    },
+  },
+  {
+    id: 'SP-13',
+    name: 'モバイル中心／現場入力アプリ',
+    appTypeIds: ['inventory'],
+    patternId: 'P7',
+    roles: {
+      frontend: 'Flutter',
+      database: 'Supabase (Postgres)',
+      auth: 'Supabase Auth',
+      hosting: 'Firebase / Vercel',
+    },
+  },
+  {
+    id: 'SP-14',
+    name: 'モバイル中心／軽量PWA',
+    appTypeIds: ['reservation'],
+    patternId: 'P7',
+    roles: {
+      frontend: 'Expo (PWA)',
+      backend: 'Cloud Functions',
+      database: 'Firestore',
+      auth: 'Firebase Auth',
+      hosting: 'Firebase Hosting',
+    },
+  },
+  {
+    id: 'SP-15',
+    name: 'デスクトップ型／店舗端末連携',
+    appTypeIds: ['inventory'],
+    patternId: 'P8',
+    roles: {
+      frontend: 'Tauri',
+      backend: 'Tauriバックエンド (Rust)',
+      database: 'SQLite（ローカル）＋同期',
+      hosting: '店舗端末常駐',
+    },
+  },
+  {
+    id: 'SP-16',
+    name: 'CMS・EC拡張／EC受注連携',
+    appTypeIds: ['saas_integration'],
+    patternId: 'P9',
+    roles: {
+      frontend: 'Shopify管理画面',
+      backend: 'Cloud Functions',
+      database: 'Shopify＋自社DB (PostgreSQL)',
+      auth: 'Shopify Auth',
+      hosting: 'Cloud Run',
+    },
+  },
+]
+
+export function findStackProfile(appTypeId: string, patternId: string): StackProfile | undefined {
+  const exact = stackProfiles.find((profile) => profile.patternId === patternId && profile.appTypeIds.includes(appTypeId))
+  if (exact) return exact
+  return stackProfiles.find((profile) => profile.patternId === patternId)
+}

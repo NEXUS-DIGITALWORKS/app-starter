@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg-1: #f5f7ff;
+  --color-bg-2: #eef1fb;
+  --color-primary: #4f46e5;
+  --color-primary-dark: #4338ca;
+  --color-primary-light: #eef0fe;
+  --color-accent: #06b6d4;
+  --color-text: #1f2333;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-surface: #ffffff;
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #b45309;
+  --color-warning-bg: #fffbeb;
+  --color-danger: #dc2626;
+  --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md: 0 4px 16px rgba(16, 24, 40, 0.08);
+  --shadow-lg: 0 12px 32px rgba(79, 70, 229, 0.14);
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /*
+   * shadcn/ui 用のエイリアス。既存の --color-* トークンと同じ色を、
+   * Tailwindのopacity修飾子（bg-primary/10 等）に対応させるため "R G B" 形式で保持する。
+   * 色の定義そのものは上記の --color-* を単一の情報源とし、値はそれと同期させること。
+   */
+  --background: 255 255 255; /* --color-surface */
+  --foreground: 31 35 51; /* --color-text */
+  --card: 255 255 255; /* --color-surface */
+  --card-foreground: 31 35 51; /* --color-text */
+  --popover: 255 255 255; /* --color-surface */
+  --popover-foreground: 31 35 51; /* --color-text */
+  --primary: 79 70 229; /* --color-primary */
+  --primary-foreground: 255 255 255;
+  --secondary: 238 240 254; /* --color-primary-light */
+  --secondary-foreground: 67 56 202; /* --color-primary-dark */
+  --muted: 249 250 251;
+  --muted-foreground: 107 114 128; /* --color-text-muted */
+  --accent: 238 240 254; /* --color-primary-light */
+  --accent-foreground: 67 56 202; /* --color-primary-dark */
+  --destructive: 220 38 38; /* --color-danger */
+  --destructive-foreground: 255 255 255;
+  --success: 5 150 105; /* --color-success */
+  --success-foreground: 255 255 255;
+  --warning: 180 83 9; /* --color-warning */
+  --warning-foreground: 255 255 255;
+  --border: 229 231 235; /* --color-border */
+  --input: 229 231 235; /* --color-border */
+  --ring: 79 70 229; /* --color-primary */
+  --radius: 0.75rem;
+}
+
+/* ログイン後(/app)向けの青系オーバーライド。primary系トークンのみを
+   上書きし、それ以外(背景・本文・成功/警告/危険色)は意図的に変更しない。
+   :root自体は変更しないため、ログイン前ページはindigoのまま。 */
+.tools-scope {
+  --color-primary: #3157e5;
+  --color-primary-dark: #2748c7;
+  --color-primary-light: #eaf1ff;
+
+  --primary: 49 87 229;
+  --secondary: 234 241 255;
+  --secondary-foreground: 39 72 199;
+  --accent: 234 241 255;
+  --accent-foreground: 39 72 199;
+  --ring: 49 87 229;
+}
+
+.tools-scope .btn-secondary:hover:not(:disabled) {
+  background: #dbe4fd;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* preflightを無効化しているため、button/inputなどのネイティブ既定ボーダーが
+   そのまま残り、かつTailwindのborder-widthユーティリティはstyle未指定だと
+   不可視になる。Tailwind preflightのborderリセット相当のみを補う。 */
+*,
+::before,
+::after {
+  border-width: 0;
+  border-style: solid;
+  border-color: #e2e8f0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  font-family: 'BIZ UDPGothic', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Yu Gothic',
+    'Noto Sans JP', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color: var(--color-text);
+  background: linear-gradient(180deg, var(--color-bg-1) 0%, var(--color-bg-2) 100%);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}
