@@ -36,7 +36,12 @@ export default function TechGuide() {
             技術要素セレクター
             <ArrowRight size={13} />
           </Link>
-          を開き、対応する構成パターンを確認できます。
+          を開き、対応する構成パターンを確認できます。構成パターンそのものを一覧で見たい場合は
+          <Link to="/tools/patterns" className="tss-inline-link">
+            構成パターンガイド
+            <ArrowRight size={13} />
+          </Link>
+          をご覧ください。
         </p>
       </main>
 
