@@ -24,22 +24,24 @@ export default function ReportNextActions({ backToSelectorUrl, saveState, saveDi
 
   return (
     <section aria-labelledby="next-action-heading">
-      <Card className="flex flex-col gap-5 rounded-2xl bg-muted/40 p-6 shadow-sm sm:flex-row sm:items-center">
-        <div
-          className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground sm:flex"
-          aria-hidden="true"
-        >
-          <LayoutDashboard className="h-5 w-5" />
+      <Card className="flex flex-col gap-5 rounded-2xl bg-muted/40 p-6 shadow-sm">
+        <div className="flex items-start gap-4">
+          <div
+            className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-secondary text-secondary-foreground sm:flex"
+            aria-hidden="true"
+          >
+            <LayoutDashboard className="h-5 w-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h2 id="next-action-heading" className="text-lg font-semibold text-foreground">
+              この構成を、目的に合わせて調整する
+            </h2>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              必要な機能や運用条件に合わせて技術要素を変更し、別の構成パターンと比較できます。
+            </p>
+          </div>
         </div>
-        <div className="flex-1">
-          <h2 id="next-action-heading" className="text-lg font-semibold text-foreground">
-            この構成を、目的に合わせて調整する
-          </h2>
-          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            必要な機能や運用条件に合わせて技術要素を変更し、別の構成パターンと比較できます。
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-start">
+        <div className="flex flex-wrap items-start gap-2">
           <Button asChild>
             <Link to={backToSelectorUrl}>
               構成を調整する
