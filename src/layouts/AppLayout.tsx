@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ChevronLeft, Home, Menu, Wrench, X } from 'lucide-react';
+import { ChevronLeft, FileText, Home, Menu, Wrench, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RequireAuth from '../features/auth/RequireAuth';
 import AccountMenu from '../features/auth/AccountMenu';
 import logo from '../assets/logo.svg';
 
-const NAV_ITEMS = [{ to: '/app', label: 'ホーム', icon: Home, end: true }];
+const NAV_ITEMS = [
+  { to: '/app', label: 'ホーム', icon: Home, end: true },
+  { to: '/app/history', label: '保存済み一覧', icon: FileText, end: false },
+];
 
 function AppLayoutContent() {
   const [collapsed, setCollapsed] = useState(false);

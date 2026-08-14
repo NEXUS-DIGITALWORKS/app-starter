@@ -22,8 +22,11 @@ export async function saveDiagnosisResult(answers: Answers, result: DiagnosisRes
 
 export type DiagnosisHistoryEntry = {
   id: string
+  user_input?: Answers
   structured_requirements: { appTypeId?: string } | null
   build_or_buy_result: { category?: string; label?: string } | null
+  recommended_stack?: { patternId?: string } | null
+  score_details?: { buildScore?: number } | null
   created_at: string
 }
 
@@ -36,11 +39,29 @@ export async function fetchDiagnosisHistory(limit = 10): Promise<DiagnosisHistor
 
   const { data, error } = await supabase
     .from('diagnosis_results')
-    .select('id, structured_requirements, build_or_buy_result, created_at')
+    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit)
 
   if (error) return []
   return data ?? []
+}
+
+export async function fetchDiagnosisById(id: string): Promise<DiagnosisHistoryEntry | null> {
+  if (!isSupabaseConfigured()) return null
+
+  const { data: sessionData } = await supabase.auth.getSession()
+  const userId = sessionData.session?.user.id
+  if (!userId) return null
+
+  const { data, error } = await supabase
+    .from('diagnosis_results')
+    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, created_at')
+    .eq('id', id)
+    .eq('user_id', userId)
+    .single()
+
+  if (error || !data) return null
+  return data as DiagnosisHistoryEntry
 }

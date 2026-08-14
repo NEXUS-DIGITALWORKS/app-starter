@@ -13,6 +13,7 @@ const PatternGuide = lazy(() => import('./pages/PatternGuide'));
 const TechSelectorReport = lazy(() => import('./pages/TechSelectorReport'));
 const RiskCheck = lazy(() => import('./pages/RiskCheck'));
 const AppHome = lazy(() => import('./pages/AppHome'));
+const AppHistory = lazy(() => import('./pages/AppHistory'));
 const Account = lazy(() => import('./pages/Account'));
 
 // 旧URL（/tools, /diagnosis, /tech-selector, /tech-guide）のブックマーク・共有リンクの
@@ -34,6 +35,7 @@ export default function App() {
 
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<AppHome />} />
+          <Route path="history" element={<AppHistory />} />
           <Route path="account" element={<Account />} />
         </Route>
 

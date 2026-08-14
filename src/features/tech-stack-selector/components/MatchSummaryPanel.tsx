@@ -137,6 +137,9 @@ export default function MatchSummaryPanel({ selection, onReset, onApplyPattern }
         </div>
 
         <div className="tss-summary-actions">
+          <Link to="/app/history" className="btn btn-secondary">
+            保存したものを開く
+          </Link>
           <button
             type="button"
             className="btn btn-secondary"

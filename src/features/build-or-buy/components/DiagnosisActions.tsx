@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import { AlertTriangle, ArrowRight, FileDown, RotateCcw, Save } from 'lucide-react'
 import { isSupabaseConfigured } from '../../../lib/supabaseClient'
 import { useAuth } from '../../../hooks/useAuth'
+import { buildSelectionForPattern } from '../../tech-stack-selector/lib/matchEngine'
+import { encodeSelectionToParam } from '../../tech-stack-selector/lib/shareLink'
 import { saveDiagnosisResult } from '../lib/resultsRepo'
 import type { Answers, DiagnosisResult } from '../types'
 
@@ -22,6 +24,7 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
     : !isAuthenticated
       ? 'ログインすると診断結果を保存できます'
       : null
+  const techSelectorUrl = `/tools/tech-selector?s=${encodeSelectionToParam(buildSelectionForPattern(result.primaryPattern.id))}`
 
   const handleSave = async () => {
     setSaveState('saving')
@@ -38,7 +41,7 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
       <div className="mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border border-[#D6DEFB] bg-[#EAF1FF] px-5 py-4 text-sm text-[#2748C7] sm:flex-row sm:items-center">
         <span>次のおすすめ：この結果をもとに、技術要素セレクターで具体的な構成を確認できます。</span>
         <Link
-          to="/tools/tech-selector"
+          to={techSelectorUrl}
           className="inline-flex shrink-0 items-center gap-1.5 font-semibold text-[#2748C7] hover:underline"
         >
           技術構成の詳細を見る
@@ -53,6 +56,12 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
         </div>
       )}
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <Link
+          to="/app/history"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#D0D5DD] bg-white px-6 py-3 text-sm font-semibold text-[#344054] transition hover:bg-[#F8FAFC]"
+        >
+          保存したものを開く
+        </Link>
         <button
           type="button"
           onClick={() => window.print()}

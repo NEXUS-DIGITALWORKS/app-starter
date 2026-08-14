@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, ChevronRight } from 'lucide-react';
 import { DiagnosisHeader } from '../features/build-or-buy/components/DiagnosisHeader';
 import { DiagnosisStepper } from '../features/build-or-buy/components/DiagnosisStepper';
@@ -10,6 +10,7 @@ import { DiagnosisActions } from '../features/build-or-buy/components/DiagnosisA
 import { diagnosisSteps, getStep } from '../features/build-or-buy/data/steps';
 import { getQuestion } from '../features/build-or-buy/data/questions';
 import { diagnose } from '../features/build-or-buy/lib/diagnosisEngine';
+import { fetchDiagnosisById } from '../features/build-or-buy/lib/resultsRepo';
 import type { Answers } from '../features/build-or-buy/types';
 import '../App.css';
 import '../features/build-or-buy/build-or-buy.css';
@@ -38,9 +39,29 @@ function isStepComplete(step: { questionIds: string[] }, answers: Answers): bool
 type Tab = 'question' | 'result';
 
 export default function DiagnosisFlow() {
+  const location = useLocation();
   const [answers, setAnswers] = useState<Answers>(loadAnswers);
   const [currentStep, setCurrentStep] = useState(1);
   const [activeTab, setActiveTab] = useState<Tab>('question');
+
+  useEffect(() => {
+    const restoreId = new URLSearchParams(location.search).get('restore');
+    if (!restoreId) return;
+
+    let ignore = false;
+    fetchDiagnosisById(restoreId).then((entry) => {
+      if (!entry || ignore) return;
+      const restoredAnswers = entry.user_input ?? {};
+      setAnswers(restoredAnswers);
+      setCurrentStep(1);
+      setActiveTab('question');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredAnswers));
+    });
+
+    return () => {
+      ignore = true;
+    };
+  }, [location.search]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
