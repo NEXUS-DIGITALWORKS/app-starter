@@ -51,7 +51,7 @@ Build or Buy診断のロジック設計ドキュメントは [docs/build-or-buy-
    cp .env.example .env
    ```
 
-   > VITE_SUPABASE_URL と VITE_SUPABASE_ANON_KEY は、WebアプリからSupabaseに接続するための情報です。ブラウザ上で使われることを前提としているため、利用者から見える状態になっても基本的には問題ありません。
+   > VITE_SUPABASE_URL と VITE_SUPABASE_PUBLISHABLE_KEY は、WebアプリからSupabaseに接続するための情報です。ブラウザ上で使われることを前提としているため、利用者から見える状態になっても基本的には問題ありません。
    >
    > ただし、データを安全に守るために、Supabase側でRLSを設定し、「誰がどのデータを見たり変更したりできるか」を制限しておく必要があります。
    >
@@ -71,4 +71,4 @@ Build or Buy診断のロジック設計ドキュメントは [docs/build-or-buy-
 
 `npm run build` で生成される `dist/` は静的ファイル一式なので、Vercel以外の静的ホスティング（Netlify、Cloudflare Pagesなど）でも動作します。Vercelは必須ではなく、GitHub連携での自動デプロイやゼロコンフィグ対応が主な採用理由です。
 
-`.env` は `.gitignore` 対象でリポジトリに含まれないため、デプロイ先にはローカルとは別に環境変数を設定する必要があります。Vercelの場合は Project Settings > Environment Variables で `VITE_SUPABASE_URL` と `VITE_SUPABASE_ANON_KEY` を登録してください。
+`.env` は `.gitignore` 対象でリポジトリに含まれないため、デプロイ先にはローカルとは別に環境変数を設定する必要があります。Vercelの場合は Project Settings > Environment Variables で `VITE_SUPABASE_URL` と `VITE_SUPABASE_PUBLISHABLE_KEY` を登録してください。

@@ -108,7 +108,7 @@ function useSteps(): Step[] {
               に設定します。
             </p>
             <CodeBlock
-              code={'VITE_SUPABASE_URL=https://xxxxx.supabase.co\nVITE_SUPABASE_ANON_KEY=xxxxx'}
+              code={'VITE_SUPABASE_URL=https://xxxxx.supabase.co\nVITE_SUPABASE_PUBLISHABLE_KEY=xxxxx'}
             />
           </div>
           <StepList
