@@ -104,11 +104,11 @@ function useSteps(): Step[] {
           />
           <div>
             <p className="m-0 text-sm leading-relaxed text-[#475569]">
-              取得した値を <InlineCode>.env.example</InlineCode> をコピーして作った <InlineCode>.env</InlineCode>{' '}
+              取得した値を <InlineCode>.env.local.example</InlineCode> をコピーして作った <InlineCode>.env</InlineCode>{' '}
               に設定します。
             </p>
             <CodeBlock
-              code={'VITE_SUPABASE_URL=https://xxxxx.supabase.co\nVITE_SUPABASE_ANON_KEY=xxxxx'}
+              code={'VITE_SUPABASE_URL=https://xxxxx.supabase.co\nVITE_SUPABASE_PUBLISHABLE_KEY=xxxxx'}
             />
           </div>
           <StepList
