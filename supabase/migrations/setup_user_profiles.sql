@@ -17,6 +17,10 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
 
 ALTER TABLE public.user_profiles ENABLE ROW LEVEL SECURITY;
 
+-- RLSポリシーだけではテーブルへのアクセス権は付与されないため、
+-- authenticatedロールへの明示的なGRANTが必要（INSERTはトリガー経由のみのため付与しない）。
+GRANT SELECT, UPDATE ON public.user_profiles TO authenticated;
+
 DO $$
 BEGIN
   IF NOT EXISTS (

@@ -20,6 +20,10 @@ CREATE INDEX IF NOT EXISTS tech_selections_user_id_created_at_idx
 
 ALTER TABLE public.tech_selections ENABLE ROW LEVEL SECURITY;
 
+-- RLSポリシーだけではテーブルへのアクセス権は付与されないため、
+-- authenticatedロールへの明示的なGRANTが必要。
+GRANT SELECT, INSERT, DELETE ON public.tech_selections TO authenticated;
+
 DO $$
 BEGIN
   IF NOT EXISTS (
