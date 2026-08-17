@@ -12,6 +12,7 @@ const TechGuide = lazy(() => import('./pages/TechGuide'));
 const PatternGuide = lazy(() => import('./pages/PatternGuide'));
 const TechSelectorReport = lazy(() => import('./pages/TechSelectorReport'));
 const RiskCheck = lazy(() => import('./pages/RiskCheck'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AppHome = lazy(() => import('./pages/AppHome'));
 const AppHistory = lazy(() => import('./pages/AppHistory'));
 const Account = lazy(() => import('./pages/Account'));
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/tools/tech-guide" element={<TechGuide />} />
         <Route path="/tools/patterns" element={<PatternGuide />} />
         <Route path="/tools/risk-check" element={<RiskCheck />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/tools" element={<RedirectTo path="/" />} />
         <Route path="/diagnosis" element={<RedirectTo path="/tools/diagnosis" />} />
