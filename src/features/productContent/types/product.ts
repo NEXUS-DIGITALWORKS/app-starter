@@ -16,6 +16,7 @@ export interface ProductListItem {
   imageUrl?: string;
   name: string;
   shortDescription?: string;
+  ingredients?: string;
   brand: string;
   storeView: StoreView;
   category: ProductCategory;
@@ -24,6 +25,7 @@ export interface ProductListItem {
   seoIssue: SeoIssueType;
   updatedAt: string;
   updatedBy: string;
+  tags?: string[];
 }
 
 export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
@@ -31,11 +33,13 @@ export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
 export interface ProductListFilters {
   search: string;
   sku: string;
+  ingredient: string;
   storeView: string;
   brand: string;
   status: ProductStatus[];
   seoIssue: SeoIssueType[];
   category: string;
+  tag: string;
   updatedWithin: UpdatedWithinFilter;
   page: number;
   limit: number;

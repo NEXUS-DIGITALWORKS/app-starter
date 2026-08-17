@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchProductListSummary, fetchProducts } from '../api/productListApi';
+import { addTagToProducts, fetchAvailableTags, fetchProductListSummary, fetchProducts, removeTagFromProduct } from '../api/productListApi';
 import type {
   ProductListFilters,
   ProductListItem,
@@ -15,11 +15,13 @@ const DEFAULT_LIMIT = 20;
 const INITIAL_FILTERS: ProductListFilters = {
   search: '',
   sku: '',
+  ingredient: '',
   storeView: 'all',
   brand: 'all',
   status: [],
   seoIssue: [],
   category: 'all',
+  tag: 'all',
   updatedWithin: 'all',
   page: 1,
   limit: DEFAULT_LIMIT,
@@ -37,10 +39,12 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 export function useProductFilters() {
   const [searchInput, setSearchInput] = useState('');
   const [skuInput, setSkuInput] = useState('');
+  const [ingredientInput, setIngredientInput] = useState('');
   const [filters, setFilters] = useState<ProductListFilters>(INITIAL_FILTERS);
 
   const debouncedSearch = useDebouncedValue(searchInput, DEBOUNCE_MS);
   const debouncedSku = useDebouncedValue(skuInput, DEBOUNCE_MS);
+  const debouncedIngredient = useDebouncedValue(ingredientInput, DEBOUNCE_MS);
 
   const [items, setItems] = useState<ProductListItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -48,12 +52,14 @@ export function useProductFilters() {
   const [error, setError] = useState<string | null>(null);
 
   const [summary, setSummary] = useState<ProductListSummary | null>(null);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [reloadKey, setReloadKey] = useState(0);
 
   const queryFilters = useMemo<ProductListFilters>(
-    () => ({ ...filters, search: debouncedSearch, sku: debouncedSku }),
-    [filters, debouncedSearch, debouncedSku],
+    () => ({ ...filters, search: debouncedSearch, sku: debouncedSku, ingredient: debouncedIngredient }),
+    [filters, debouncedSearch, debouncedSku, debouncedIngredient],
   );
 
   useEffect(() => {
@@ -76,22 +82,38 @@ export function useProductFilters() {
     return () => {
       ignore = true;
     };
-  }, [queryFilters]);
+  }, [queryFilters, reloadKey]);
 
   useEffect(() => {
     fetchProductListSummary().then(setSummary);
-  }, []);
+  }, [reloadKey]);
+
+  useEffect(() => {
+    fetchAvailableTags().then(setAvailableTags);
+  }, [reloadKey]);
 
   // 検索条件が変わったらページを1に戻す
   useEffect(() => {
     setFilters((prev) => (prev.page === 1 ? prev : { ...prev, page: 1 }));
-  }, [debouncedSearch, debouncedSku, filters.storeView, filters.brand, filters.category, filters.updatedWithin, filters.status, filters.seoIssue]);
+  }, [
+    debouncedSearch,
+    debouncedSku,
+    debouncedIngredient,
+    filters.storeView,
+    filters.brand,
+    filters.category,
+    filters.tag,
+    filters.updatedWithin,
+    filters.status,
+    filters.seoIssue,
+  ]);
 
   const setPage = (page: number) => setFilters((prev) => ({ ...prev, page }));
 
   const setStoreView = (storeView: string) => setFilters((prev) => ({ ...prev, storeView }));
   const setBrand = (brand: string) => setFilters((prev) => ({ ...prev, brand }));
   const setCategory = (category: string) => setFilters((prev) => ({ ...prev, category }));
+  const setTag = (tag: string) => setFilters((prev) => ({ ...prev, tag }));
   const setUpdatedWithin = (updatedWithin: UpdatedWithinFilter) => setFilters((prev) => ({ ...prev, updatedWithin }));
 
   const toggleStatus = (status: ProductStatus) =>
@@ -115,6 +137,7 @@ export function useProductFilters() {
   const clearFilters = () => {
     setSearchInput('');
     setSkuInput('');
+    setIngredientInput('');
     setFilters(INITIAL_FILTERS);
   };
 
@@ -131,15 +154,29 @@ export function useProductFilters() {
 
   const clearSelection = () => setSelectedIds(new Set());
 
+  const addTags = async (ids: string[], tag: string) => {
+    await addTagToProducts(ids, tag);
+    setReloadKey((n) => n + 1);
+    clearSelection();
+  };
+
+  const removeTag = async (id: string, tag: string) => {
+    await removeTagFromProduct(id, tag);
+    setReloadKey((n) => n + 1);
+  };
+
   return {
     searchInput,
     setSearchInput,
     skuInput,
     setSkuInput,
+    ingredientInput,
+    setIngredientInput,
     filters,
     setStoreView,
     setBrand,
     setCategory,
+    setTag,
     setUpdatedWithin,
     toggleStatus,
     toggleSeoIssue,
@@ -154,10 +191,13 @@ export function useProductFilters() {
     isLoading,
     error,
     summary,
+    availableTags,
     selectedIds,
     toggleSelect,
     toggleSelectAll,
     clearSelection,
+    addTags,
+    removeTag,
   };
 }
 

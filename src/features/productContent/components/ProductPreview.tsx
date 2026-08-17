@@ -34,12 +34,9 @@ export default function ProductPreview({ productName, productImage, content, fea
             <h3 className="mb-2 text-sm font-semibold text-[#111827]">特徴</h3>
             <ul className="grid grid-cols-1 gap-x-6 gap-y-1.5 text-sm text-[#344054] sm:grid-cols-2">
               {features.map((f) => (
-                <li key={f.key} className="flex gap-1.5">
-                  <span className="text-[#98A2B3]">・</span>
-                  <span>
-                    <span className="text-[#667085]">{f.label}: </span>
-                    {f.value}
-                  </span>
+                <li key={f.key}>
+                  <span className="text-[#667085]">{f.label}: </span>
+                  {f.value}
                 </li>
               ))}
             </ul>

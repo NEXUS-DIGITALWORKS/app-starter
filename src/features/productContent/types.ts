@@ -12,12 +12,16 @@ export interface Product {
   id: string;
   sku: string;
   brand: string;
-  name: string;
+  name: string; // 商品名（日本語・マスターデータ）
+  nameZhHant: string; // 商品名（繁体字）
+  nameEn: string; // 商品名（英語）
+  price: string;
   ecStatus: EcStatus;
   ecStatusLabel: string;
   ecVisibility: EcVisibility;
   workflowStatus: WorkflowStatus;
   imagePath: string;
+  tags?: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -40,12 +44,22 @@ export interface ProductContentText {
 
 export type ContentVersionType = 'source' | 'translation' | 'ai_suggestion' | 'edited' | 'approved';
 
-// storeView単位の本文コンテンツ（原文 / AI翻訳 / 改善案）
+// 翻訳先言語。原文（日本語）から、この2言語へAI翻訳→人による編集を行う。
+export type TargetLocale = 'zhHant' | 'en';
+
+// ターゲット言語ごとのコンテンツ（AI翻訳結果 / 人による編集後）
+export interface LocaleContent {
+  aiTranslation: ProductContentText;
+  edited: ProductContentText;
+}
+
+// storeView単位の本文コンテンツ。原文（日本語・マスターデータ）を起点に、
+// 繁体字・英語それぞれへAI翻訳→人による編集を行う。
 export interface ProductContent {
   storeViewId: string;
   original: ProductContentText;
-  translationJa: ProductContentText;
-  improvedJa: ProductContentText;
+  zhHant: LocaleContent;
+  en: LocaleContent;
 }
 
 export type AttributeStatus = 'missing' | 'partial' | 'available' | 'unknown';
@@ -98,6 +112,13 @@ export interface SeoSuggestion {
   metaTitle: string;
   metaDescription: string;
   urlKey: string;
+}
+
+// SEO診断・改善案は商品概要と同様、原文（日本語）・繁体字・英語それぞれの
+// store view ごとにmeta_title/meta_description/url_keyが異なるため言語別に保持する。
+export interface LocaleSeo {
+  issues: SeoIssue[];
+  suggestion: SeoSuggestion;
 }
 
 export interface MissingField {
@@ -168,10 +189,8 @@ export interface ProductImageAsset {
 }
 
 export interface ProductStats {
-  charCount: number;
   imageCount: number;
   headingCount: number;
-  storeViewCode: string;
 }
 
 // 画面で扱う「1商品・1StoreView分」のまとまり
@@ -182,8 +201,11 @@ export interface ProductWorkspace {
   attributes: ProductAttribute[];
   extractedFeatures: ExtractedFeature[];
   missingFields: MissingField[];
-  seoIssues: SeoIssue[];
-  seoSuggestion: SeoSuggestion;
+  seo: {
+    original: LocaleSeo;
+    zhHant: LocaleSeo;
+    en: LocaleSeo;
+  };
   metadata: ProductMagentoMetadata;
   images: ProductImageAsset[];
   stats: ProductStats;

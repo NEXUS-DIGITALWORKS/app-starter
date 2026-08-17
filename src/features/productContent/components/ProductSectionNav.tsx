@@ -21,7 +21,7 @@ export default function ProductSectionNav({ active, onChange }: ProductSectionNa
   return (
     <nav aria-label="セクションナビ" className="rounded-xl border border-[#E5E7EB] bg-white p-2">
       <p className="px-2.5 pb-1.5 pt-1 text-xs font-semibold text-[#98A2B3]">セクションナビ</p>
-      <ul className="flex flex-row gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+      <ul className="m-0 flex list-none flex-row gap-1 p-0 overflow-x-auto lg:flex-col lg:overflow-visible">
         {SECTIONS.map(({ key, label, icon: Icon }) => {
           const isActive = key === active;
           return (

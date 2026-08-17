@@ -19,11 +19,15 @@ interface ProductListToolbarProps {
   onSearchInputChange: (value: string) => void;
   skuInput: string;
   onSkuInputChange: (value: string) => void;
+  ingredientInput: string;
+  onIngredientInputChange: (value: string) => void;
   filters: ProductListFilters;
+  availableTags: string[];
   onStoreViewChange: (value: string) => void;
   onBrandChange: (value: string) => void;
   onSingleStatusChange: (value: ProductStatus | 'all') => void;
   onSingleSeoIssueChange: (value: SeoIssueType | 'all') => void;
+  onTagChange: (value: string) => void;
   onClear: () => void;
 }
 
@@ -32,11 +36,15 @@ export default function ProductListToolbar({
   onSearchInputChange,
   skuInput,
   onSkuInputChange,
+  ingredientInput,
+  onIngredientInputChange,
   filters,
+  availableTags,
   onStoreViewChange,
   onBrandChange,
   onSingleStatusChange,
   onSingleSeoIssueChange,
+  onTagChange,
   onClear,
 }: ProductListToolbarProps) {
   return (
@@ -60,6 +68,16 @@ export default function ProductListToolbar({
             placeholder="SKUで検索"
             className="h-10 pl-9"
             aria-label="SKUで検索"
+          />
+        </div>
+        <div className="relative w-full lg:w-60">
+          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#98A2B3]" />
+          <Input
+            value={ingredientInput}
+            onChange={(e) => onIngredientInputChange(e.target.value)}
+            placeholder="成分で検索（例: グリチルリチン酸2K）"
+            className="h-10 pl-9"
+            aria-label="成分で検索"
           />
         </div>
       </div>
@@ -116,6 +134,20 @@ export default function ProductListToolbar({
             {SEO_ISSUE_OPTIONS.map((v) => (
               <SelectItem key={v.value} value={v.value}>
                 {v.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Select value={filters.tag} onValueChange={onTagChange}>
+          <SelectTrigger className="h-9 w-[140px]" aria-label="タグ">
+            <SelectValue placeholder="タグ" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">すべて</SelectItem>
+            {availableTags.map((tag) => (
+              <SelectItem key={tag} value={tag}>
+                {tag}
               </SelectItem>
             ))}
           </SelectContent>

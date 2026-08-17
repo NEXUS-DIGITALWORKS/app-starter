@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import AppLayout from './layouts/AppLayout';
-import RequireAuth from './features/auth/RequireAuth';
 import './App.css';
 
 // ページ単位でJSを分割し、初回アクセス時に他ページ分のコードまで読み込まれないようにする。
@@ -39,26 +38,11 @@ export default function App() {
 
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<AppHome />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/:sku" element={<ProductContent />} />
           <Route path="history" element={<AppHistory />} />
           <Route path="account" element={<Account />} />
         </Route>
-
-        <Route
-          path="/app/products"
-          element={
-            <RequireAuth>
-              <ProductList />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/app/products/:sku"
-          element={
-            <RequireAuth>
-              <ProductContent />
-            </RequireAuth>
-          }
-        />
 
         <Route path="/tools/diagnosis" element={<DiagnosisIntro />} />
         <Route path="/tools/diagnosis/start" element={<DiagnosisFlow />} />

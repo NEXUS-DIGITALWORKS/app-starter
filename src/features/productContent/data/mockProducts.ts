@@ -1,14 +1,18 @@
+import { getProductImageUrl } from '../lib/productImage';
 import type { ProductListItem } from '../types/product';
 
 // 商品一覧画面用のMockデータ（MVP1）。実データ接続はMagento連携後。
 // 1件目は商品詳細画面のモック（data/mockProduct.ts の MOCK_SKU）と同一SKUにして、
 // 一覧→詳細の遷移が違和感なく繋がるようにしている。
-export const mockProducts: ProductListItem[] = [
+const RAW_PRODUCTS: (Omit<ProductListItem, 'imageUrl'> & { imagePath?: string })[] = [
   {
     id: '1',
     sku: '4901301276070',
-    name: '【花王】Curel 潤和潔淨洗髮精 420ml',
+    imagePath: '/1/0/101775621734_0157658996.jpg',
+    name: '【花王】キュレルシャンプーポンプ 420ml',
     shortDescription: '頭皮にやさしい、低刺激処方のシャンプー。',
+    ingredients:
+      '有効成分：グリチルリチン酸2K／その他の成分：精製水、ラウレス硫酸Na、アルキルグリコシド、ヤシ油脂肪酸アシルグルタミン酸Na、オレンジ油、ユーカリ油、エタノール、エデト酸塩、安息香酸塩 ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'ヘアケア',
@@ -23,6 +27,8 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301420152',
     name: '【花王】Curel 潤浸保濕乳霜 40g',
     shortDescription: '乾燥性敏感肌用・深層保湿クリーム。',
+    ingredients:
+      '有効成分：グリチルリチン酸2K／その他の成分：水、BG、グリセリン、スクワラン、ワセリン、セラミド2、コレステロール、ジメチコン、カルボマー、水酸化K ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -37,6 +43,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301283217',
     name: '【花王】Curel 潤浸保濕化妝水III 150ml',
     shortDescription: '角層まで潤いを届ける化粧水。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、BG、グリセリン、PEG-32、カルボマー、キサンタンガム、水酸化K、フェノキシエタノール ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -51,6 +58,8 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301259351',
     name: '【花王】Curel 深層保濕卸妝乳 130g',
     shortDescription: 'メイクと汚れをやさしく落とすクレンジング。',
+    ingredients:
+      '有効成分：グリチルリチン酸2K／その他の成分：水、ミネラルオイル、PEG-20グリセリル、トリ(カプリル酸/カプリン酸)グリセリル、シクロペンタシロキサン ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -65,6 +74,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301269894',
     name: '【花王】Curel 潤浸保濕眼霜 25g',
     shortDescription: '乾燥による小じわを目立たなくする。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、BG、グリセリン、スクワラン、シア脂、セラミド2、トコフェロール ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -79,6 +89,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301270037',
     name: '【花王】Curel 泡洗顔料 150ml',
     shortDescription: 'ふんわり泡でやさしく洗う洗顔料。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、ラウリン酸、ミリスチン酸、水酸化K、グリセリン、ヤシ油脂肪酸アミドDEA ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -93,6 +104,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301295994',
     name: '【花王】Curel 身體保濕乳液 220ml',
     shortDescription: '全身の乾燥肌に、長時間うるおい。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、グリセリン、スクワラン、ジメチコン、セテアリルアルコール、ステアリン酸グリセリル ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -107,6 +119,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301321109',
     name: '【花王】Curel UV防護乳 SPF30 60g',
     shortDescription: '乾燥性敏感肌を紫外線から守るUV乳液。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、酸化亜鉛、酸化チタン、シクロペンタシロキサン、BG、グリセリン ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -121,6 +134,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301112361',
     name: '【花王】Merit 潤養洗髮精 480ml',
     shortDescription: '髪と地肌をやさしく洗い上げるシャンプー。',
+    ingredients: '有効成分：ラウレス硫酸Na／その他の成分：水、コカミドDEA、ジステアリン酸グリコール、ポリクオタニウム-10、クエン酸 ほか',
     brand: 'Kao',
     storeView: 'Japan Store View',
     category: 'ヘアケア',
@@ -135,6 +149,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4987176102773',
     name: '【資生堂】ELIXIR 化妝水 W 170ml',
     shortDescription: 'ハリとうるおいを与えるエイジングケア化粧水。',
+    ingredients: '有効成分：アセチルヒアルロン酸Na／その他の成分：水、BG、グリセリン、DPG、ペンチレングリコール、キサンタンガム ほか',
     brand: 'Shiseido',
     storeView: 'English Store View',
     category: 'スキンケア',
@@ -149,6 +164,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301412454',
     name: '【花王】バブ 入浴劑 12錠',
     shortDescription: '肩こり・腰痛をやわらげる炭酸入浴剤。',
+    ingredients: '成分：炭酸水素Na、コハク酸、炭酸Na、香料、着色料（黄4、青1） ほか',
     brand: 'Kao',
     storeView: 'Japan Store View',
     category: '日用品',
@@ -163,6 +179,7 @@ export const mockProducts: ProductListItem[] = [
     sku: '4901301235799',
     name: '【花王】Curel 潤浸保濕沐浴乳 420ml',
     shortDescription: '敏感肌にやさしい低刺激ボディウォッシュ。',
+    ingredients: '有効成分：グリチルリチン酸2K／その他の成分：水、ラウレス硫酸Na、コカミドプロピルベタイン、グリセリン、BG ほか',
     brand: 'Curel',
     storeView: 'Taiwan Store View',
     category: 'スキンケア',
@@ -173,3 +190,8 @@ export const mockProducts: ProductListItem[] = [
     updatedBy: 'Admin',
   },
 ];
+
+export const mockProducts: ProductListItem[] = RAW_PRODUCTS.map(({ imagePath, ...item }) => ({
+  ...item,
+  imageUrl: imagePath ? getProductImageUrl(imagePath) : undefined,
+}));

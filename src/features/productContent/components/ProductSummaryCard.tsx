@@ -1,73 +1,140 @@
-import { Eye } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import type { Product, ProductStoreView } from '../types';
-
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
+import { useState } from 'react';
+import { Plus, X } from 'lucide-react';
+import type { Product } from '../types';
 
 interface ProductSummaryCardProps {
   product: Product;
-  storeView: ProductStoreView;
-  onOpenPreview: () => void;
+  editable: boolean;
+  onChangeName: (field: 'name' | 'nameZhHant' | 'nameEn', value: string) => void;
+  onAddTag: (tag: string) => void;
+  onRemoveTag: (tag: string) => void;
 }
 
-export default function ProductSummaryCard({ product, storeView, onOpenPreview }: ProductSummaryCardProps) {
+const NAME_FIELDS: { key: 'name' | 'nameZhHant' | 'nameEn'; label: string }[] = [
+  { key: 'name', label: '商品名' },
+  { key: 'nameZhHant', label: '商品名（繁体字）' },
+  { key: 'nameEn', label: '商品名（英語）' },
+];
+
+function TagList({ tags, onAddTag, onRemoveTag }: { tags: string[]; onAddTag: (tag: string) => void; onRemoveTag: (tag: string) => void }) {
+  const [input, setInput] = useState('');
+
+  const handleAdd = () => {
+    if (!input.trim()) return;
+    onAddTag(input);
+    setInput('');
+  };
+
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      {tags.map((tag) => (
+        <span
+          key={tag}
+          className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FE] py-0.5 pl-2 pr-1 text-xs font-medium text-[#3157E5]"
+        >
+          {tag}
+          <button
+            type="button"
+            onClick={() => onRemoveTag(tag)}
+            aria-label={`タグ「${tag}」を削除`}
+            className="rounded-full p-0.5 hover:bg-[#D6DEFB]"
+          >
+            <X size={11} />
+          </button>
+        </span>
+      ))}
+      <div className="flex items-center gap-1">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleAdd();
+            }
+          }}
+          placeholder="タグを追加"
+          className="h-7 w-28 rounded-md border border-[#D0D5DD] bg-white px-2 text-xs text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3157E5]"
+        />
+        <button
+          type="button"
+          onClick={handleAdd}
+          aria-label="タグを追加"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-[#D0D5DD] text-[#475467] hover:bg-[#F8FAFC]"
+        >
+          <Plus size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function ProductSummaryCard({ product, editable, onChangeName, onAddTag, onRemoveTag }: ProductSummaryCardProps) {
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-6">
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-          <img
-            src={product.imagePath}
-            alt={product.name}
-            className="h-24 w-24 shrink-0 rounded-lg border border-[#EEF0F4] bg-[#F8FAFC] object-contain"
-            onError={(e) => {
-              e.currentTarget.style.visibility = 'hidden';
-            }}
-          />
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-[#667085]">SKU:</dt>
-            <dd className="font-medium text-[#111827]">{product.sku}</dd>
-            <dt className="text-[#667085]">Store View:</dt>
-            <dd className="text-[#344054]">{storeView.storeViewName}</dd>
-            <dt className="text-[#667085]">商品名:</dt>
-            <dd className="text-[#344054]">{product.name}</dd>
-            <dt className="text-[#667085]">ブランド:</dt>
-            <dd className="text-[#344054]">{product.brand}</dd>
-          </dl>
-        </div>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <img
+          src={product.imagePath}
+          alt={product.name}
+          className="h-40 w-40 shrink-0 rounded-lg border border-[#EEF0F4] bg-[#F8FAFC] object-contain sm:h-48 sm:w-48"
+          onError={(e) => {
+            e.currentTarget.style.visibility = 'hidden';
+          }}
+        />
+        <div className="min-w-0 flex-1 space-y-4">
+          {!editable && (
+            <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 text-sm">
+              <dt className="text-[#667085]">SKU:</dt>
+              <dd className="font-medium text-[#111827]">{product.sku}</dd>
+              <dt className="text-[#667085]">商品名:</dt>
+              <dd className="text-[#344054]">{product.name}</dd>
+              <dt className="text-[#667085]">商品名（繁体字）:</dt>
+              <dd className="text-[#344054]">{product.nameZhHant}</dd>
+              <dt className="text-[#667085]">商品名（英語）:</dt>
+              <dd className="text-[#344054]">{product.nameEn}</dd>
+              <dt className="text-[#667085]">ブランド:</dt>
+              <dd className="text-[#344054]">{product.brand}</dd>
+              <dt className="text-[#667085]">販売価格:</dt>
+              <dd className="font-medium text-[#344054]">{product.price}</dd>
+              <dt className="text-[#667085]">タグ:</dt>
+              <dd>
+                <TagList tags={product.tags ?? []} onAddTag={onAddTag} onRemoveTag={onRemoveTag} />
+              </dd>
+            </dl>
+          )}
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-8">
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-[#667085]">Status:</dt>
-            <dd>
-              <Badge variant="success" className="rounded-md">
-                {product.ecStatusLabel}
-              </Badge>
-            </dd>
-            <dt className="text-[#667085]">Visibility:</dt>
-            <dd className="font-medium text-[#3157E5]">{product.ecVisibility}</dd>
-            <dt className="text-[#667085]">Created At:</dt>
-            <dd className="text-[#344054]">{formatDateTime(product.createdAt)}</dd>
-            <dt className="text-[#667085]">Updated At:</dt>
-            <dd className="text-[#344054]">{formatDateTime(product.updatedAt)}</dd>
-            <dt className="text-[#667085]">Image:</dt>
-            <dd className="truncate text-[#344054]">{product.imagePath}</dd>
-          </dl>
+          {editable && (
+            <>
+              <dl className="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-2 text-sm">
+                <dt className="text-[#667085]">SKU:</dt>
+                <dd className="font-medium text-[#111827]">{product.sku}</dd>
+                <dt className="text-[#667085]">ブランド:</dt>
+                <dd className="text-[#344054]">{product.brand}</dd>
+                <dt className="text-[#667085]">販売価格:</dt>
+                <dd className="font-medium text-[#344054]">{product.price}</dd>
+                <dt className="text-[#667085]">タグ:</dt>
+                <dd>
+                  <TagList tags={product.tags ?? []} onAddTag={onAddTag} onRemoveTag={onRemoveTag} />
+                </dd>
+              </dl>
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onOpenPreview}
-            className="shrink-0 self-start border-[#D6BBFB] text-[#6941C6] hover:bg-[#F9F5FF]"
-          >
-            <Eye size={14} />
-            翻訳プレビュー
-          </Button>
+              <div className="space-y-3 border-t border-[#EEF0F4] pt-3">
+                {NAME_FIELDS.map(({ key, label }) => (
+                  <div key={key}>
+                    <label className="mb-1 block text-xs font-semibold text-[#667085]" htmlFor={`product-${key}`}>
+                      {label}
+                    </label>
+                    <input
+                      id={`product-${key}`}
+                      value={product[key]}
+                      onChange={(e) => onChangeName(key, e.target.value)}
+                      className="w-full rounded-md border border-[#D0D5DD] bg-white px-3 py-2 text-sm text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3157E5]"
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

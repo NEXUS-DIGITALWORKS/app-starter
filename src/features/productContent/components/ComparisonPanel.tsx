@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { CONTENT_FIELDS } from '../lib/contentFields';
+import { CONTENT_FIELDS, countChars } from '../lib/contentFields';
 import type { ProductContentText } from '../types';
 import AiRegenerateButton from './AiRegenerateButton';
 
-function ContentBlocks({ content }: { content: ProductContentText }) {
+function CharCount({ content }: { content: ProductContentText }) {
+  return <span className="ml-1.5 text-xs font-normal text-[#98A2B3]">（約{countChars(content)}文字）</span>;
+}
+
+export function ContentBlocks({ content }: { content: ProductContentText }) {
   return (
     <div className="space-y-4">
       {CONTENT_FIELDS.map(({ key, label }) => (
@@ -18,16 +22,42 @@ function ContentBlocks({ content }: { content: ProductContentText }) {
   );
 }
 
+export function EditableContentBlocks({
+  content,
+  onChange,
+}: {
+  content: ProductContentText;
+  onChange: (next: ProductContentText) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      {CONTENT_FIELDS.map(({ key, label }) => (
+        <div key={key}>
+          <label className="mb-1 block text-sm font-semibold text-[#111827]" htmlFor={`field-${key}`}>
+            {label}
+          </label>
+          <textarea
+            id={`field-${key}`}
+            value={content[key]}
+            onChange={(e) => onChange({ ...content, [key]: e.target.value })}
+            rows={key === 'shortDescription' ? 2 : 4}
+            className="w-full resize-y rounded-lg border border-[#D0D5DD] px-3 py-2 text-sm leading-relaxed text-[#344054] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3157E5]"
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 interface AiPanelProps {
   title: string;
   content: ProductContentText;
-  productImage?: string;
-  productName?: string;
+  editable?: boolean;
   onRegenerate: () => Promise<ProductContentText>;
   onAdopt: (next: ProductContentText) => void;
 }
 
-function AiPanel({ title, content, productImage, productName, onRegenerate, onAdopt }: AiPanelProps) {
+function AiPanel({ title, content, editable, onRegenerate, onAdopt }: AiPanelProps) {
   const [loading, setLoading] = useState(false);
   const [pending, setPending] = useState<ProductContentText | null>(null);
 
@@ -44,7 +74,10 @@ function AiPanel({ title, content, productImage, productName, onRegenerate, onAd
   return (
     <div className="flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-[#111827]">{title}</h3>
+        <h3 className="text-sm font-semibold text-[#111827]">
+          {title}
+          <CharCount content={content} />
+        </h3>
         <AiRegenerateButton onClick={handleRegenerate} loading={loading} />
       </div>
 
@@ -72,17 +105,7 @@ function AiPanel({ title, content, productImage, productName, onRegenerate, onAd
         </div>
       )}
 
-      {productImage && (
-        <div className="mb-4 flex items-start gap-3 rounded-lg bg-[#F8FAFC] p-3">
-          <img src={productImage} alt="" className="h-16 w-16 shrink-0 rounded-md border border-[#EEF0F4] bg-white object-contain" />
-          <div className="min-w-0 text-xs text-[#667085]">
-            <p className="font-medium text-[#475467]">画像（プレビュー）</p>
-            <p className="mt-1 truncate">Alt（プレビュー）: {productName}</p>
-          </div>
-        </div>
-      )}
-
-      <ContentBlocks content={content} />
+      {editable ? <EditableContentBlocks content={content} onChange={onAdopt} /> : <ContentBlocks content={content} />}
     </div>
   );
 }
@@ -91,11 +114,13 @@ export type ComparisonMode = 'original-translation' | 'original-improved' | 'tra
 
 interface ComparisonPanelProps {
   mode: ComparisonMode;
+  editable: boolean;
   original: ProductContentText;
-  translationJa: ProductContentText;
-  improvedJa: ProductContentText;
-  productImage: string;
-  productName: string;
+  originalLabel: string;
+  translation: ProductContentText;
+  translationLabel: string;
+  improved: ProductContentText;
+  improvedLabel: string;
   onRegenerateTranslation: () => Promise<ProductContentText>;
   onRegenerateImproved: () => Promise<ProductContentText>;
   onAdoptTranslation: (next: ProductContentText) => void;
@@ -104,47 +129,44 @@ interface ComparisonPanelProps {
 
 export default function ComparisonPanel({
   mode,
+  editable,
   original,
-  translationJa,
-  improvedJa,
-  productImage,
-  productName,
+  originalLabel,
+  translation,
+  translationLabel,
+  improved,
+  improvedLabel,
   onRegenerateTranslation,
   onRegenerateImproved,
   onAdoptTranslation,
   onAdoptImproved,
 }: ComparisonPanelProps) {
   const leftIsOriginal = mode !== 'translation-improved';
-  const leftLabel = leftIsOriginal ? '原文（繁体字）' : '日本語翻訳';
-  const leftContent = leftIsOriginal ? original : translationJa;
+  const leftLabel = leftIsOriginal ? originalLabel : translationLabel;
+  const leftContent = leftIsOriginal ? original : translation;
   const rightIsImproved = mode !== 'original-translation';
-  const rightLabel = rightIsImproved ? '改善案（日本語）' : '日本語翻訳（AIプレビュー）';
+  const rightLabel = rightIsImproved ? improvedLabel : `${translationLabel}（AIプレビュー）`;
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row">
       <div className="flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
-        <h3 className="mb-3 text-sm font-semibold text-[#111827]">{leftLabel}</h3>
+        <h3 className="mb-3 text-sm font-semibold text-[#111827]">
+          {leftLabel}
+          <CharCount content={leftContent} />
+        </h3>
         <ContentBlocks content={leftContent} />
       </div>
 
       {rightIsImproved ? (
         <AiPanel
           title={rightLabel}
-          content={improvedJa}
-          productImage={productImage}
-          productName={productName}
+          content={improved}
+          editable={editable}
           onRegenerate={onRegenerateImproved}
           onAdopt={onAdoptImproved}
         />
       ) : (
-        <AiPanel
-          title={rightLabel}
-          content={translationJa}
-          productImage={productImage}
-          productName={productName}
-          onRegenerate={onRegenerateTranslation}
-          onAdopt={onAdoptTranslation}
-        />
+        <AiPanel title={rightLabel} content={translation} onRegenerate={onRegenerateTranslation} onAdopt={onAdoptTranslation} />
       )}
     </div>
   );

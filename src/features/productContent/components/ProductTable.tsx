@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, ImageOff, MoreVertical, Pencil, RefreshCw } from 'lucide-react';
+import { Eye, ImageOff, MoreVertical, Pencil, RefreshCw, Tag, X } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,14 +19,28 @@ import SeoScoreBadge from './SeoScoreBadge';
 import ProductPagination from './ProductPagination';
 import type { ProductListItem } from '../types/product';
 
-const BULK_ACTIONS = ['SEO分析', 'AI翻訳', '再同期', 'エクスポート'];
+const OTHER_BULK_ACTIONS = ['SEO分析', 'AI翻訳', '再同期', 'エクスポート'];
 const MORE_ACTIONS = ['再同期', 'AI分析', '複製', 'CSV出力'];
 
-function formatDateTime(iso: string): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+function ProductThumbnail({ src, alt }: { src?: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return (
+      <span className="flex h-12 w-12 items-center justify-center rounded-md border border-[#EEF0F4] bg-[#F8FAFC] text-[#98A2B3]">
+        <ImageOff size={18} />
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      onError={() => setFailed(true)}
+      className="h-12 w-12 rounded-md border border-[#EEF0F4] object-contain"
+    />
+  );
 }
 
 interface ProductTableProps {
@@ -41,6 +56,8 @@ interface ProductTableProps {
   limit: number;
   total: number;
   onPageChange: (page: number) => void;
+  onAddTag: (ids: string[], tag: string) => Promise<void>;
+  onRemoveTag: (id: string, tag: string) => Promise<void>;
 }
 
 export default function ProductTable({
@@ -56,14 +73,32 @@ export default function ProductTable({
   limit,
   total,
   onPageChange,
+  onAddTag,
+  onRemoveTag,
 }: ProductTableProps) {
   const navigate = useNavigate();
   const [previewItem, setPreviewItem] = useState<ProductListItem | null>(null);
+  const [tagDialogOpen, setTagDialogOpen] = useState(false);
+  const [tagInput, setTagInput] = useState('');
+  const [isAddingTag, setIsAddingTag] = useState(false);
 
   const allSelected = items.length > 0 && selectedIds.size === items.length;
   const someSelected = selectedIds.size > 0 && !allSelected;
 
   const goToDetail = (sku: string) => navigate(`/app/products/${sku}`);
+
+  const handleConfirmAddTag = async () => {
+    const tag = tagInput.trim();
+    if (!tag) return;
+    setIsAddingTag(true);
+    try {
+      await onAddTag([...selectedIds], tag);
+      setTagDialogOpen(false);
+      setTagInput('');
+    } finally {
+      setIsAddingTag(false);
+    }
+  };
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white">
@@ -76,7 +111,12 @@ export default function ProductTable({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            {BULK_ACTIONS.map((action) => (
+            <DropdownMenuItem onSelect={() => setTagDialogOpen(true)}>
+              <Tag size={14} />
+              タグを追加
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            {OTHER_BULK_ACTIONS.map((action) => (
               <DropdownMenuItem key={action} onSelect={() => console.info('[bulk-action]', action, [...selectedIds])}>
                 {action}
               </DropdownMenuItem>
@@ -100,10 +140,9 @@ export default function ProductTable({
             <TableHead className="min-w-[104px]">SKU</TableHead>
             <TableHead className="min-w-[220px]">商品名</TableHead>
             <TableHead className="min-w-[76px]">ブランド</TableHead>
-            <TableHead className="min-w-[120px]">Store View</TableHead>
+            <TableHead className="min-w-[140px]">タグ</TableHead>
             <TableHead className="min-w-[80px]">ステータス</TableHead>
             <TableHead className="min-w-[126px]">SEOスコア/課題</TableHead>
-            <TableHead className="min-w-[110px]">更新日</TableHead>
             <TableHead className="min-w-[128px] text-right">アクション</TableHead>
           </TableRow>
         </TableHeader>
@@ -111,7 +150,7 @@ export default function ProductTable({
           {isLoading &&
             Array.from({ length: 8 }).map((_, i) => (
               <TableRow key={`skeleton-${i}`}>
-                <TableCell colSpan={10}>
+                <TableCell colSpan={9}>
                   <Skeleton className="h-10 w-full" />
                 </TableCell>
               </TableRow>
@@ -119,7 +158,7 @@ export default function ProductTable({
 
           {!isLoading && error && (
             <TableRow>
-              <TableCell colSpan={10} className="py-12 text-center">
+              <TableCell colSpan={9} className="py-12 text-center">
                 <p className="text-sm font-medium text-[#B42318]">{error}</p>
                 <Button variant="outline" size="sm" className="mt-3 border-[#D0D5DD] text-[#475467]" onClick={onRetry}>
                   <RefreshCw size={14} />
@@ -131,7 +170,7 @@ export default function ProductTable({
 
           {!isLoading && !error && items.length === 0 && (
             <TableRow>
-              <TableCell colSpan={10} className="py-12 text-center">
+              <TableCell colSpan={9} className="py-12 text-center">
                 <p className="text-sm font-medium text-[#344054]">条件に一致する商品がありません</p>
                 <p className="mt-1 text-sm text-[#98A2B3]">検索条件を変更してください</p>
                 <Button variant="outline" size="sm" className="mt-3 border-[#D0D5DD] text-[#475467]" onClick={onClearFilters}>
@@ -153,13 +192,7 @@ export default function ProductTable({
                   />
                 </TableCell>
                 <TableCell>
-                  {item.imageUrl ? (
-                    <img src={item.imageUrl} alt={item.name} className="h-12 w-12 rounded-md border border-[#EEF0F4] object-contain" />
-                  ) : (
-                    <span className="flex h-12 w-12 items-center justify-center rounded-md border border-[#EEF0F4] bg-[#F8FAFC] text-[#98A2B3]">
-                      <ImageOff size={18} />
-                    </span>
-                  )}
+                  <ProductThumbnail src={item.imageUrl} alt={item.name} />
                 </TableCell>
                 <TableCell className="text-sm text-[#475467]">{item.sku}</TableCell>
                 <TableCell className="max-w-[320px]">
@@ -167,16 +200,35 @@ export default function ProductTable({
                   {item.shortDescription && <p className="truncate text-xs text-[#667085]">{item.shortDescription}</p>}
                 </TableCell>
                 <TableCell className="text-sm text-[#344054]">{item.brand}</TableCell>
-                <TableCell className="text-sm text-[#344054]">{item.storeView}</TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  {item.tags && item.tags.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {item.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FE] py-0.5 pl-2 pr-1 text-xs font-medium text-[#3157E5]"
+                        >
+                          {tag}
+                          <button
+                            type="button"
+                            onClick={() => onRemoveTag(item.id, tag)}
+                            aria-label={`タグ「${tag}」を削除`}
+                            className="rounded-full p-0.5 hover:bg-[#D6DEFB]"
+                          >
+                            <X size={11} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs text-[#98A2B3]">なし</span>
+                  )}
+                </TableCell>
                 <TableCell>
                   <ProductStatusBadge status={item.status} />
                 </TableCell>
                 <TableCell>
                   <SeoScoreBadge score={item.seoScore} issueType={item.seoIssue} />
-                </TableCell>
-                <TableCell>
-                  <p className="text-sm text-[#344054]">{formatDateTime(item.updatedAt)}</p>
-                  <p className="text-xs text-[#98A2B3]">{item.updatedBy}</p>
                 </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1">
@@ -237,6 +289,41 @@ export default function ProductTable({
             <DialogDescription>SKU: {previewItem?.sku}</DialogDescription>
           </DialogHeader>
           <p className="text-sm text-[#667085]">プレビュー機能は準備中です。実データ接続後にEC上の表示イメージを確認できるようになります。</p>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={tagDialogOpen}
+        onOpenChange={(open) => {
+          setTagDialogOpen(open);
+          if (!open) setTagInput('');
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>タグを追加</DialogTitle>
+            <DialogDescription>{selectedIds.size}件の商品にタグを追加します。</DialogDescription>
+          </DialogHeader>
+          <Input
+            value={tagInput}
+            onChange={(e) => setTagInput(e.target.value)}
+            placeholder="タグ名を入力（例: セール対象）"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') handleConfirmAddTag();
+            }}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setTagDialogOpen(false)} className="border-[#D0D5DD] text-[#475467]">
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleConfirmAddTag}
+              disabled={!tagInput.trim() || isAddingTag}
+              className="bg-[#3157E5] hover:bg-[#2748C7] hover:opacity-100"
+            >
+              追加する
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

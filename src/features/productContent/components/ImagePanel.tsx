@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Loader2, Sparkles } from 'lucide-react';
+import { ImageOff, Loader2, Sparkles } from 'lucide-react';
 import type { ProductImageAsset } from '../types';
 
 interface ImagePanelProps {
@@ -10,6 +10,7 @@ interface ImagePanelProps {
 export default function ImagePanel({ images, productName }: ImagePanelProps) {
   const [suggestions, setSuggestions] = useState<Record<string, string>>({});
   const [loadingKey, setLoadingKey] = useState<string | null>(null);
+  const [failedKeys, setFailedKeys] = useState<Record<string, boolean>>({});
 
   const handleGenerateAlt = async (key: string) => {
     setLoadingKey(key);
@@ -25,14 +26,21 @@ export default function ImagePanel({ images, productName }: ImagePanelProps) {
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
       <h3 className="mb-4 text-sm font-semibold text-[#111827]">商品画像</h3>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {images.map((image) => (
           <div key={image.key} className="rounded-lg border border-[#EEF0F4] p-3">
-            <img
-              src={image.path}
-              alt={image.alt ?? ''}
-              className="mb-3 h-28 w-full rounded-md border border-[#EEF0F4] bg-[#F8FAFC] object-contain"
-            />
+            {failedKeys[image.key] ? (
+              <div className="mb-3 flex h-64 w-full items-center justify-center rounded-md border border-[#EEF0F4] bg-[#F8FAFC] text-[#98A2B3]">
+                <ImageOff size={28} />
+              </div>
+            ) : (
+              <img
+                src={image.path}
+                alt={image.alt ?? ''}
+                onError={() => setFailedKeys((prev) => ({ ...prev, [image.key]: true }))}
+                className="mb-3 h-64 w-full rounded-md border border-[#EEF0F4] bg-[#F8FAFC] object-contain"
+              />
+            )}
             <p className="text-xs font-semibold text-[#111827]">{image.label}</p>
             <p className="mt-1 truncate text-xs text-[#667085]">{image.path}</p>
             <p className="mt-1 text-xs text-[#98A2B3]">
