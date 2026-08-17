@@ -2,7 +2,12 @@ import { isSupabaseConfigured, supabase } from '../../../lib/supabaseClient';
 import { computePatternMatches } from './matchEngine';
 import type { Selection } from '../types';
 
-export async function saveTechSelection(selection: Selection): Promise<void> {
+export type SaveTechSelectionMeta = {
+  title?: string;
+  memo?: string;
+};
+
+export async function saveTechSelection(selection: Selection, meta?: SaveTechSelectionMeta): Promise<void> {
   if (!isSupabaseConfigured()) return;
 
   const { data: sessionData } = await supabase.auth.getSession();
@@ -16,5 +21,7 @@ export async function saveTechSelection(selection: Selection): Promise<void> {
     user_id: userId,
     selection,
     matched_pattern_ids: perfectMatchPatternIds,
+    title: meta?.title?.trim() || null,
+    memo: meta?.memo?.trim() || null,
   });
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ChevronRight, CircleAlert } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
+import { SaveMetaDialog } from '../components/SaveMetaDialog';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
 import { Alert, AlertDescription } from '../components/ui/alert';
@@ -26,6 +27,9 @@ import '../features/tech-stack-selector/tech-stack-selector.css';
 export default function TechSelectorReport() {
   const { isAuthenticated } = useAuth();
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [memo, setMemo] = useState('');
 
   // selection はURLから一度読み取れば以降は不変。保存中/保存済みの状態遷移で
   // 再レンダリングされるたびにデコードやマッチ計算をやり直さないようメモ化する。
@@ -49,11 +53,17 @@ export default function TechSelectorReport() {
         ? '技術要素を1つ以上選択してください'
         : null;
 
-  const handleSave = async () => {
+  const openSaveDialog = () => {
+    setSaveState('idle');
+    setDialogOpen(true);
+  };
+
+  const handleConfirmSave = async () => {
     setSaveState('saving');
     try {
-      await saveTechSelection(selection);
+      await saveTechSelection(selection, { title, memo });
       setSaveState('saved');
+      setDialogOpen(false);
     } catch {
       setSaveState('error');
     }
@@ -122,7 +132,7 @@ export default function TechSelectorReport() {
                         backToSelectorUrl={backToSelectorUrl}
                         saveState={saveState}
                         saveDisabledReason={saveDisabledReason}
-                        onSave={handleSave}
+                        onSave={openSaveDialog}
                       />
                     )}
                   </article>
@@ -138,6 +148,20 @@ export default function TechSelectorReport() {
       </div>
 
       <footer className="site-footer">© 2026 App Starter</footer>
+
+      <SaveMetaDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        heading="選択内容を保存"
+        description="後で見返しやすいように、タイトルとメモを付けられます。"
+        confirmLabel="保存する"
+        title={title}
+        onTitleChange={setTitle}
+        memo={memo}
+        onMemoChange={setMemo}
+        onConfirm={handleConfirmSave}
+        confirmState={saveState}
+      />
     </div>
   );
 }

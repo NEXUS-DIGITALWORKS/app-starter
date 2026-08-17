@@ -12,15 +12,13 @@ type Props = {
   onSave: () => void;
 };
 
-export default function ReportNextActions({ backToSelectorUrl, saveState, saveDisabledReason, onSave }: Props) {
-  const saveButtonLabel =
-    saveState === 'saved'
-      ? '保存しました'
-      : saveState === 'saving'
-        ? '保存中…'
-        : saveState === 'error'
-          ? '保存に失敗しました'
-          : 'この構成を保存する';
+export default function ReportNextActions({
+  backToSelectorUrl,
+  saveState,
+  saveDisabledReason,
+  onSave,
+}: Props) {
+  const saveButtonLabel = saveState === 'saved' ? '保存しました' : 'この構成を保存する';
 
   return (
     <section aria-labelledby="next-action-heading">

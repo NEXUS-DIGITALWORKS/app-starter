@@ -1,7 +1,16 @@
 import { isSupabaseConfigured, supabase } from '../../../lib/supabaseClient'
 import type { Answers, DiagnosisResult } from '../types'
 
-export async function saveDiagnosisResult(answers: Answers, result: DiagnosisResult): Promise<void> {
+export type SaveDiagnosisResultMeta = {
+  title?: string
+  memo?: string
+}
+
+export async function saveDiagnosisResult(
+  answers: Answers,
+  result: DiagnosisResult,
+  meta?: SaveDiagnosisResultMeta,
+): Promise<void> {
   if (!isSupabaseConfigured()) return
 
   const { data: sessionData } = await supabase.auth.getSession()
@@ -17,6 +26,8 @@ export async function saveDiagnosisResult(answers: Answers, result: DiagnosisRes
     alternative_stack: result.alternativePattern ? { patternId: result.alternativePattern.id } : null,
     score_details: { buildScore: result.buildOrBuy.buildScore },
     risks: result.risks,
+    title: meta?.title?.trim() || null,
+    memo: meta?.memo?.trim() || null,
   })
 }
 
@@ -27,6 +38,8 @@ export type DiagnosisHistoryEntry = {
   build_or_buy_result: { category?: string; label?: string } | null
   recommended_stack?: { patternId?: string } | null
   score_details?: { buildScore?: number } | null
+  title: string | null
+  memo: string | null
   created_at: string
 }
 
@@ -39,7 +52,7 @@ export async function fetchDiagnosisHistory(limit = 10): Promise<DiagnosisHistor
 
   const { data, error } = await supabase
     .from('diagnosis_results')
-    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, created_at')
+    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, title, memo, created_at')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
     .limit(limit)
@@ -57,7 +70,7 @@ export async function fetchDiagnosisById(id: string): Promise<DiagnosisHistoryEn
 
   const { data, error } = await supabase
     .from('diagnosis_results')
-    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, created_at')
+    .select('id, user_input, structured_requirements, build_or_buy_result, recommended_stack, score_details, title, memo, created_at')
     .eq('id', id)
     .eq('user_id', userId)
     .single()

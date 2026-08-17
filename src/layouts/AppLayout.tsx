@@ -6,10 +6,9 @@ import RequireAuth from '../features/auth/RequireAuth';
 import AccountMenu from '../features/auth/AccountMenu';
 import logo from '../assets/logo.svg';
 
-const NAV_ITEMS = [
-  { to: '/app', label: 'ホーム', icon: Home, end: true },
-  { to: '/app/history', label: '保存済み一覧', icon: FileText, end: false },
-];
+const NAV_ITEMS = [{ to: '/app', label: 'ホーム', icon: Home, end: true }];
+
+const HISTORY_ITEM = { to: '/app/history', label: '保存済み一覧', icon: FileText, end: false };
 
 function AppLayoutContent() {
   const [collapsed, setCollapsed] = useState(false);
@@ -44,7 +43,7 @@ function AppLayoutContent() {
         ))}
       </nav>
 
-      <div className="border-t border-[#EEF0F4] px-3 py-4">
+      <div className="space-y-1 border-t border-[#EEF0F4] px-3 py-4">
         <Link
           to="/"
           onClick={onNavigate}
@@ -53,6 +52,22 @@ function AppLayoutContent() {
           <Wrench size={18} className="shrink-0" />
           {(!collapsed || onNavigate) && <span>Tech診断</span>}
         </Link>
+        <NavLink
+          to={HISTORY_ITEM.to}
+          end={HISTORY_ITEM.end}
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+              isActive
+                ? 'bg-[#EEF0FE] text-[#3157E5]'
+                : 'text-[#475467] hover:bg-[#F8FAFC] hover:text-[#111827]',
+            )
+          }
+        >
+          <HISTORY_ITEM.icon size={18} className="shrink-0" />
+          {(!collapsed || onNavigate) && <span>{HISTORY_ITEM.label}</span>}
+        </NavLink>
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { AlertTriangle, ArrowRight, FileDown, RotateCcw, Save } from 'lucide-react'
 import { isSupabaseConfigured } from '../../../lib/supabaseClient'
 import { useAuth } from '../../../hooks/useAuth'
+import { SaveMetaDialog } from '../../../components/SaveMetaDialog'
 import { buildSelectionForPattern } from '../../tech-stack-selector/lib/matchEngine'
 import { encodeSelectionToParam } from '../../tech-stack-selector/lib/shareLink'
 import { saveDiagnosisResult } from '../lib/resultsRepo'
@@ -17,6 +18,9 @@ type Props = {
 export function DiagnosisActions({ answers, result, onReset }: Props) {
   const { isAuthenticated } = useAuth()
   const [saveState, setSaveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [dialogOpen, setDialogOpen] = useState(false)
+  const [title, setTitle] = useState('')
+  const [memo, setMemo] = useState('')
 
   const supabaseConfigured = isSupabaseConfigured()
   const saveDisabledReason = !supabaseConfigured
@@ -26,11 +30,17 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
       : null
   const techSelectorUrl = `/tools/tech-selector?s=${encodeSelectionToParam(buildSelectionForPattern(result.primaryPattern.id))}`
 
-  const handleSave = async () => {
+  const openSaveDialog = () => {
+    setSaveState('idle')
+    setDialogOpen(true)
+  }
+
+  const handleConfirmSave = async () => {
     setSaveState('saving')
     try {
-      await saveDiagnosisResult(answers, result)
+      await saveDiagnosisResult(answers, result, { title, memo })
       setSaveState('saved')
+      setDialogOpen(false)
     } catch {
       setSaveState('error')
     }
@@ -55,6 +65,7 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
           <span>{saveDisabledReason}</span>
         </div>
       )}
+
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
           to="/app/history"
@@ -72,13 +83,13 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
         </button>
         <button
           type="button"
-          onClick={handleSave}
-          disabled={saveState === 'saving' || Boolean(saveDisabledReason)}
+          onClick={openSaveDialog}
+          disabled={Boolean(saveDisabledReason)}
           title={saveDisabledReason ?? undefined}
           className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#D0D5DD] bg-white px-6 py-3 text-sm font-semibold text-[#344054] transition hover:bg-[#F8FAFC] disabled:cursor-not-allowed disabled:opacity-40"
         >
           <Save size={16} />
-          {saveState === 'saved' ? '保存しました' : saveState === 'saving' ? '保存中…' : saveState === 'error' ? '保存に失敗しました' : 'この診断を保存'}
+          {saveState === 'saved' ? '保存しました' : 'この診断を保存'}
         </button>
         <button
           type="button"
@@ -89,6 +100,19 @@ export function DiagnosisActions({ answers, result, onReset }: Props) {
           最初から診断する
         </button>
       </div>
+
+      <SaveMetaDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        heading="診断結果を保存"
+        description="後で見返しやすいように、タイトルとメモを付けられます。"
+        title={title}
+        onTitleChange={setTitle}
+        memo={memo}
+        onMemoChange={setMemo}
+        onConfirm={handleConfirmSave}
+        confirmState={saveState}
+      />
     </div>
   )
 }

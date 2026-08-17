@@ -12,6 +12,8 @@ CREATE TABLE IF NOT EXISTS public.tech_selections (
   user_id               UUID        NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   selection             JSONB       NOT NULL,
   matched_pattern_ids   JSONB,
+  title                 TEXT,
+  memo                  TEXT,
   created_at            TIMESTAMPTZ DEFAULT timezone('utc', now())
 );
 
@@ -22,7 +24,7 @@ ALTER TABLE public.tech_selections ENABLE ROW LEVEL SECURITY;
 
 -- RLSポリシーだけではテーブルへのアクセス権は付与されないため、
 -- authenticatedロールへの明示的なGRANTが必要。
-GRANT SELECT, INSERT, DELETE ON public.tech_selections TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tech_selections TO authenticated;
 
 DO $$
 BEGIN
@@ -38,6 +40,13 @@ BEGIN
   ) THEN
     CREATE POLICY "insert_own_tech_selections" ON public.tech_selections
       FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'tech_selections' AND policyname = 'update_own_tech_selections'
+  ) THEN
+    CREATE POLICY "update_own_tech_selections" ON public.tech_selections
+      FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
   END IF;
 
   IF NOT EXISTS (
