@@ -8,7 +8,7 @@ interface ProductBreadcrumbProps {
 export default function ProductBreadcrumb({ sku }: ProductBreadcrumbProps) {
   return (
     <nav aria-label="パンくず" className="flex min-w-0 items-center gap-1.5 text-sm text-[#667085]">
-      <Link to="/app" className="shrink-0 font-medium text-[#475467] hover:text-[#3157E5]">
+      <Link to="/app/products" className="shrink-0 font-medium text-[#475467] hover:text-[#3157E5]">
         商品一覧
       </Link>
       <ChevronRight size={14} className="shrink-0" />

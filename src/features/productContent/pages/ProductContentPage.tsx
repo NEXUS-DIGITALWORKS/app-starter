@@ -77,7 +77,7 @@ export default function ProductContentPage() {
         <ProductContentHeader />
         <div className="flex flex-1 flex-col items-center justify-center gap-3 text-sm text-[#667085]">
           <p>SKU「{sku}」の商品情報が見つかりませんでした。</p>
-          <button type="button" onClick={() => navigate('/app')} className="text-[#3157E5] hover:underline">
+          <button type="button" onClick={() => navigate('/app/products')} className="text-[#3157E5] hover:underline">
             商品一覧に戻る
           </button>
         </div>
@@ -111,7 +111,7 @@ export default function ProductContentPage() {
 
   const handleClose = () => {
     if (isDirty && !window.confirm('保存されていない変更があります。破棄して閉じますか？')) return;
-    navigate('/app');
+    navigate('/app/products');
   };
 
   return (

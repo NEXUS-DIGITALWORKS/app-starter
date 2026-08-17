@@ -18,6 +18,7 @@ const AppHome = lazy(() => import('./pages/AppHome'));
 const AppHistory = lazy(() => import('./pages/AppHistory'));
 const Account = lazy(() => import('./pages/Account'));
 const ProductContent = lazy(() => import('./features/productContent').then((m) => ({ default: m.ProductContentPage })));
+const ProductList = lazy(() => import('./features/productContent').then((m) => ({ default: m.ProductListPage })));
 
 // 旧URL（/tools, /diagnosis, /tech-selector, /tech-guide）のブックマーク・共有リンクの
 // 互換性維持のため、クエリ・ハッシュを保持したままリダイレクトする。
@@ -42,6 +43,14 @@ export default function App() {
           <Route path="account" element={<Account />} />
         </Route>
 
+        <Route
+          path="/app/products"
+          element={
+            <RequireAuth>
+              <ProductList />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/app/products/:sku"
           element={
