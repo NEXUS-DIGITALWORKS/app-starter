@@ -10,7 +10,7 @@ import RiskStatCards from '../features/risk-check/components/RiskStatCards';
 import { RISK_CATEGORIES, RISK_ITEMS } from '../features/risk-check/data/riskItems';
 import { useRiskStatuses } from '../features/risk-check/lib/useRiskStatuses';
 import type { RiskCategory, RiskLevel } from '../features/risk-check/types';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/risk-check/risk-check.css';
 

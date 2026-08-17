@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { BookOpen, Layers, ShieldCheck, Sparkles } from 'lucide-react'
 import AuthWidget from '../../auth/AuthWidget'
-import logo from '../../../assets/logo.svg'
+import logo from '../../../assets/logo.png'
 
 const NAV_ITEMS = [
   { id: 'diagnosis', label: '診断', to: '/tools/diagnosis', match: '/tools/diagnosis', icon: Sparkles },

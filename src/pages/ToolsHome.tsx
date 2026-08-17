@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, ShieldCheck, Sparkles, Layers } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import './ToolsHome.css';
 

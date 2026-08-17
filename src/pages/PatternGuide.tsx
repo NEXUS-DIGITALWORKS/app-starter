@@ -10,7 +10,7 @@ import { PATTERN_DETAILS, type PatternDetail } from '../features/tech-stack-sele
 import { buildSelectionForPattern, countSelectedElements } from '../features/tech-stack-selector/lib/matchEngine';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
 import type { Pattern } from '../features/tech-stack-selector/types';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/pattern-guide.css';

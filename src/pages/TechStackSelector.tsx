@@ -9,7 +9,7 @@ import { CATEGORIES } from '../features/tech-stack-selector/data/categories';
 import { buildSelectionForPattern } from '../features/tech-stack-selector/lib/matchEngine';
 import { readSelectionFromLocation } from '../features/tech-stack-selector/lib/shareLink';
 import type { Selection } from '../features/tech-stack-selector/types';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 

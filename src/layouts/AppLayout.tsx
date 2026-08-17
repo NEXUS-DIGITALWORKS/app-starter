@@ -4,7 +4,7 @@ import { ChevronLeft, FileText, Home, Menu, Wrench, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RequireAuth from '../features/auth/RequireAuth';
 import AccountMenu from '../features/auth/AccountMenu';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 
 const NAV_ITEMS = [{ to: '/app', label: 'ホーム', icon: Home, end: true }];
 
@@ -85,7 +85,7 @@ function AppLayoutContent() {
             <Menu size={22} />
           </button>
           <Link to="/app" className="flex min-w-0 items-center gap-2">
-            <img src={logo} alt="BizTools" className="h-6 w-auto shrink-0" />
+            <img src={logo} alt="BizTools" className="h-8 w-auto shrink-0" />
           </Link>
         </div>
         <AccountMenu />
@@ -120,7 +120,7 @@ function AppLayoutContent() {
             />
             <aside className="absolute inset-y-0 left-0 flex w-[min(280px,84vw)] flex-col bg-[#FBFBFC] shadow-[0_0_24px_rgba(16,24,40,0.2)]">
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] px-4">
-                <img src={logo} alt="BizTools" className="h-6 w-auto shrink-0" />
+                <img src={logo} alt="BizTools" className="h-8 w-auto shrink-0" />
                 <button
                   type="button"
                   onClick={() => setMobileNavOpen(false)}

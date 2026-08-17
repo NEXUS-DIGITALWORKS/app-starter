@@ -6,7 +6,7 @@ import { CATEGORIES } from '../features/tech-stack-selector/data/categories';
 import { ELEMENT_DETAILS } from '../features/tech-stack-selector/data/elementDetails';
 import { ALL_PATTERN_IDS, PATTERN_MAP } from '../features/tech-stack-selector/data/patterns';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/tech-guide.css';

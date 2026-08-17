@@ -20,7 +20,7 @@ import { PATTERN_DETAILS } from '../features/tech-stack-selector/data/patternDet
 import { saveTechSelection } from '../features/tech-stack-selector/lib/resultsRepo';
 import { computePatternMatches, getSelectedElements } from '../features/tech-stack-selector/lib/matchEngine';
 import { encodeSelectionToParam, readSelectionFromLocation } from '../features/tech-stack-selector/lib/shareLink';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 

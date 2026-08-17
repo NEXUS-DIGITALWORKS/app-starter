@@ -145,7 +145,7 @@ function useSteps(): Step[] {
         <StepList
           items={[
             'src/index.css の配色トークン（--color-primary など）を変更する',
-            'src/assets/logo.svg を自分のロゴファイルに差し替える',
+            'src/assets/logo.png を自分のロゴファイルに差し替える',
           ]}
         />
       ),
