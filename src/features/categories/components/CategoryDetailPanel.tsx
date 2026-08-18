@@ -4,7 +4,7 @@ import CategoryPathPreview from './CategoryPathPreview';
 import CategoryProductCount from './CategoryProductCount';
 import CategoryProductList from './CategoryProductList';
 import { getAncestors, getChildren } from '../lib/categoryTree';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { UseCategoryManagementReturn } from '../hooks/useCategoryManagement';
 
 interface CategoryDetailPanelProps {
@@ -42,7 +42,7 @@ export default function CategoryDetailPanel({ state }: CategoryDetailPanelProps)
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-sm text-[#667085]">{selectedCategory.code}</span>
+              <span className="font-mono text-sm text-[#667085]">{formatCategoryCode(selectedCategory.code)}</span>
               <CategoryBadge categoryType={selectedCategory.categoryType} />
               {!selectedCategory.isActive && (
                 <span className="rounded-full bg-[#EEF0F4] px-2 py-0.5 text-xs font-medium text-[#667085]">無効</span>
@@ -99,7 +99,7 @@ export default function CategoryDetailPanel({ state }: CategoryDetailPanelProps)
                   className="flex w-full items-center justify-between gap-3 py-2 text-left text-sm hover:text-[#3157E5]"
                 >
                   <span>
-                    <span className="mr-2 font-mono text-xs text-[#98A2B3]">{child.code}</span>
+                    <span className="mr-2 font-mono text-xs text-[#98A2B3]">{formatCategoryCode(child.code)}</span>
                     {getCategoryDisplayName(child)}
                   </span>
                   <span className="text-xs tabular-nums text-[#98A2B3]">{productCountOf(child.id)}</span>

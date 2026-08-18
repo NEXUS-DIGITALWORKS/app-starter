@@ -7,6 +7,13 @@ export function getCategoryDisplayName(category: Pick<Category, 'nameJa' | 'name
   return category.nameJa || category.nameEn || category.nameZhTw || category.code;
 }
 
+// codeは 'm'+MagentoカテゴリID（例: m607）で保存されているが、'm'自体は表示上意味を
+// 持たずノイズになるため、一覧・詳細等の読み取り専用表示では取り除いた数字部分のみ見せる
+// （カテゴリコード編集フォームの入力値など、実際の保存値を扱う箇所では変換しない）。
+export function formatCategoryCode(code: string): string {
+  return code.replace(/^m(?=\d)/, '');
+}
+
 export function getCategoryLocaleName(
   category: Pick<Category, 'nameJa' | 'nameEn' | 'nameZhTw'>,
   locale: MagentoLocale,

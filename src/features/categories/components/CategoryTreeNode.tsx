@@ -2,7 +2,7 @@ import { ChevronRight, EyeOff } from 'lucide-react';
 import { TreeItem } from '@/components/ui/tree';
 import { cn } from '@/lib/utils';
 import CategoryBadge from './CategoryBadge';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { CategoryTreeNode as CategoryTreeNodeType } from '../types';
 
 interface CategoryTreeNodeProps {
@@ -28,10 +28,14 @@ export default function CategoryTreeNode({
 
   const hasChildren = node.children.length > 0;
   const isExpanded = expandedIds.has(node.id);
+  const displayName = getCategoryDisplayName(node);
+  // 深い階層では横幅が逼迫し名称が読めなくなるため、コードは3階層目以降表示を省略する
+  // （情報自体はtitleツールチップと詳細パネルで確認できる）。
+  const showCode = depth < 3;
 
   return (
-    <div role="group">
-      <TreeItem depth={depth} selected={selectedId === node.id} onClick={() => onSelect(node.id)}>
+    <div role="group" className={depth > 0 ? 'ml-2.5 border-l border-[#E5E7EB] pl-1.5' : undefined}>
+      <TreeItem selected={selectedId === node.id} onClick={() => onSelect(node.id)}>
         <span
           role="button"
           tabIndex={-1}
@@ -48,12 +52,12 @@ export default function CategoryTreeNode({
         >
           {hasChildren && <ChevronRight size={14} />}
         </span>
-        <span className="shrink-0 font-mono text-xs text-[#667085]">{node.code}</span>
+        {showCode && <span className="shrink-0 font-mono text-xs text-[#667085]">{formatCategoryCode(node.code)}</span>}
         <span
           className={cn('min-w-[4ch] flex-1 truncate', !node.isActive && 'text-[#98A2B3]')}
-          title={getCategoryDisplayName(node)}
+          title={`${formatCategoryCode(node.code)}  ${displayName}`}
         >
-          {getCategoryDisplayName(node)}
+          {displayName}
         </span>
         {!node.isActive && <EyeOff size={13} className="shrink-0 text-[#98A2B3]" aria-label="非公開" />}
         <CategoryBadge categoryType={node.categoryType} variant="dot" />

@@ -1,6 +1,6 @@
 import { Star, X } from 'lucide-react';
 import CategorySelector from './CategorySelector';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { UseProductCategoryEditorReturn } from '../hooks/useProductCategoryEditor';
 
 interface ProductCategoryEditorProps {
@@ -27,7 +27,7 @@ export default function ProductCategoryEditor({ state, editable }: ProductCatego
             className="inline-flex items-center gap-1 rounded-full bg-[#EEF0FE] py-0.5 px-2 text-xs font-medium text-[#3157E5]"
           >
             {l.isPrimary && <Star size={10} className="fill-current" />}
-            {l.category.code} {getCategoryDisplayName(l.category)}
+            {formatCategoryCode(l.category.code)} {getCategoryDisplayName(l.category)}
           </span>
         ))}
       </div>
@@ -88,7 +88,7 @@ function CategoryPill({
           <Star size={10} />
         </button>
       )}
-      {link.category.code} {getCategoryDisplayName(link.category)}
+      {formatCategoryCode(link.category.code)} {getCategoryDisplayName(link.category)}
       <button type="button" onClick={onRemove} aria-label="カテゴリを解除" className="rounded-full p-0.5 hover:bg-[#D6DEFB]">
         <X size={11} />
       </button>

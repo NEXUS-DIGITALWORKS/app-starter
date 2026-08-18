@@ -11,20 +11,18 @@ const Tree = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElemen
 Tree.displayName = 'Tree';
 
 export interface TreeItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  depth?: number;
   selected?: boolean;
 }
 
 const TreeItem = React.forwardRef<HTMLButtonElement, TreeItemProps>(
-  ({ className, depth = 0, selected, style, ...props }, ref) => (
+  ({ className, selected, ...props }, ref) => (
     <button
       ref={ref}
       type="button"
       role="treeitem"
       aria-selected={selected}
-      style={{ paddingLeft: `${8 + depth * 16}px`, ...style }}
       className={cn(
-        'flex w-full items-center gap-1.5 rounded-md py-1.5 pr-2 text-left text-sm transition-colors',
+        'flex w-full items-center gap-1 rounded-md py-1.5 pl-2 pr-2 text-left text-sm transition-colors',
         selected ? 'bg-[#EEF0FE] text-[#3157E5] font-medium' : 'text-[#344054] hover:bg-[#F8FAFC]',
         className,
       )}

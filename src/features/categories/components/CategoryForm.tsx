@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import CategorySelector from './CategorySelector';
-import { getCategoryDisplayName, CATEGORY_TYPE_LABEL } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName, CATEGORY_TYPE_LABEL } from '../lib/categoryName';
 import { getDescendantIds } from '../lib/categoryTree';
 import { CATEGORY_TYPES } from '../types';
 import type { Category, CategoryType, CreateCategoryInput, UpdateCategoryInput } from '../types';
@@ -99,7 +99,7 @@ export default function CategoryForm({
         {parent ? (
           <div className="flex items-center justify-between rounded-md border border-[#D0D5DD] bg-white px-3 py-2 text-sm">
             <span>
-              <span className="mr-2 font-mono text-xs text-[#98A2B3]">{parent.code}</span>
+              <span className="mr-2 font-mono text-xs text-[#98A2B3]">{formatCategoryCode(parent.code)}</span>
               {getCategoryDisplayName(parent)}
             </span>
             <button type="button" onClick={() => setParent(null)} className="text-xs text-[#3157E5] hover:underline">

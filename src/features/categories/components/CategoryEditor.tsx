@@ -3,7 +3,7 @@ import { Pencil, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CategoryForm from './CategoryForm';
 import DeactivateCategoryDialog from './DeactivateCategoryDialog';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { UseCategoryManagementReturn } from '../hooks/useCategoryManagement';
 
 interface CategoryEditorProps {
@@ -69,7 +69,7 @@ export default function CategoryEditor({ state }: CategoryEditorProps) {
   return (
     <div className="space-y-3">
       <h2 className="text-sm font-semibold text-[#111827]">
-        <span className="mr-2 font-mono text-xs text-[#98A2B3]">{selectedCategory.code}</span>
+        <span className="mr-2 font-mono text-xs text-[#98A2B3]">{formatCategoryCode(selectedCategory.code)}</span>
         {getCategoryDisplayName(selectedCategory)}
       </h2>
 

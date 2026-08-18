@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { Category } from '../types';
 
 interface DeactivateCategoryDialogProps {
@@ -20,7 +20,7 @@ export default function DeactivateCategoryDialog({ category, productCount, isSav
           <DialogDescription>
             {category && (
               <>
-                <span className="font-mono text-xs text-[#98A2B3]">{category.code}</span> {getCategoryDisplayName(category)}
+                <span className="font-mono text-xs text-[#98A2B3]">{formatCategoryCode(category.code)}</span> {getCategoryDisplayName(category)}
               </>
             )}
           </DialogDescription>

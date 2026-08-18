@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getCategoryDisplayName } from '../lib/categoryName';
+import { formatCategoryCode, getCategoryDisplayName } from '../lib/categoryName';
 import type { Category } from '../types';
 
 interface CategorySelectorProps {
@@ -73,7 +73,7 @@ export default function CategorySelector({ categories, excludeIds = [], onSelect
                   'flex w-full items-center gap-2 rounded-md px-2.5 py-1.5 text-left text-sm text-[#344054] hover:bg-[#F8FAFC]',
                 )}
               >
-                <span className="shrink-0 font-mono text-xs text-[#98A2B3]">{c.code}</span>
+                <span className="shrink-0 font-mono text-xs text-[#98A2B3]">{formatCategoryCode(c.code)}</span>
                 <span className="min-w-0 flex-1 truncate">{getCategoryDisplayName(c)}</span>
               </button>
             ))
