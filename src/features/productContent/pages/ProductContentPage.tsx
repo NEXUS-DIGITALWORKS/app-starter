@@ -149,12 +149,12 @@ export default function ProductContentPage() {
   };
 
   const handleAddTag = async (tag: string) => {
-    await addTagToProduct(tag);
+    await addTagToProduct(sku, tag);
     setTags((prev) => (prev.includes(tag.trim()) ? prev : [...prev, tag.trim()]));
   };
 
   const handleRemoveTag = async (tag: string) => {
-    await removeTagFromProduct(tag);
+    await removeTagFromProduct(sku, tag);
     setTags((prev) => prev.filter((t) => t !== tag));
   };
 

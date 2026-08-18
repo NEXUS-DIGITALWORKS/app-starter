@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import OnboardingGuide from '../components/OnboardingGuide';
-import { MOCK_SKU } from '../features/productContent/data/mockProduct';
 
 export default function AppHome() {
   const { session, profile } = useAuth();
@@ -13,7 +12,7 @@ export default function AppHome() {
       <h1 className="m-0 text-2xl font-bold text-[#0F172A]">{name ? `ようこそ、${name}さん` : 'ホーム'}</h1>
 
       <Link
-        to={`/app/products/${MOCK_SKU}`}
+        to="/app/products"
         className="mt-6 flex items-center gap-3 rounded-xl border border-[#E5E7EB] bg-white p-4 transition-colors hover:border-[#3157E5] hover:bg-[#F8FAFC]"
       >
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#EEF0FE] text-[#3157E5]">
