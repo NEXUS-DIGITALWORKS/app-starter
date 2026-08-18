@@ -16,6 +16,7 @@ import FieldComparisonCard from '../components/FieldComparisonCard';
 import type { SectionKey } from '../components/sectionKeys';
 import { addTagToProduct, fetchProductWorkspace, removeTagFromProduct, saveProductContent } from '../api/productContentApi';
 import { translateProduct, improveProductDescription } from '../api/aiStub';
+import { useProductCategoryEditor } from '../../categories/hooks/useProductCategoryEditor';
 import type { ExtractedFeature, LocaleContent, LocaleSeo, ProductContentText, ProductWorkspace, SeoSuggestion, TargetLocale } from '../types';
 
 type ProductNames = { name: string; nameZhHant: string; nameEn: string };
@@ -37,6 +38,7 @@ function useBeforeUnloadGuard(isDirty: boolean) {
 export default function ProductContentPage() {
   const { sku = '' } = useParams<{ sku: string }>();
   const navigate = useNavigate();
+  const categoryEditorState = useProductCategoryEditor(sku);
 
   const [workspace, setWorkspace] = useState<ProductWorkspace | null | undefined>(undefined);
   const [mode, setMode] = useState<PageMode>('view');
@@ -212,6 +214,7 @@ export default function ProductContentPage() {
             onChangeName={handleChangeName}
             onAddTag={handleAddTag}
             onRemoveTag={handleRemoveTag}
+            categoryEditorState={categoryEditorState}
           />
 
           {section === 'overview' && (

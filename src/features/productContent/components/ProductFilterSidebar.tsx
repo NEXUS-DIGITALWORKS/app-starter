@@ -2,6 +2,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PRODUCT_STATUS_OPTIONS } from './ProductStatusBadge';
+import { useCategoryFilterOptions } from '../../categories/hooks/useCategoryFilterOptions';
+import { getCategoryDisplayName } from '../../categories/lib/categoryName';
 import type { ProductListFilters, ProductStatus, SeoIssueType, UpdatedWithinFilter } from '../types/product';
 
 const SEO_ISSUE_OPTIONS: { value: SeoIssueType; label: string }[] = [
@@ -10,8 +12,6 @@ const SEO_ISSUE_OPTIONS: { value: SeoIssueType; label: string }[] = [
   { value: 'missing', label: '不足情報あり' },
   { value: 'unrated', label: '未評価' },
 ];
-
-const CATEGORY_OPTIONS = ['ヘアケア', 'スキンケア', '医薬品', '健康食品', '日用品'];
 
 const UPDATED_WITHIN_OPTIONS: { value: UpdatedWithinFilter; label: string }[] = [
   { value: 'all', label: 'すべての期間' },
@@ -41,6 +41,8 @@ export default function ProductFilterSidebar({
   onUpdatedWithinChange,
   onClear,
 }: ProductFilterSidebarProps) {
+  const { categories } = useCategoryFilterOptions();
+
   return (
     <aside className="flex w-full shrink-0 flex-col gap-5 rounded-xl border border-[#E5E7EB] bg-white p-4 lg:w-[220px]">
       <div className="flex items-center justify-between">
@@ -88,9 +90,9 @@ export default function ProductFilterSidebar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">すべて</SelectItem>
-            {CATEGORY_OPTIONS.map((c) => (
-              <SelectItem key={c} value={c}>
-                {c}
+            {categories.map((c) => (
+              <SelectItem key={c.id} value={c.id}>
+                {c.code} - {getCategoryDisplayName(c)}
               </SelectItem>
             ))}
           </SelectContent>

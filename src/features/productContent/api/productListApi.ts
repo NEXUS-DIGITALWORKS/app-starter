@@ -1,6 +1,7 @@
 import { mockProducts } from '../data/mockProducts';
 import { addTag, getAllTags, getTags, removeTag } from '../data/mockTagsStore';
-import type { ProductListFilters, ProductListResult, ProductListSummary } from '../types/product';
+import { fetchProductCategoryLinksMap } from '../../categories/api/productCategoriesApi';
+import type { ProductListFilters, ProductListItem, ProductListResult, ProductListSummary } from '../types/product';
 
 // Component から直接 mockProducts を参照しない。実データ接続時はこのファイルの中身だけを
 // GET /api/products 相当の呼び出しに差し替える（呼び出し側のシグネチャは変えない）。
@@ -24,6 +25,10 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   const sku = filters.sku.trim().toLowerCase();
   const ingredient = filters.ingredient.trim().toLowerCase();
 
+  // カテゴリ絞り込み用に、対象となりうる全商品分の関連付けを1回のバッチ取得でまとめて解決する
+  // （商品ごとに個別クエリを投げるN+1を避けるため）。
+  const categoryLinksMap = await fetchProductCategoryLinksMap(mockProducts.map((p) => p.sku));
+
   const filtered = mockProducts.filter((item) => {
     if (search && !item.name.toLowerCase().includes(search) && !(item.shortDescription ?? '').toLowerCase().includes(search) && !item.sku.includes(search)) {
       return false;
@@ -32,7 +37,10 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
     if (ingredient && !(item.ingredients ?? '').toLowerCase().includes(ingredient)) return false;
     if (filters.storeView !== 'all' && item.storeView !== filters.storeView) return false;
     if (filters.brand !== 'all' && item.brand !== filters.brand) return false;
-    if (filters.category !== 'all' && item.category !== filters.category) return false;
+    if (filters.category !== 'all') {
+      const categoryIds = (categoryLinksMap[item.sku] ?? []).map((l) => l.categoryId);
+      if (!categoryIds.includes(filters.category)) return false;
+    }
     if (filters.status.length > 0 && !filters.status.includes(item.status)) return false;
     if (filters.seoIssue.length > 0 && !filters.seoIssue.includes(item.seoIssue)) return false;
     if (filters.tag !== 'all' && !getTags(item.sku).includes(filters.tag)) return false;
@@ -41,7 +49,15 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   });
 
   const start = (filters.page - 1) * filters.limit;
-  const items = filtered.slice(start, start + filters.limit).map((item) => ({ ...item, tags: getTags(item.sku) }));
+  const items: ProductListItem[] = filtered.slice(start, start + filters.limit).map((item) => {
+    const links = categoryLinksMap[item.sku] ?? [];
+    return {
+      ...item,
+      tags: getTags(item.sku),
+      categoryIds: links.map((l) => l.categoryId),
+      primaryCategoryId: links.find((l) => l.isPrimary)?.categoryId ?? null,
+    };
+  });
 
   return delay({ items, total: filtered.length });
 }
@@ -64,6 +80,13 @@ export async function removeTagFromProduct(id: string, tag: string): Promise<voi
 
 export async function fetchAvailableTags(): Promise<string[]> {
   return delay(getAllTags());
+}
+
+// カテゴリ単位のCSV出力（src/features/categories）向け。指定SKU群の商品情報をまとめて取得する。
+export async function fetchProductsBySkus(skus: string[]): Promise<ProductListItem[]> {
+  const skuSet = new Set(skus);
+  const items = mockProducts.filter((item) => skuSet.has(item.sku)).map((item) => ({ ...item, tags: getTags(item.sku) }));
+  return delay(items);
 }
 
 export async function fetchProductListSummary(): Promise<ProductListSummary> {

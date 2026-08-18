@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
+import ProductCategoryEditor from '../../categories/components/ProductCategoryEditor';
+import type { UseProductCategoryEditorReturn } from '../../categories/hooks/useProductCategoryEditor';
 import type { Product } from '../types';
 
 interface ProductSummaryCardProps {
@@ -8,6 +10,7 @@ interface ProductSummaryCardProps {
   onChangeName: (field: 'name' | 'nameZhHant' | 'nameEn', value: string) => void;
   onAddTag: (tag: string) => void;
   onRemoveTag: (tag: string) => void;
+  categoryEditorState: UseProductCategoryEditorReturn;
 }
 
 const NAME_FIELDS: { key: 'name' | 'nameZhHant' | 'nameEn'; label: string }[] = [
@@ -69,7 +72,14 @@ function TagList({ tags, onAddTag, onRemoveTag }: { tags: string[]; onAddTag: (t
   );
 }
 
-export default function ProductSummaryCard({ product, editable, onChangeName, onAddTag, onRemoveTag }: ProductSummaryCardProps) {
+export default function ProductSummaryCard({
+  product,
+  editable,
+  onChangeName,
+  onAddTag,
+  onRemoveTag,
+  categoryEditorState,
+}: ProductSummaryCardProps) {
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
@@ -100,6 +110,10 @@ export default function ProductSummaryCard({ product, editable, onChangeName, on
               <dd>
                 <TagList tags={product.tags ?? []} onAddTag={onAddTag} onRemoveTag={onRemoveTag} />
               </dd>
+              <dt className="text-[#667085]">カテゴリ:</dt>
+              <dd>
+                <ProductCategoryEditor state={categoryEditorState} editable={false} />
+              </dd>
             </dl>
           )}
 
@@ -115,6 +129,10 @@ export default function ProductSummaryCard({ product, editable, onChangeName, on
                 <dt className="text-[#667085]">タグ:</dt>
                 <dd>
                   <TagList tags={product.tags ?? []} onAddTag={onAddTag} onRemoveTag={onRemoveTag} />
+                </dd>
+                <dt className="text-[#667085]">カテゴリ:</dt>
+                <dd>
+                  <ProductCategoryEditor state={categoryEditorState} editable />
                 </dd>
               </dl>
 

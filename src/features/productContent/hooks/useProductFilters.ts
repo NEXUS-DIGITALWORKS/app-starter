@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { addTagToProducts, fetchAvailableTags, fetchProductListSummary, fetchProducts, removeTagFromProduct } from '../api/productListApi';
+import { fetchCategories } from '../../categories/api/categoriesApi';
 import type {
   ProductListFilters,
   ProductListItem,
@@ -37,10 +39,31 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 export function useProductFilters() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [searchInput, setSearchInput] = useState('');
   const [skuInput, setSkuInput] = useState('');
   const [ingredientInput, setIngredientInput] = useState('');
   const [filters, setFilters] = useState<ProductListFilters>(INITIAL_FILTERS);
+
+  // カテゴリ絞り込みはURLの ?category=<カテゴリコード> と相互同期する
+  // （/app/products?category=2510 のようなディープリンクをカテゴリ管理画面等から使えるようにするため）。
+  // filters.category はcategoryId、URLパラメータはcode(外部から読みやすい安定値)で持つ。
+  const [categoryOptions, setCategoryOptions] = useState<{ id: string; code: string }[]>([]);
+
+  useEffect(() => {
+    fetchCategories().then((cats) => setCategoryOptions(cats.map((c) => ({ id: c.id, code: c.code }))));
+  }, []);
+
+  useEffect(() => {
+    const code = searchParams.get('category');
+    if (!code || categoryOptions.length === 0) return;
+    const match = categoryOptions.find((c) => c.code === code);
+    if (match && filters.category !== match.id) {
+      setFilters((prev) => ({ ...prev, category: match.id }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, categoryOptions]);
 
   const debouncedSearch = useDebouncedValue(searchInput, DEBOUNCE_MS);
   const debouncedSku = useDebouncedValue(skuInput, DEBOUNCE_MS);
@@ -112,7 +135,19 @@ export function useProductFilters() {
 
   const setStoreView = (storeView: string) => setFilters((prev) => ({ ...prev, storeView }));
   const setBrand = (brand: string) => setFilters((prev) => ({ ...prev, brand }));
-  const setCategory = (category: string) => setFilters((prev) => ({ ...prev, category }));
+  const setCategory = (category: string) => {
+    setFilters((prev) => ({ ...prev, category }));
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        const code = categoryOptions.find((c) => c.id === category)?.code;
+        if (category === 'all' || !code) next.delete('category');
+        else next.set('category', code);
+        return next;
+      },
+      { replace: true },
+    );
+  };
   const setTag = (tag: string) => setFilters((prev) => ({ ...prev, tag }));
   const setUpdatedWithin = (updatedWithin: UpdatedWithinFilter) => setFilters((prev) => ({ ...prev, updatedWithin }));
 
@@ -139,6 +174,14 @@ export function useProductFilters() {
     setSkuInput('');
     setIngredientInput('');
     setFilters(INITIAL_FILTERS);
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        next.delete('category');
+        return next;
+      },
+      { replace: true },
+    );
   };
 
   const toggleSelect = (id: string) =>

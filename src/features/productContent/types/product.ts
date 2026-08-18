@@ -19,13 +19,15 @@ export interface ProductListItem {
   ingredients?: string;
   brand: string;
   storeView: StoreView;
-  category: ProductCategory;
+  category: ProductCategory; // レガシー: 5値固定ラベル。カテゴリマスタ(categoryIds)とは無関係、削除せず放置
   status: ProductStatus;
   seoScore: number | null;
   seoIssue: SeoIssueType;
   updatedAt: string;
   updatedBy: string;
   tags?: string[];
+  categoryIds?: string[]; // features/categories の categories.id 群（多対多）
+  primaryCategoryId?: string | null;
 }
 
 export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
@@ -38,7 +40,7 @@ export interface ProductListFilters {
   brand: string;
   status: ProductStatus[];
   seoIssue: SeoIssueType[];
-  category: string;
+  category: string; // categories.id（'all'で絞り込みなし）。features/categories 側のマスタを参照する
   tag: string;
   updatedWithin: UpdatedWithinFilter;
   page: number;

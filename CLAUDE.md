@@ -20,7 +20,7 @@ npm install       # 依存関係のインストール
 
 ### Supabase セットアップ
 
-Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQLを**番号なしなら以下の順**で実行する: `setup_user_profiles.sql` → `setup_diagnosis_results.sql` → `setup_tech_selections.sql`
+Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQLを**番号なしなら以下の順**で実行する: `setup_user_profiles.sql` → `setup_diagnosis_results.sql` → `setup_tech_selections.sql` → `setup_categories.sql` → `setup_product_categories.sql` → `seed_categories_initial.sql`（カテゴリ初期データ、再実行しても`ON CONFLICT DO NOTHING`で安全）
 
 テーブル定義は「Supabase スキーマ」章を参照。
 
