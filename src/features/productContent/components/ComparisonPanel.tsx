@@ -12,9 +12,12 @@ function CharCount({ content }: { content: ProductContentText }) {
 export function ContentBlocks({ content }: { content: ProductContentText }) {
   return (
     <div className="space-y-4">
-      {CONTENT_FIELDS.map(({ key, label }) => (
+      {CONTENT_FIELDS.map(({ key, label, showFieldCharCount }) => (
         <div key={key}>
-          <p className="mb-1 text-sm font-semibold text-[#111827]">{label}</p>
+          <p className="mb-1 text-sm font-semibold text-[#111827]">
+            {label}
+            {showFieldCharCount && <span className="ml-1.5 font-normal text-[#98A2B3]">（{content[key].length}文字）</span>}
+          </p>
           <p className="whitespace-pre-line text-sm leading-relaxed text-[#344054]">{content[key]}</p>
         </div>
       ))}
@@ -31,10 +34,11 @@ export function EditableContentBlocks({
 }) {
   return (
     <div className="space-y-4">
-      {CONTENT_FIELDS.map(({ key, label }) => (
+      {CONTENT_FIELDS.map(({ key, label, showFieldCharCount }) => (
         <div key={key}>
           <label className="mb-1 block text-sm font-semibold text-[#111827]" htmlFor={`field-${key}`}>
             {label}
+            {showFieldCharCount && <span className="ml-1.5 font-normal text-[#98A2B3]">（{content[key].length}文字）</span>}
           </label>
           <textarea
             id={`field-${key}`}

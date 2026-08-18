@@ -10,6 +10,8 @@ interface ProductRow {
   name_zh_tw: string | null;
   name_en: string | null;
   short_description: string | null;
+  short_description_length: number | null;
+  description_length: number | null;
   ingredients: string | null;
   ec_status: 'enabled' | 'disabled';
   workflow_status: 'draft' | 'editing' | 'review_requested' | 'approved' | 'applied';
@@ -59,6 +61,8 @@ function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryC
     nameZhTw: row.name_zh_tw ?? undefined,
     nameEn: row.name_en ?? undefined,
     shortDescription: row.short_description ?? undefined,
+    shortDescriptionLength: row.short_description_length ?? undefined,
+    descriptionLength: row.description_length ?? undefined,
     ingredients: row.ingredients ?? undefined,
     brand: row.brand ?? '',
     storeView: toStoreView(row.store_view_name),
@@ -115,6 +119,10 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   }
   const ingredient = filters.ingredient.trim();
   if (ingredient) query = query.ilike('ingredients', `%${ingredient}%`);
+  if (filters.shortDescriptionLengthMin != null) query = query.gte('short_description_length', filters.shortDescriptionLengthMin);
+  if (filters.shortDescriptionLengthMax != null) query = query.lte('short_description_length', filters.shortDescriptionLengthMax);
+  if (filters.descriptionLengthMin != null) query = query.gte('description_length', filters.descriptionLengthMin);
+  if (filters.descriptionLengthMax != null) query = query.lte('description_length', filters.descriptionLengthMax);
   if (filters.status.length > 0) {
     query = query.in('workflow_status', filters.status.flatMap((s) => STATUS_TO_WORKFLOW[s]));
   }

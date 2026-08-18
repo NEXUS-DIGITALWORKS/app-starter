@@ -22,6 +22,10 @@ export default function ProductListPage() {
     setTag,
     setUpdatedWithin,
     setSingleStatus,
+    setShortDescriptionLengthMin,
+    setShortDescriptionLengthMax,
+    setDescriptionLengthMin,
+    setDescriptionLengthMax,
     setPage,
     nameLocale,
     setNameLocale,
@@ -88,6 +92,10 @@ export default function ProductListPage() {
         onToggleCategory={toggleCategory}
         onClearCategory={clearCategoryFilter}
         onUpdatedWithinChange={setUpdatedWithin}
+        onShortDescriptionLengthMinChange={setShortDescriptionLengthMin}
+        onShortDescriptionLengthMaxChange={setShortDescriptionLengthMax}
+        onDescriptionLengthMinChange={setDescriptionLengthMin}
+        onDescriptionLengthMaxChange={setDescriptionLengthMax}
         onClear={clearFilters}
       />
 

@@ -15,6 +15,10 @@ const INITIAL_FILTERS: ProductListFilters = {
   categoryIds: [],
   tag: 'all',
   updatedWithin: 'all',
+  shortDescriptionLengthMin: null,
+  shortDescriptionLengthMax: null,
+  descriptionLengthMin: null,
+  descriptionLengthMax: null,
   page: 1,
   limit: DEFAULT_LIMIT,
 };
@@ -122,6 +126,10 @@ export function useProductFilters() {
     filters.tag,
     filters.updatedWithin,
     filters.status,
+    filters.shortDescriptionLengthMin,
+    filters.shortDescriptionLengthMax,
+    filters.descriptionLengthMin,
+    filters.descriptionLengthMax,
   ]);
 
   const setPage = (page: number) => setFilters((prev) => ({ ...prev, page }));
@@ -155,6 +163,10 @@ export function useProductFilters() {
 
   const setTag = (tag: string) => setFilters((prev) => ({ ...prev, tag }));
   const setUpdatedWithin = (updatedWithin: UpdatedWithinFilter) => setFilters((prev) => ({ ...prev, updatedWithin }));
+  const setShortDescriptionLengthMin = (value: number | null) => setFilters((prev) => ({ ...prev, shortDescriptionLengthMin: value }));
+  const setShortDescriptionLengthMax = (value: number | null) => setFilters((prev) => ({ ...prev, shortDescriptionLengthMax: value }));
+  const setDescriptionLengthMin = (value: number | null) => setFilters((prev) => ({ ...prev, descriptionLengthMin: value }));
+  const setDescriptionLengthMax = (value: number | null) => setFilters((prev) => ({ ...prev, descriptionLengthMax: value }));
 
   const setSingleStatus = (status: ProductStatus | 'all') => setFilters((prev) => ({ ...prev, status: status === 'all' ? [] : [status] }));
 
@@ -209,6 +221,10 @@ export function useProductFilters() {
     setTag,
     setUpdatedWithin,
     setSingleStatus,
+    setShortDescriptionLengthMin,
+    setShortDescriptionLengthMax,
+    setDescriptionLengthMin,
+    setDescriptionLengthMax,
     setPage,
     nameLocale,
     setNameLocale,

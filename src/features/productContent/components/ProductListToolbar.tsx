@@ -33,7 +33,55 @@ interface ProductListToolbarProps {
   onToggleCategory: (categoryId: string) => void;
   onClearCategory: () => void;
   onUpdatedWithinChange: (value: UpdatedWithinFilter) => void;
+  onShortDescriptionLengthMinChange: (value: number | null) => void;
+  onShortDescriptionLengthMaxChange: (value: number | null) => void;
+  onDescriptionLengthMinChange: (value: number | null) => void;
+  onDescriptionLengthMaxChange: (value: number | null) => void;
   onClear: () => void;
+}
+
+function parseLengthInput(value: string): number | null {
+  return value === '' ? null : Number(value);
+}
+
+function LengthRangeField({
+  label,
+  min,
+  max,
+  onMinChange,
+  onMaxChange,
+}: {
+  label: string;
+  min: number | null;
+  max: number | null;
+  onMinChange: (value: number | null) => void;
+  onMaxChange: (value: number | null) => void;
+}) {
+  return (
+    <FilterField label={label}>
+      <div className="flex items-center gap-1.5">
+        <Input
+          type="number"
+          min={0}
+          value={min ?? ''}
+          onChange={(e) => onMinChange(parseLengthInput(e.target.value))}
+          placeholder="最小"
+          className="h-9 w-20"
+          aria-label={`${label}の最小値`}
+        />
+        <span className="text-xs text-[#98A2B3]">〜</span>
+        <Input
+          type="number"
+          min={0}
+          value={max ?? ''}
+          onChange={(e) => onMaxChange(parseLengthInput(e.target.value))}
+          placeholder="最大"
+          className="h-9 w-20"
+          aria-label={`${label}の最大値`}
+        />
+      </div>
+    </FilterField>
+  );
 }
 
 function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
@@ -60,6 +108,10 @@ export default function ProductListToolbar({
   onToggleCategory,
   onClearCategory,
   onUpdatedWithinChange,
+  onShortDescriptionLengthMinChange,
+  onShortDescriptionLengthMaxChange,
+  onDescriptionLengthMinChange,
+  onDescriptionLengthMaxChange,
   onClear,
 }: ProductListToolbarProps) {
   return (
@@ -159,6 +211,22 @@ export default function ProductListToolbar({
             </SelectContent>
           </Select>
         </FilterField>
+
+        <LengthRangeField
+          label="Short Description文字数"
+          min={filters.shortDescriptionLengthMin}
+          max={filters.shortDescriptionLengthMax}
+          onMinChange={onShortDescriptionLengthMinChange}
+          onMaxChange={onShortDescriptionLengthMaxChange}
+        />
+
+        <LengthRangeField
+          label="Description文字数"
+          min={filters.descriptionLengthMin}
+          max={filters.descriptionLengthMax}
+          onMinChange={onDescriptionLengthMinChange}
+          onMaxChange={onDescriptionLengthMaxChange}
+        />
 
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={onClear} className="text-[#475467]">

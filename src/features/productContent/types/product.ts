@@ -22,6 +22,8 @@ export interface ProductListItem {
   nameZhTw?: string;
   nameEn?: string;
   shortDescription?: string;
+  shortDescriptionLength?: number;
+  descriptionLength?: number;
   ingredients?: string;
   brand: string;
   storeView: StoreView;
@@ -45,6 +47,10 @@ export interface ProductListFilters {
   categoryIds: string[]; // categories.id の配列（複数選択・OR条件、空配列で絞り込みなし）。features/categories 側のマスタを参照する
   tag: string;
   updatedWithin: UpdatedWithinFilter;
+  shortDescriptionLengthMin: number | null; // ショートディスクリプション（原文）の文字数の下限（未指定はnull）
+  shortDescriptionLengthMax: number | null;
+  descriptionLengthMin: number | null; // ディスクリプション（原文）の文字数の下限（未指定はnull）
+  descriptionLengthMax: number | null;
   page: number;
   limit: number;
 }
