@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../../lib/supabaseClient';
-import { fetchProductCategoryLinksMap, fetchProductIdsByCategory } from '../../categories/api/productCategoriesApi';
+import { fetchProductCategoryLinksMap, fetchProductIdsByCategories } from '../../categories/api/productCategoriesApi';
 import { getProductImageUrl } from '../lib/productImage';
 import type { ProductListFilters, ProductListItem, ProductListResult, ProductListSummary, ProductStatus, StoreView } from '../types/product';
 
@@ -56,6 +56,8 @@ function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryC
     sku: row.sku,
     imageUrl: row.base_image ? getProductImageUrl(row.base_image) : undefined,
     name: row.name_ja,
+    nameZhTw: row.name_zh_tw ?? undefined,
+    nameEn: row.name_en ?? undefined,
     shortDescription: row.short_description ?? undefined,
     ingredients: row.ingredients ?? undefined,
     brand: row.brand ?? '',
@@ -86,19 +88,14 @@ async function fetchProductTagsMap(skus: string[]): Promise<Record<string, strin
 export async function fetchProducts(filters: ProductListFilters): Promise<ProductListResult> {
   if (!isSupabaseConfigured()) return { items: [], total: 0 };
 
-  // SEO診断は未実装のため実データは常に'unrated'。'unrated'以外が選ばれていれば該当0件で確定できる。
-  if (filters.seoIssue.length > 0 && !filters.seoIssue.includes('unrated')) {
-    return { items: [], total: 0 };
-  }
-
   if (filters.status.length > 0) {
     const workflowValues = filters.status.flatMap((s) => STATUS_TO_WORKFLOW[s]);
     if (workflowValues.length === 0) return { items: [], total: 0 };
   }
 
   let categorySkuFilter: string[] | null = null;
-  if (filters.category !== 'all') {
-    categorySkuFilter = await fetchProductIdsByCategory(filters.category);
+  if (filters.categoryIds.length > 0) {
+    categorySkuFilter = await fetchProductIdsByCategories(filters.categoryIds);
     if (categorySkuFilter.length === 0) return { items: [], total: 0 };
   }
 
@@ -116,12 +113,8 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
     const pattern = toOrFilterValue(`%${search}%`);
     query = query.or(`name_ja.ilike.${pattern},short_description.ilike.${pattern},sku.ilike.${pattern}`);
   }
-  const sku = filters.sku.trim();
-  if (sku) query = query.ilike('sku', `%${sku}%`);
   const ingredient = filters.ingredient.trim();
   if (ingredient) query = query.ilike('ingredients', `%${ingredient}%`);
-  if (filters.storeView !== 'all') query = query.eq('store_view_name', filters.storeView);
-  if (filters.brand !== 'all') query = query.eq('brand', filters.brand);
   if (filters.status.length > 0) {
     query = query.in('workflow_status', filters.status.flatMap((s) => STATUS_TO_WORKFLOW[s]));
   }
@@ -178,14 +171,6 @@ export async function fetchAvailableTags(): Promise<string[]> {
   if (error || !data) return [];
   const tagSet = new Set((data as { tag: string }[]).map((r) => r.tag));
   return [...tagSet].sort((a, b) => a.localeCompare(b, 'ja'));
-}
-
-export async function fetchAvailableBrands(): Promise<string[]> {
-  if (!isSupabaseConfigured()) return [];
-  const { data, error } = await supabase.from('products').select('brand').not('brand', 'is', null);
-  if (error || !data) return [];
-  const brandSet = new Set((data as { brand: string | null }[]).map((r) => r.brand).filter((b): b is string => Boolean(b)));
-  return [...brandSet].sort((a, b) => a.localeCompare(b, 'ja'));
 }
 
 // カテゴリ単位のCSV出力（src/features/categories）向け。指定SKU群の商品情報をまとめて取得する。

@@ -10,11 +10,17 @@ export type StoreView = 'Japan Store View' | 'Taiwan Store View' | 'English Stor
 
 export type ProductCategory = 'ヘアケア' | 'スキンケア' | '医薬品' | '健康食品' | '日用品';
 
+// 一覧の「商品名の言語」表示切替用。絞り込み(filters)ではなく、取得済み商品名のどの言語カラムを
+// 表示するかだけを切り替える表示専用の状態（NameLocale参照）。
+export type NameLocale = 'ja' | 'zh_tw' | 'en';
+
 export interface ProductListItem {
   id: string;
   sku: string;
   imageUrl?: string;
   name: string;
+  nameZhTw?: string;
+  nameEn?: string;
   shortDescription?: string;
   ingredients?: string;
   brand: string;
@@ -33,14 +39,10 @@ export interface ProductListItem {
 export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
 
 export interface ProductListFilters {
-  search: string;
-  sku: string;
+  search: string; // 商品名・説明・SKUを横断検索（SKU単独の検索欄は持たず、これに統合する）
   ingredient: string;
-  storeView: string;
-  brand: string;
   status: ProductStatus[];
-  seoIssue: SeoIssueType[];
-  category: string; // categories.id（'all'で絞り込みなし）。features/categories 側のマスタを参照する
+  categoryIds: string[]; // categories.id の配列（複数選択・OR条件、空配列で絞り込みなし）。features/categories 側のマスタを参照する
   tag: string;
   updatedWithin: UpdatedWithinFilter;
   page: number;

@@ -31,15 +31,15 @@ export default function ProductSummaryCards({ summary }: ProductSummaryCardsProp
         const value = summary ? summary[key] : null;
         const isPositive = !delta.startsWith('-');
         return (
-          <div key={key} className="rounded-xl border border-[#E5E7EB] bg-white p-4">
+          <div key={key} className="rounded-xl border border-[#E5E7EB] bg-white px-3 py-2.5">
             <div className="flex items-center gap-2">
-              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${accent}`}>
-                <Icon size={16} />
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${accent}`}>
+                <Icon size={13} />
               </span>
               <span className="truncate text-xs font-medium text-[#667085]">{label}</span>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-[#111827]">{value ?? '—'}</span>
+            <div className="mt-1.5 flex items-baseline gap-2">
+              <span className="text-lg font-bold text-[#111827]">{value ?? '—'}</span>
               <span className={`text-xs font-medium ${isPositive ? 'text-[#059669]' : 'text-[#B42318]'}`}>{delta}</span>
             </div>
           </div>

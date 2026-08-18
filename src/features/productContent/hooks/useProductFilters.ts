@@ -2,27 +2,17 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { addTagToProducts, fetchAvailableTags, fetchProductListSummary, fetchProducts, removeTagFromProduct } from '../api/productListApi';
 import { fetchCategories } from '../../categories/api/categoriesApi';
-import type {
-  ProductListFilters,
-  ProductListItem,
-  ProductListSummary,
-  ProductStatus,
-  SeoIssueType,
-  UpdatedWithinFilter,
-} from '../types/product';
+import type { Category } from '../../categories/types';
+import type { NameLocale, ProductListFilters, ProductListItem, ProductListSummary, ProductStatus, UpdatedWithinFilter } from '../types/product';
 
 const DEBOUNCE_MS = 350;
 const DEFAULT_LIMIT = 20;
 
 const INITIAL_FILTERS: ProductListFilters = {
   search: '',
-  sku: '',
   ingredient: '',
-  storeView: 'all',
-  brand: 'all',
   status: [],
-  seoIssue: [],
-  category: 'all',
+  categoryIds: [],
   tag: 'all',
   updatedWithin: 'all',
   page: 1,
@@ -42,31 +32,35 @@ export function useProductFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [searchInput, setSearchInput] = useState('');
-  const [skuInput, setSkuInput] = useState('');
   const [ingredientInput, setIngredientInput] = useState('');
   const [filters, setFilters] = useState<ProductListFilters>(INITIAL_FILTERS);
 
-  // カテゴリ絞り込みはURLの ?category=<カテゴリコード> と相互同期する
-  // （/app/products?category=2510 のようなディープリンクをカテゴリ管理画面等から使えるようにするため）。
-  // filters.category はcategoryId、URLパラメータはcode(外部から読みやすい安定値)で持つ。
-  const [categoryOptions, setCategoryOptions] = useState<{ id: string; code: string }[]>([]);
+  // カテゴリ絞り込み（複数選択）はURLの ?category=<カンマ区切りカテゴリコード> と相互同期する
+  // （/app/products?category=2510,2520 のようなディープリンクをカテゴリ管理画面等から使えるようにするため）。
+  // filters.categoryIds はcategoryIdの配列、URLパラメータはcode(外部から読みやすい安定値)のカンマ区切りで持つ。
+  // 一覧テーブルのカテゴリ列表示（categoryMap）にも同じ取得結果を流用する。
+  const [categoryOptions, setCategoryOptions] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetchCategories().then((cats) => setCategoryOptions(cats.map((c) => ({ id: c.id, code: c.code }))));
+    fetchCategories().then(setCategoryOptions);
   }, []);
 
+  const categoryMap = useMemo(() => new Map(categoryOptions.map((c) => [c.id, c])), [categoryOptions]);
+
   useEffect(() => {
-    const code = searchParams.get('category');
-    if (!code || categoryOptions.length === 0) return;
-    const match = categoryOptions.find((c) => c.code === code);
-    if (match && filters.category !== match.id) {
-      setFilters((prev) => ({ ...prev, category: match.id }));
+    const codes = searchParams.get('category');
+    if (!codes || categoryOptions.length === 0) return;
+    const ids = codes
+      .split(',')
+      .map((code) => categoryOptions.find((c) => c.code === code)?.id)
+      .filter((id): id is string => Boolean(id));
+    if (ids.length > 0 && ids.join(',') !== filters.categoryIds.join(',')) {
+      setFilters((prev) => ({ ...prev, categoryIds: ids }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, categoryOptions]);
 
   const debouncedSearch = useDebouncedValue(searchInput, DEBOUNCE_MS);
-  const debouncedSku = useDebouncedValue(skuInput, DEBOUNCE_MS);
   const debouncedIngredient = useDebouncedValue(ingredientInput, DEBOUNCE_MS);
 
   const [items, setItems] = useState<ProductListItem[]>([]);
@@ -80,9 +74,12 @@ export function useProductFilters() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [reloadKey, setReloadKey] = useState(0);
 
+  // 商品名の表示言語（絞り込みではなく、取得済みの商品名のどの言語カラムを表示するかの表示専用状態）。
+  const [nameLocale, setNameLocale] = useState<NameLocale>('ja');
+
   const queryFilters = useMemo<ProductListFilters>(
-    () => ({ ...filters, search: debouncedSearch, sku: debouncedSku, ingredient: debouncedIngredient }),
-    [filters, debouncedSearch, debouncedSku, debouncedIngredient],
+    () => ({ ...filters, search: debouncedSearch, ingredient: debouncedIngredient }),
+    [filters, debouncedSearch, debouncedIngredient],
   );
 
   useEffect(() => {
@@ -120,58 +117,49 @@ export function useProductFilters() {
     setFilters((prev) => (prev.page === 1 ? prev : { ...prev, page: 1 }));
   }, [
     debouncedSearch,
-    debouncedSku,
     debouncedIngredient,
-    filters.storeView,
-    filters.brand,
-    filters.category,
+    filters.categoryIds,
     filters.tag,
     filters.updatedWithin,
     filters.status,
-    filters.seoIssue,
   ]);
 
   const setPage = (page: number) => setFilters((prev) => ({ ...prev, page }));
 
-  const setStoreView = (storeView: string) => setFilters((prev) => ({ ...prev, storeView }));
-  const setBrand = (brand: string) => setFilters((prev) => ({ ...prev, brand }));
-  const setCategory = (category: string) => {
-    setFilters((prev) => ({ ...prev, category }));
+  const syncCategoryParam = (categoryIds: string[]) => {
     setSearchParams(
       (prev) => {
         const next = new URLSearchParams(prev);
-        const code = categoryOptions.find((c) => c.id === category)?.code;
-        if (category === 'all' || !code) next.delete('category');
-        else next.set('category', code);
+        const codes = categoryIds.map((id) => categoryOptions.find((c) => c.id === id)?.code).filter((c): c is string => Boolean(c));
+        if (codes.length === 0) next.delete('category');
+        else next.set('category', codes.join(','));
         return next;
       },
       { replace: true },
     );
   };
+
+  const toggleCategory = (categoryId: string) =>
+    setFilters((prev) => {
+      const categoryIds = prev.categoryIds.includes(categoryId)
+        ? prev.categoryIds.filter((id) => id !== categoryId)
+        : [...prev.categoryIds, categoryId];
+      syncCategoryParam(categoryIds);
+      return { ...prev, categoryIds };
+    });
+
+  const clearCategoryFilter = () => {
+    setFilters((prev) => ({ ...prev, categoryIds: [] }));
+    syncCategoryParam([]);
+  };
+
   const setTag = (tag: string) => setFilters((prev) => ({ ...prev, tag }));
   const setUpdatedWithin = (updatedWithin: UpdatedWithinFilter) => setFilters((prev) => ({ ...prev, updatedWithin }));
 
-  const toggleStatus = (status: ProductStatus) =>
-    setFilters((prev) => ({
-      ...prev,
-      status: prev.status.includes(status) ? prev.status.filter((s) => s !== status) : [...prev.status, status],
-    }));
-
-  const toggleSeoIssue = (issue: SeoIssueType) =>
-    setFilters((prev) => ({
-      ...prev,
-      seoIssue: prev.seoIssue.includes(issue) ? prev.seoIssue.filter((s) => s !== issue) : [...prev.seoIssue, issue],
-    }));
-
-  const clearStatusFilter = () => setFilters((prev) => ({ ...prev, status: [] }));
-  const clearSeoIssueFilter = () => setFilters((prev) => ({ ...prev, seoIssue: [] }));
-
   const setSingleStatus = (status: ProductStatus | 'all') => setFilters((prev) => ({ ...prev, status: status === 'all' ? [] : [status] }));
-  const setSingleSeoIssue = (issue: SeoIssueType | 'all') => setFilters((prev) => ({ ...prev, seoIssue: issue === 'all' ? [] : [issue] }));
 
   const clearFilters = () => {
     setSearchInput('');
-    setSkuInput('');
     setIngredientInput('');
     setFilters(INITIAL_FILTERS);
     setSearchParams(
@@ -213,23 +201,17 @@ export function useProductFilters() {
   return {
     searchInput,
     setSearchInput,
-    skuInput,
-    setSkuInput,
     ingredientInput,
     setIngredientInput,
     filters,
-    setStoreView,
-    setBrand,
-    setCategory,
+    toggleCategory,
+    clearCategoryFilter,
     setTag,
     setUpdatedWithin,
-    toggleStatus,
-    toggleSeoIssue,
-    clearStatusFilter,
-    clearSeoIssueFilter,
     setSingleStatus,
-    setSingleSeoIssue,
     setPage,
+    nameLocale,
+    setNameLocale,
     clearFilters,
     items,
     total,
@@ -237,6 +219,8 @@ export function useProductFilters() {
     error,
     summary,
     availableTags,
+    categoryOptions,
+    categoryMap,
     selectedIds,
     toggleSelect,
     toggleSelectAll,

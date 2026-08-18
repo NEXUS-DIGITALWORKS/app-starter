@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { ChevronRight, Download, Home, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductListToolbar from '../components/ProductListToolbar';
-import ProductFilterSidebar from '../components/ProductFilterSidebar';
 import ProductSummaryCards from '../components/ProductSummaryCards';
 import ProductTable from '../components/ProductTable';
 import ProductImportDialog from '../components/ProductImportDialog';
@@ -15,23 +14,17 @@ export default function ProductListPage() {
   const {
     searchInput,
     setSearchInput,
-    skuInput,
-    setSkuInput,
     ingredientInput,
     setIngredientInput,
     filters,
-    setStoreView,
-    setBrand,
-    setCategory,
+    toggleCategory,
+    clearCategoryFilter,
     setTag,
     setUpdatedWithin,
-    toggleStatus,
-    toggleSeoIssue,
-    clearStatusFilter,
-    clearSeoIssueFilter,
     setSingleStatus,
-    setSingleSeoIssue,
     setPage,
+    nameLocale,
+    setNameLocale,
     clearFilters,
     items,
     total,
@@ -39,6 +32,8 @@ export default function ProductListPage() {
     error,
     summary,
     availableTags,
+    categoryOptions,
+    categoryMap,
     selectedIds,
     toggleSelect,
     toggleSelectAll,
@@ -81,53 +76,41 @@ export default function ProductListPage() {
       <ProductListToolbar
         searchInput={searchInput}
         onSearchInputChange={setSearchInput}
-        skuInput={skuInput}
-        onSkuInputChange={setSkuInput}
         ingredientInput={ingredientInput}
         onIngredientInputChange={setIngredientInput}
         filters={filters}
         availableTags={availableTags}
-        onStoreViewChange={setStoreView}
-        onBrandChange={setBrand}
+        categoryOptions={categoryOptions}
+        nameLocale={nameLocale}
+        onNameLocaleChange={setNameLocale}
         onSingleStatusChange={setSingleStatus}
-        onSingleSeoIssueChange={setSingleSeoIssue}
         onTagChange={setTag}
+        onToggleCategory={toggleCategory}
+        onClearCategory={clearCategoryFilter}
+        onUpdatedWithinChange={setUpdatedWithin}
         onClear={clearFilters}
       />
 
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
-        <ProductFilterSidebar
-          filters={filters}
-          onToggleStatus={toggleStatus}
-          onToggleSeoIssue={toggleSeoIssue}
-          onClearStatus={clearStatusFilter}
-          onClearSeoIssue={clearSeoIssueFilter}
-          onCategoryChange={setCategory}
-          onUpdatedWithinChange={setUpdatedWithin}
-          onClear={clearFilters}
-        />
+      <ProductSummaryCards summary={summary} />
 
-        <div className="min-w-0 flex-1 space-y-4">
-          <ProductSummaryCards summary={summary} />
-
-          <ProductTable
-            items={items}
-            isLoading={isLoading}
-            error={error}
-            onRetry={() => setPage(filters.page)}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
-            onToggleSelectAll={toggleSelectAll}
-            onClearFilters={clearFilters}
-            page={filters.page}
-            limit={filters.limit}
-            total={total}
-            onPageChange={setPage}
-            onAddTag={addTags}
-            onRemoveTag={removeTag}
-          />
-        </div>
-      </div>
+      <ProductTable
+        items={items}
+        categoryMap={categoryMap}
+        nameLocale={nameLocale}
+        isLoading={isLoading}
+        error={error}
+        onRetry={() => setPage(filters.page)}
+        selectedIds={selectedIds}
+        onToggleSelect={toggleSelect}
+        onToggleSelectAll={toggleSelectAll}
+        onClearFilters={clearFilters}
+        page={filters.page}
+        limit={filters.limit}
+        total={total}
+        onPageChange={setPage}
+        onAddTag={addTags}
+        onRemoveTag={removeTag}
+      />
 
       <ProductImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={refresh} />
     </div>

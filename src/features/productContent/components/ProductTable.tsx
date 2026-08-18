@@ -17,7 +17,11 @@ import {
 import ProductStatusBadge from './ProductStatusBadge';
 import SeoScoreBadge from './SeoScoreBadge';
 import ProductPagination from './ProductPagination';
-import type { ProductListItem } from '../types/product';
+import { getCategoryDisplayName } from '../../categories/lib/categoryName';
+import type { Category } from '../../categories/types';
+import type { NameLocale, ProductListItem } from '../types/product';
+
+const COLUMN_COUNT = 10;
 
 const OTHER_BULK_ACTIONS = ['SEO分析', 'AI翻訳', '再同期', 'エクスポート'];
 const MORE_ACTIONS = ['再同期', 'AI分析', '複製', 'CSV出力'];
@@ -43,8 +47,46 @@ function ProductThumbnail({ src, alt }: { src?: string; alt: string }) {
   );
 }
 
+// 列幅を狭めた分、横1列ではなく3段程度まで折り返して表示する。カテゴリ名は短いことが多いため
+// 1段あたり2〜3件程度で収まる想定で、3段を超えそうな分は「+N」にまとめる（実測ではなく件数での近似）。
+const MAX_VISIBLE_CATEGORIES = 6;
+
+function getDisplayName(item: ProductListItem, nameLocale: NameLocale): string {
+  if (nameLocale === 'zh_tw') return item.nameZhTw || item.name;
+  if (nameLocale === 'en') return item.nameEn || item.name;
+  return item.name;
+}
+
+function ProductCategoryCell({ item, categoryMap }: { item: ProductListItem; categoryMap: Map<string, Category> }) {
+  // primaryCategoryIdが未設定の商品も一定数あるため、その場合は
+  // categoryIds の順序（productListApi側でis_primary優先・sort_order順に取得済み）をそのまま使う。
+  const ids = item.categoryIds ?? [];
+  const orderedIds = item.primaryCategoryId
+    ? [item.primaryCategoryId, ...ids.filter((id) => id !== item.primaryCategoryId)]
+    : ids;
+  const categories = orderedIds.map((id) => categoryMap.get(id)).filter((c): c is Category => Boolean(c));
+
+  if (categories.length === 0) return <span className="text-xs text-[#98A2B3]">未設定</span>;
+
+  const visible = categories.slice(0, MAX_VISIBLE_CATEGORIES);
+  const hiddenCount = categories.length - visible.length;
+
+  return (
+    <div className="flex max-w-[190px] flex-wrap items-center gap-1">
+      {visible.map((c) => (
+        <span key={c.id} className="inline-flex items-center rounded-full bg-[#EEF0FE] px-2 py-0.5 text-xs font-medium text-[#3157E5]">
+          {getCategoryDisplayName(c)}
+        </span>
+      ))}
+      {hiddenCount > 0 && <span className="text-xs text-[#98A2B3]">+{hiddenCount}</span>}
+    </div>
+  );
+}
+
 interface ProductTableProps {
   items: ProductListItem[];
+  categoryMap: Map<string, Category>;
+  nameLocale: NameLocale;
   isLoading: boolean;
   error: string | null;
   onRetry: () => void;
@@ -62,6 +104,8 @@ interface ProductTableProps {
 
 export default function ProductTable({
   items,
+  categoryMap,
+  nameLocale,
   isLoading,
   error,
   onRetry,
@@ -137,20 +181,21 @@ export default function ProductTable({
               />
             </TableHead>
             <TableHead className="w-14">画像</TableHead>
-            <TableHead className="min-w-[104px]">SKU</TableHead>
-            <TableHead className="min-w-[220px]">商品名</TableHead>
-            <TableHead className="min-w-[76px]">ブランド</TableHead>
-            <TableHead className="min-w-[140px]">タグ</TableHead>
+            <TableHead className="min-w-[84px]">SKU</TableHead>
+            <TableHead className="min-w-[160px]">商品名</TableHead>
+            <TableHead className="min-w-[110px]">ブランド</TableHead>
+            <TableHead className="min-w-[190px]">カテゴリ</TableHead>
+            <TableHead className="min-w-[170px]">タグ</TableHead>
             <TableHead className="min-w-[80px]">ステータス</TableHead>
             <TableHead className="min-w-[126px]">SEOスコア/課題</TableHead>
-            <TableHead className="min-w-[128px] text-right">アクション</TableHead>
+            <TableHead className="min-w-[88px] text-right">アクション</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {isLoading &&
             Array.from({ length: 8 }).map((_, i) => (
               <TableRow key={`skeleton-${i}`}>
-                <TableCell colSpan={9}>
+                <TableCell colSpan={COLUMN_COUNT}>
                   <Skeleton className="h-10 w-full" />
                 </TableCell>
               </TableRow>
@@ -158,7 +203,7 @@ export default function ProductTable({
 
           {!isLoading && error && (
             <TableRow>
-              <TableCell colSpan={9} className="py-12 text-center">
+              <TableCell colSpan={COLUMN_COUNT} className="py-12 text-center">
                 <p className="text-sm font-medium text-[#B42318]">{error}</p>
                 <Button variant="outline" size="sm" className="mt-3 border-[#D0D5DD] text-[#475467]" onClick={onRetry}>
                   <RefreshCw size={14} />
@@ -170,7 +215,7 @@ export default function ProductTable({
 
           {!isLoading && !error && items.length === 0 && (
             <TableRow>
-              <TableCell colSpan={9} className="py-12 text-center">
+              <TableCell colSpan={COLUMN_COUNT} className="py-12 text-center">
                 <p className="text-sm font-medium text-[#344054]">条件に一致する商品がありません</p>
                 <p className="mt-1 text-sm text-[#98A2B3]">検索条件を変更してください</p>
                 <Button variant="outline" size="sm" className="mt-3 border-[#D0D5DD] text-[#475467]" onClick={onClearFilters}>
@@ -194,12 +239,15 @@ export default function ProductTable({
                 <TableCell>
                   <ProductThumbnail src={item.imageUrl} alt={item.name} />
                 </TableCell>
-                <TableCell className="text-sm text-[#475467]">{item.sku}</TableCell>
-                <TableCell className="max-w-[320px]">
-                  <p className="line-clamp-2 text-sm font-medium text-[#111827]">{item.name}</p>
+                <TableCell className="text-xs text-[#475467]">{item.sku}</TableCell>
+                <TableCell className="max-w-[220px]">
+                  <p className="line-clamp-2 text-sm font-medium text-[#111827]">{getDisplayName(item, nameLocale)}</p>
                   {item.shortDescription && <p className="truncate text-xs text-[#667085]">{item.shortDescription}</p>}
                 </TableCell>
                 <TableCell className="text-sm text-[#344054]">{item.brand}</TableCell>
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <ProductCategoryCell item={item} categoryMap={categoryMap} />
+                </TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   {item.tags && item.tags.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
@@ -234,21 +282,12 @@ export default function ProductTable({
                   <div className="flex items-center justify-end gap-1">
                     <Button
                       variant="outline"
-                      size="sm"
-                      className="gap-1 border-[#D0D5DD] px-2 text-[#475467]"
+                      size="icon"
+                      className="h-9 w-9 border-[#D0D5DD] text-[#475467]"
+                      aria-label="編集"
                       onClick={() => goToDetail(item.sku)}
                     >
-                      <Pencil size={13} />
-                      編集
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1 border-[#D0D5DD] px-2 text-[#475467]"
-                      onClick={() => setPreviewItem(item)}
-                    >
-                      <Eye size={13} />
-                      プレビュー
+                      <Pencil size={14} />
                     </Button>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -257,6 +296,11 @@ export default function ProductTable({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onSelect={() => setPreviewItem(item)}>
+                          <Eye size={14} />
+                          プレビュー
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         {MORE_ACTIONS.map((action) => (
                           <DropdownMenuItem key={action} onSelect={() => console.info('[row-action]', action, item.sku)}>
                             {action}

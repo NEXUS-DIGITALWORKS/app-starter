@@ -95,7 +95,12 @@ export async function fetchProductCategories(sku: string): Promise<ProductCatego
 export async function fetchProductCategoryLinksMap(skus: string[]): Promise<Record<string, ProductCategoryWithDetail[]>> {
   if (!isSupabaseConfigured() || skus.length === 0) return {};
 
-  const { data, error } = await supabase.from('product_categories').select(LINK_WITH_CATEGORY_COLUMNS).in('product_id', skus);
+  const { data, error } = await supabase
+    .from('product_categories')
+    .select(LINK_WITH_CATEGORY_COLUMNS)
+    .in('product_id', skus)
+    .order('is_primary', { ascending: false })
+    .order('sort_order', { ascending: true });
 
   if (error || !data) return {};
 
@@ -166,4 +171,13 @@ export async function fetchProductIdsByCategory(categoryId: string): Promise<str
   const { data, error } = await supabase.from('product_categories').select('product_id').eq('category_id', categoryId);
   if (error || !data) return [];
   return (data as { product_id: string }[]).map((row) => row.product_id);
+}
+
+// 商品一覧のカテゴリ複数選択フィルタ用。指定カテゴリのいずれかに属する商品ID（OR条件）を返す。
+export async function fetchProductIdsByCategories(categoryIds: string[]): Promise<string[]> {
+  if (!isSupabaseConfigured() || categoryIds.length === 0) return [];
+
+  const { data, error } = await supabase.from('product_categories').select('product_id').in('category_id', categoryIds);
+  if (error || !data) return [];
+  return [...new Set((data as { product_id: string }[]).map((row) => row.product_id))];
 }
