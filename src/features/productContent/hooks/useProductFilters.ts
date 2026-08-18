@@ -208,6 +208,8 @@ export function useProductFilters() {
     setReloadKey((n) => n + 1);
   };
 
+  const refresh = () => setReloadKey((n) => n + 1);
+
   return {
     searchInput,
     setSearchInput,
@@ -241,6 +243,7 @@ export function useProductFilters() {
     clearSelection,
     addTags,
     removeTag,
+    refresh,
   };
 }
 

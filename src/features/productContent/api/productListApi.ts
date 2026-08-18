@@ -1,101 +1,234 @@
-import { mockProducts } from '../data/mockProducts';
-import { addTag, getAllTags, getTags, removeTag } from '../data/mockTagsStore';
-import { fetchProductCategoryLinksMap } from '../../categories/api/productCategoriesApi';
-import type { ProductListFilters, ProductListItem, ProductListResult, ProductListSummary } from '../types/product';
+import { isSupabaseConfigured, supabase } from '../../../lib/supabaseClient';
+import { fetchProductCategoryLinksMap, fetchProductIdsByCategory } from '../../categories/api/productCategoriesApi';
+import { getProductImageUrl } from '../lib/productImage';
+import type { ProductListFilters, ProductListItem, ProductListResult, ProductListSummary, ProductStatus, StoreView } from '../types/product';
 
-// Component から直接 mockProducts を参照しない。実データ接続時はこのファイルの中身だけを
-// GET /api/products 相当の呼び出しに差し替える（呼び出し側のシグネチャは変えない）。
-
-const MOCK_DELAY_MS = 250;
-
-function delay<T>(value: T, ms = MOCK_DELAY_MS): Promise<T> {
-  return new Promise((resolve) => setTimeout(() => resolve(value), ms));
+interface ProductRow {
+  sku: string;
+  name: string;
+  brand: string | null;
+  name_zh_tw: string | null;
+  name_en: string | null;
+  short_description: string | null;
+  ingredients: string | null;
+  ec_status: 'enabled' | 'disabled';
+  workflow_status: 'draft' | 'editing' | 'review_requested' | 'approved' | 'applied';
+  base_image: string | null;
+  store_view_name: string | null;
+  updated_at: string;
 }
 
-function withinUpdatedRange(updatedAt: string, range: ProductListFilters['updatedWithin']): boolean {
-  if (range === 'all') return true;
-  const days = range === 'today' ? 1 : range === '7d' ? 7 : 30;
-  const diffMs = Date.now() - new Date(updatedAt).getTime();
-  return diffMs <= days * 24 * 60 * 60 * 1000;
+// UI側(ProductStatus)とDB側(workflow_status)は別々の設計背景を持つ列挙値
+// （UI: published/draft/needs_review/approval_pending/private、DB: draft/editing/review_requested/approved/applied）
+// のため厳密な1:1対応ではなく、ワークフローの進行段階が近いもの同士を対応付けた暫定マッピング。
+const WORKFLOW_TO_STATUS: Record<ProductRow['workflow_status'], ProductStatus> = {
+  draft: 'draft',
+  editing: 'draft',
+  review_requested: 'needs_review',
+  approved: 'approval_pending',
+  applied: 'published',
+};
+
+const STATUS_TO_WORKFLOW: Record<ProductStatus, ProductRow['workflow_status'][]> = {
+  draft: ['draft', 'editing'],
+  needs_review: ['review_requested'],
+  approval_pending: ['approved'],
+  published: ['applied'],
+  private: [],
+};
+
+const STORE_VIEWS: StoreView[] = ['Japan Store View', 'Taiwan Store View', 'English Store View'];
+
+function toStoreView(value: string | null): StoreView {
+  return (STORE_VIEWS as string[]).includes(value ?? '') ? (value as StoreView) : 'Japan Store View';
+}
+
+// PostgRESTの.or()フィルタ構文はカンマ・括弧を条件区切りとして解釈するため、
+// 検索語にそれらの文字が含まれる場合はダブルクオートで囲んで値全体をリテラル扱いにする。
+function toOrFilterValue(pattern: string): string {
+  if (!/[,()]/.test(pattern)) return pattern;
+  return `"${pattern.replace(/"/g, '\\"')}"`;
+}
+
+function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryCategoryId: string | null): ProductListItem {
+  return {
+    id: row.sku,
+    sku: row.sku,
+    imageUrl: row.base_image ? getProductImageUrl(row.base_image) : undefined,
+    name: row.name,
+    shortDescription: row.short_description ?? undefined,
+    ingredients: row.ingredients ?? undefined,
+    brand: row.brand ?? '',
+    storeView: toStoreView(row.store_view_name),
+    category: 'スキンケア', // レガシー項目（types/product.ts参照）。実データでは未使用のため固定値。
+    status: WORKFLOW_TO_STATUS[row.workflow_status] ?? 'draft',
+    seoScore: null, // SEO診断はAI生成の別テーブル想定でまだ未実装（setup_products.sqlのコメント参照）
+    seoIssue: 'unrated',
+    updatedAt: row.updated_at,
+    updatedBy: '',
+    tags,
+    categoryIds,
+    primaryCategoryId,
+  };
+}
+
+async function fetchProductTagsMap(skus: string[]): Promise<Record<string, string[]>> {
+  if (skus.length === 0) return {};
+  const { data, error } = await supabase.from('product_tags').select('product_id, tag').in('product_id', skus);
+  if (error || !data) return {};
+  const map: Record<string, string[]> = {};
+  for (const row of data as { product_id: string; tag: string }[]) {
+    (map[row.product_id] ??= []).push(row.tag);
+  }
+  return map;
 }
 
 export async function fetchProducts(filters: ProductListFilters): Promise<ProductListResult> {
-  // TODO: 実データ接続時は GET /api/products?search=&sku=&storeView=&brand=&status=&seoIssue=&category=&updatedFrom=&page=&limit= に置き換える
-  const search = filters.search.trim().toLowerCase();
-  const sku = filters.sku.trim().toLowerCase();
-  const ingredient = filters.ingredient.trim().toLowerCase();
+  if (!isSupabaseConfigured()) return { items: [], total: 0 };
 
-  // カテゴリ絞り込み用に、対象となりうる全商品分の関連付けを1回のバッチ取得でまとめて解決する
-  // （商品ごとに個別クエリを投げるN+1を避けるため）。
-  const categoryLinksMap = await fetchProductCategoryLinksMap(mockProducts.map((p) => p.sku));
+  // SEO診断は未実装のため実データは常に'unrated'。'unrated'以外が選ばれていれば該当0件で確定できる。
+  if (filters.seoIssue.length > 0 && !filters.seoIssue.includes('unrated')) {
+    return { items: [], total: 0 };
+  }
 
-  const filtered = mockProducts.filter((item) => {
-    if (search && !item.name.toLowerCase().includes(search) && !(item.shortDescription ?? '').toLowerCase().includes(search) && !item.sku.includes(search)) {
-      return false;
-    }
-    if (sku && !item.sku.toLowerCase().includes(sku)) return false;
-    if (ingredient && !(item.ingredients ?? '').toLowerCase().includes(ingredient)) return false;
-    if (filters.storeView !== 'all' && item.storeView !== filters.storeView) return false;
-    if (filters.brand !== 'all' && item.brand !== filters.brand) return false;
-    if (filters.category !== 'all') {
-      const categoryIds = (categoryLinksMap[item.sku] ?? []).map((l) => l.categoryId);
-      if (!categoryIds.includes(filters.category)) return false;
-    }
-    if (filters.status.length > 0 && !filters.status.includes(item.status)) return false;
-    if (filters.seoIssue.length > 0 && !filters.seoIssue.includes(item.seoIssue)) return false;
-    if (filters.tag !== 'all' && !getTags(item.sku).includes(filters.tag)) return false;
-    if (!withinUpdatedRange(item.updatedAt, filters.updatedWithin)) return false;
-    return true;
-  });
+  if (filters.status.length > 0) {
+    const workflowValues = filters.status.flatMap((s) => STATUS_TO_WORKFLOW[s]);
+    if (workflowValues.length === 0) return { items: [], total: 0 };
+  }
+
+  let categorySkuFilter: string[] | null = null;
+  if (filters.category !== 'all') {
+    categorySkuFilter = await fetchProductIdsByCategory(filters.category);
+    if (categorySkuFilter.length === 0) return { items: [], total: 0 };
+  }
+
+  let tagSkuFilter: string[] | null = null;
+  if (filters.tag !== 'all') {
+    const { data } = await supabase.from('product_tags').select('product_id').eq('tag', filters.tag);
+    tagSkuFilter = (data as { product_id: string }[] | null)?.map((r) => r.product_id) ?? [];
+    if (tagSkuFilter.length === 0) return { items: [], total: 0 };
+  }
+
+  let query = supabase.from('products').select('*', { count: 'exact' });
+
+  const search = filters.search.trim();
+  if (search) {
+    const pattern = toOrFilterValue(`%${search}%`);
+    query = query.or(`name.ilike.${pattern},short_description.ilike.${pattern},sku.ilike.${pattern}`);
+  }
+  const sku = filters.sku.trim();
+  if (sku) query = query.ilike('sku', `%${sku}%`);
+  const ingredient = filters.ingredient.trim();
+  if (ingredient) query = query.ilike('ingredients', `%${ingredient}%`);
+  if (filters.storeView !== 'all') query = query.eq('store_view_name', filters.storeView);
+  if (filters.brand !== 'all') query = query.eq('brand', filters.brand);
+  if (filters.status.length > 0) {
+    query = query.in('workflow_status', filters.status.flatMap((s) => STATUS_TO_WORKFLOW[s]));
+  }
+  if (categorySkuFilter) query = query.in('sku', categorySkuFilter);
+  if (tagSkuFilter) query = query.in('sku', tagSkuFilter);
+  if (filters.updatedWithin !== 'all') {
+    const days = filters.updatedWithin === 'today' ? 1 : filters.updatedWithin === '7d' ? 7 : 30;
+    query = query.gte('updated_at', new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString());
+  }
 
   const start = (filters.page - 1) * filters.limit;
-  const items: ProductListItem[] = filtered.slice(start, start + filters.limit).map((item) => {
-    const links = categoryLinksMap[item.sku] ?? [];
-    return {
-      ...item,
-      tags: getTags(item.sku),
-      categoryIds: links.map((l) => l.categoryId),
-      primaryCategoryId: links.find((l) => l.isPrimary)?.categoryId ?? null,
-    };
+  query = query.order('updated_at', { ascending: false }).range(start, start + filters.limit - 1);
+
+  const { data, error, count } = await query;
+  if (error || !data) return { items: [], total: 0 };
+
+  const rows = data as ProductRow[];
+  const skus = rows.map((r) => r.sku);
+  const [tagsMap, categoryLinksMap] = await Promise.all([fetchProductTagsMap(skus), fetchProductCategoryLinksMap(skus)]);
+
+  const items = rows.map((row) => {
+    const links = categoryLinksMap[row.sku] ?? [];
+    return mapRow(
+      row,
+      tagsMap[row.sku] ?? [],
+      links.map((l) => l.categoryId),
+      links.find((l) => l.isPrimary)?.categoryId ?? null,
+    );
   });
 
-  return delay({ items, total: filtered.length });
+  return { items, total: count ?? items.length };
 }
 
 export async function addTagToProducts(ids: string[], tag: string): Promise<void> {
-  // TODO: 実データ接続時は POST /api/products/tags 相当（一括タグ付与）に置き換える
-  const idSet = new Set(ids);
-  for (const item of mockProducts) {
-    if (idSet.has(item.id)) addTag(item.sku, tag);
-  }
-  return delay(undefined);
+  const trimmed = tag.trim();
+  if (!trimmed || ids.length === 0) return;
+  const { error } = await supabase
+    .from('product_tags')
+    .upsert(
+      ids.map((sku) => ({ product_id: sku, tag: trimmed, source: 'manual' as const })),
+      { onConflict: 'product_id,tag', ignoreDuplicates: true },
+    );
+  if (error) throw error;
 }
 
 export async function removeTagFromProduct(id: string, tag: string): Promise<void> {
-  // TODO: 実データ接続時は DELETE /api/products/:id/tags/:tag 相当に置き換える
-  const item = mockProducts.find((p) => p.id === id);
-  if (item) removeTag(item.sku, tag);
-  return delay(undefined);
+  const { error } = await supabase.from('product_tags').delete().eq('product_id', id).eq('tag', tag);
+  if (error) throw error;
 }
 
 export async function fetchAvailableTags(): Promise<string[]> {
-  return delay(getAllTags());
+  if (!isSupabaseConfigured()) return [];
+  const { data, error } = await supabase.from('product_tags').select('tag');
+  if (error || !data) return [];
+  const tagSet = new Set((data as { tag: string }[]).map((r) => r.tag));
+  return [...tagSet].sort((a, b) => a.localeCompare(b, 'ja'));
+}
+
+export async function fetchAvailableBrands(): Promise<string[]> {
+  if (!isSupabaseConfigured()) return [];
+  const { data, error } = await supabase.from('products').select('brand').not('brand', 'is', null);
+  if (error || !data) return [];
+  const brandSet = new Set((data as { brand: string | null }[]).map((r) => r.brand).filter((b): b is string => Boolean(b)));
+  return [...brandSet].sort((a, b) => a.localeCompare(b, 'ja'));
 }
 
 // カテゴリ単位のCSV出力（src/features/categories）向け。指定SKU群の商品情報をまとめて取得する。
 export async function fetchProductsBySkus(skus: string[]): Promise<ProductListItem[]> {
-  const skuSet = new Set(skus);
-  const items = mockProducts.filter((item) => skuSet.has(item.sku)).map((item) => ({ ...item, tags: getTags(item.sku) }));
-  return delay(items);
+  if (!isSupabaseConfigured() || skus.length === 0) return [];
+  const { data, error } = await supabase.from('products').select('*').in('sku', skus);
+  if (error || !data) return [];
+
+  const rows = data as ProductRow[];
+  const [tagsMap, categoryLinksMap] = await Promise.all([fetchProductTagsMap(skus), fetchProductCategoryLinksMap(skus)]);
+
+  return rows.map((row) => {
+    const links = categoryLinksMap[row.sku] ?? [];
+    return mapRow(
+      row,
+      tagsMap[row.sku] ?? [],
+      links.map((l) => l.categoryId),
+      links.find((l) => l.isPrimary)?.categoryId ?? null,
+    );
+  });
 }
 
 export async function fetchProductListSummary(): Promise<ProductListSummary> {
-  const total = mockProducts.length;
-  const needsReview = mockProducts.filter((p) => p.status === 'needs_review').length;
-  const seoIssues = mockProducts.filter((p) => p.seoIssue === 'warning' || p.seoIssue === 'missing').length;
-  const published = mockProducts.filter((p) => p.status === 'published').length;
-  const untranslated = mockProducts.filter((p) => p.storeView !== 'Japan Store View').length;
-  const approvalPending = mockProducts.filter((p) => p.status === 'approval_pending').length;
+  if (!isSupabaseConfigured()) {
+    return { total: 0, needsReview: 0, seoIssues: 0, published: 0, untranslated: 0, approvalPending: 0 };
+  }
 
-  return delay({ total, needsReview, seoIssues, published, untranslated, approvalPending });
+  const base = () => supabase.from('products').select('*', { count: 'exact', head: true });
+
+  const [totalRes, needsReviewRes, publishedRes, approvalPendingRes, untranslatedRes] = await Promise.all([
+    base(),
+    base().eq('workflow_status', 'review_requested'),
+    base().eq('workflow_status', 'applied'),
+    base().eq('workflow_status', 'approved'),
+    base().or('name_zh_tw.is.null,name_en.is.null'),
+  ]);
+
+  return {
+    total: totalRes.count ?? 0,
+    needsReview: needsReviewRes.count ?? 0,
+    seoIssues: 0, // SEO診断は未実装のため常に0（実装後にSEO結果テーブルの集計に置き換える）
+    published: publishedRes.count ?? 0,
+    untranslated: untranslatedRes.count ?? 0,
+    approvalPending: approvalPendingRes.count ?? 0,
+  };
 }

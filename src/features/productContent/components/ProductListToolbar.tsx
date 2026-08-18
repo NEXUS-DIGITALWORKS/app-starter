@@ -1,12 +1,13 @@
+import { useEffect, useState } from 'react';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PRODUCT_STATUS_OPTIONS } from './ProductStatusBadge';
+import { fetchAvailableBrands } from '../api/productListApi';
 import type { ProductListFilters, ProductStatus, SeoIssueType } from '../types/product';
 
 const STORE_VIEW_OPTIONS = ['Japan Store View', 'Taiwan Store View', 'English Store View'];
-const BRAND_OPTIONS = ['Curel', 'Kao', 'Shiseido'];
 const SEO_ISSUE_OPTIONS: { value: SeoIssueType; label: string }[] = [
   { value: 'none', label: '課題なし' },
   { value: 'warning', label: 'SEO警告あり' },
@@ -47,6 +48,12 @@ export default function ProductListToolbar({
   onTagChange,
   onClear,
 }: ProductListToolbarProps) {
+  const [brandOptions, setBrandOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchAvailableBrands().then(setBrandOptions);
+  }, []);
+
   return (
     <div className="flex flex-col gap-3 rounded-xl border border-[#E5E7EB] bg-white p-3 sm:p-4">
       <div className="flex flex-col gap-3 lg:flex-row">
@@ -103,7 +110,7 @@ export default function ProductListToolbar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">すべて</SelectItem>
-            {BRAND_OPTIONS.map((v) => (
+            {brandOptions.map((v) => (
               <SelectItem key={v} value={v}>
                 {v}
               </SelectItem>

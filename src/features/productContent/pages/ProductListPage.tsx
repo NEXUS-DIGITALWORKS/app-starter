@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Download, Home, RefreshCw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,9 +6,12 @@ import ProductListToolbar from '../components/ProductListToolbar';
 import ProductFilterSidebar from '../components/ProductFilterSidebar';
 import ProductSummaryCards from '../components/ProductSummaryCards';
 import ProductTable from '../components/ProductTable';
+import ProductImportDialog from '../components/ProductImportDialog';
 import { useProductFilters } from '../hooks/useProductFilters';
 
 export default function ProductListPage() {
+  const [importOpen, setImportOpen] = useState(false);
+
   const {
     searchInput,
     setSearchInput,
@@ -40,6 +44,7 @@ export default function ProductListPage() {
     toggleSelectAll,
     addTags,
     removeTag,
+    refresh,
   } = useProductFilters();
 
   return (
@@ -58,9 +63,9 @@ export default function ProductListPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => console.info('[products] CSV取込')}>
+          <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => setImportOpen(true)}>
             <Upload size={14} />
-            CSV取込
+            商品データ取込
           </Button>
           <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => console.info('[products] エクスポート')}>
             <Download size={14} />
@@ -123,6 +128,8 @@ export default function ProductListPage() {
           />
         </div>
       </div>
+
+      <ProductImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={refresh} />
     </div>
   );
 }
