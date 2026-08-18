@@ -20,7 +20,7 @@ npm install       # 依存関係のインストール
 
 ### Supabase セットアップ
 
-Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQLを**番号なしなら以下の順**で実行する: `setup_user_profiles.sql` → `setup_diagnosis_results.sql` → `setup_tech_selections.sql` → `setup_categories.sql` → `setup_product_categories.sql` → `setup_products.sql`（商品本体マスタ`products`・タグ`product_tags`。Magentoエクスポートから投入するDDLのみで、実データ投入用SQLは未作成）→ `add_locale_content_to_products.sql`（`products`に繁体字・英語版の本文＋メタタイトル/ディスクリプションのカラムを追加）→ `seed_categories_initial.sql`（カテゴリ初期データ、再実行しても`ON CONFLICT DO NOTHING`で安全）→ `set_categories_name_ja.sql`（`seed_categories_initial.sql` 投入時点でNULLだった `name_ja` を補完するUPDATE、再実行しても同じ値で上書きされるだけで安全）→ `import_product_categories_from_csv.sql`（Magento出力のSKU×カテゴリ紐づけCSVから`product_categories`へ投入。`categories`マスタに未登録のカテゴリコードを参照する組み合わせはJOINで自然に除外されるため、マスタ拡充後に再実行すると取り込みが増える。`ON CONFLICT DO NOTHING`で再実行安全）
+Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQLを**番号なしなら以下の順**で実行する: `setup_user_profiles.sql` → `setup_diagnosis_results.sql` → `setup_tech_selections.sql` → `setup_categories.sql` → `setup_product_categories.sql` → `setup_products.sql`（商品本体マスタ`products`・タグ`product_tags`。Magentoエクスポートから投入するDDLのみで、実データ投入用SQLは未作成）→ `add_locale_content_to_products.sql`（`products`に繁体字・英語版の本文＋メタタイトル/ディスクリプションのカラムを追加）→ `rename_content_columns_add_ja_suffix.sql`（`products`の`name`/`description`/`meta_title`/`meta_description`を`name_ja`/`description_ja`/`meta_title_ja`/`meta_description_ja`にリネームし、日本語カラムの命名を`_zh_tw`/`_en`と揃える。未使用の`meta_keyword`カラムも削除。実データ投入前提のRENAME COLUMNのため、再実行時は対象カラムが既に存在しなければ何もしない）→ `seed_categories_initial.sql`（カテゴリ初期データ、再実行しても`ON CONFLICT DO NOTHING`で安全）→ `set_categories_name_ja.sql`（`seed_categories_initial.sql` 投入時点でNULLだった `name_ja` を補完するUPDATE、再実行しても同じ値で上書きされるだけで安全）→ `import_product_categories_from_csv.sql`（Magento出力のSKU×カテゴリ紐づけCSVから`product_categories`へ投入。`categories`マスタに未登録のカテゴリコードを参照する組み合わせはJOINで自然に除外されるため、マスタ拡充後に再実行すると取り込みが増える。`ON CONFLICT DO NOTHING`で再実行安全）
 
 テーブル定義は「Supabase スキーマ」章を参照。
 
@@ -84,6 +84,7 @@ npm run preview   # ビルド成果物のプレビュー
 - `setup_tech_selections.sql` — `tech_selections` テーブル（tech-stack-selector診断結果）
 - `setup_products.sql` — `products`（商品本体マスタ、SKUを主キーとしMagentoエクスポート由来の原本データを保持）・`product_tags`（商品タグ）テーブル
 - `add_locale_content_to_products.sql` — `products`に繁体字/英語版の本文（`short_description_zh_tw`/`_en` 等）・メタタイトル/ディスクリプション（`meta_title_zh_tw`/`_en`, `meta_description_zh_tw`/`_en`）を追加。AI翻訳の下書き（人が確定する前の提案）・抽出特徴量・SEO診断issuesは生成結果を保存するテーブルが未実装のため対象外
+- `rename_content_columns_add_ja_suffix.sql` — `products`の`name`/`description`/`meta_title`/`meta_description`を`name_ja`/`description_ja`/`meta_title_ja`/`meta_description_ja`にリネームし、繁体字・英語カラムと同じ`_ja`/`_zh_tw`/`_en`の命名規則に統一。未使用の`meta_keyword`カラムを削除
 
 フロントエンドで使う `VITE_SUPABASE_PUBLISHABLE_KEY` はRLS前提で公開されて問題ない設計。`service_role` キーはフロントエンド・`VITE_`環境変数には設定しない。
 

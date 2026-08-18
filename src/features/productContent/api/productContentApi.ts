@@ -13,7 +13,7 @@ import type {
 interface ProductRow {
   sku: string;
   brand: string | null;
-  name: string;
+  name_ja: string;
   name_zh_tw: string | null;
   name_en: string | null;
   price: number | null;
@@ -21,7 +21,7 @@ interface ProductRow {
   ec_visibility: EcVisibility | null;
   workflow_status: 'draft' | 'editing' | 'review_requested' | 'approved' | 'applied';
   short_description: string | null;
-  description: string | null;
+  description_ja: string | null;
   ingredients: string | null;
   usage_notes: string | null;
   short_description_zh_tw: string | null;
@@ -37,9 +37,8 @@ interface ProductRow {
   store_view_code: string | null;
   store_view_name: string | null;
   locale: string | null;
-  meta_title: string | null;
-  meta_description: string | null;
-  meta_keyword: string | null;
+  meta_title_ja: string | null;
+  meta_description_ja: string | null;
   url_key: string | null;
   meta_title_zh_tw: string | null;
   meta_title_en: string | null;
@@ -78,7 +77,7 @@ async function fetchTags(sku: string): Promise<string[]> {
 function toWorkspace(row: ProductRow, tags: string[]): ProductWorkspace {
   const original: ProductContentText = {
     shortDescription: row.short_description ?? '',
-    description: row.description ?? '',
+    description: row.description_ja ?? '',
     ingredients: row.ingredients ?? '',
     usageNotes: row.usage_notes ?? '',
   };
@@ -106,7 +105,7 @@ function toWorkspace(row: ProductRow, tags: string[]): ProductWorkspace {
       id: row.sku,
       sku: row.sku,
       brand: row.brand ?? '',
-      name: row.name,
+      name: row.name_ja,
       nameZhHant: row.name_zh_tw ?? '',
       nameEn: row.name_en ?? '',
       price: row.price != null ? `¥${row.price.toLocaleString('ja-JP')}` : '',
@@ -140,8 +139,8 @@ function toWorkspace(row: ProductRow, tags: string[]): ProductWorkspace {
       original: {
         issues: [],
         suggestion: {
-          metaTitle: row.meta_title ?? '',
-          metaDescription: row.meta_description ?? '',
+          metaTitle: row.meta_title_ja ?? '',
+          metaDescription: row.meta_description_ja ?? '',
           urlKey: row.url_key ?? '',
         },
       },
@@ -157,12 +156,8 @@ function toWorkspace(row: ProductRow, tags: string[]): ProductWorkspace {
     metadata: {
       entityId: row.magento_entity_id ?? '',
       sku: row.sku,
-      storeId: row.store_id ?? '',
-      storeViewCode: row.store_view_code ?? '',
-      storeViewName: row.store_view_name ?? '',
-      metaTitle: row.meta_title ?? '',
-      metaDescription: row.meta_description,
-      metaKeyword: row.meta_keyword ?? '',
+      metaTitle: row.meta_title_ja ?? '',
+      metaDescription: row.meta_description_ja,
       urlKey: row.url_key ?? '',
       baseImage: row.base_image ?? '',
       smallImage: row.small_image ?? '',
@@ -171,7 +166,6 @@ function toWorkspace(row: ProductRow, tags: string[]): ProductWorkspace {
     images: imagePaths.map((img) => ({ key: img.key, label: img.label, path: getProductImageUrl(img.path), alt: null })),
     stats: {
       imageCount: new Set(imagePaths.map((img) => img.path)).size,
-      headingCount: 0,
     },
   };
 }
@@ -201,11 +195,11 @@ export async function saveProductContent(input: SaveProductContentInput): Promis
   const { error } = await supabase
     .from('products')
     .update({
-      name: input.productName.name,
+      name_ja: input.productName.name,
       name_zh_tw: input.productName.nameZhHant,
       name_en: input.productName.nameEn,
       short_description: input.original.shortDescription,
-      description: input.original.description,
+      description_ja: input.original.description,
       ingredients: input.original.ingredients,
       usage_notes: input.original.usageNotes,
       short_description_zh_tw: input.zhHant.shortDescription,

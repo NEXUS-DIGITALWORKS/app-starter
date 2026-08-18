@@ -58,7 +58,7 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
 
     rows.push({
       sku,
-      name,
+      name_ja: name,
       name_zh_tw: toStringOrNull(obj.name_zh_tw),
       name_en: toStringOrNull(obj.name_en),
       brand: toStringOrNull(obj.brand),
@@ -71,7 +71,7 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
           ? (ecVisibilityRaw as ProductImportRow['ec_visibility'])
           : null,
       short_description: toStringOrNull(obj.short_description),
-      description: toStringOrNull(obj.description),
+      description_ja: toStringOrNull(obj.description),
       ingredients: toStringOrNull(obj.ingredients),
       usage_notes: toStringOrNull(obj.usage_notes),
       magento_entity_id: toStringOrNull(obj.entity_id ?? obj.magento_entity_id),
@@ -79,9 +79,8 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
       store_view_code: toStringOrNull(obj.store_view_code),
       store_view_name: toStringOrNull(obj.store_view_name),
       locale: toStringOrNull(obj.locale),
-      meta_title: toStringOrNull(obj.meta_title),
-      meta_description: toStringOrNull(obj.meta_description),
-      meta_keyword: toStringOrNull(obj.meta_keyword),
+      meta_title_ja: toStringOrNull(obj.meta_title),
+      meta_description_ja: toStringOrNull(obj.meta_description),
       url_key: toStringOrNull(obj.url_key),
       base_image: toStringOrNull(obj.base_image),
       small_image: toStringOrNull(obj.small_image),

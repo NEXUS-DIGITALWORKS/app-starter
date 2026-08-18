@@ -168,12 +168,8 @@ export interface ApprovalRequest {
 export interface ProductMagentoMetadata {
   entityId: string;
   sku: string;
-  storeId: string;
-  storeViewCode: string;
-  storeViewName: string;
   metaTitle: string;
   metaDescription: string | null;
-  metaKeyword: string;
   urlKey: string;
   baseImage: string;
   smallImage: string;
@@ -190,7 +186,6 @@ export interface ProductImageAsset {
 
 export interface ProductStats {
   imageCount: number;
-  headingCount: number;
 }
 
 // 画面で扱う「1商品・1StoreView分」のまとまり

@@ -7,12 +7,8 @@ interface ProductMetadataTableProps {
 const ROWS: { key: keyof ProductMagentoMetadata; label: string }[] = [
   { key: 'entityId', label: 'entity_id' },
   { key: 'sku', label: 'sku' },
-  { key: 'storeId', label: 'store_id' },
-  { key: 'storeViewCode', label: 'store_view_code' },
-  { key: 'storeViewName', label: 'store_view_name' },
   { key: 'metaTitle', label: 'meta_title' },
   { key: 'metaDescription', label: 'meta_description' },
-  { key: 'metaKeyword', label: 'meta_keyword' },
   { key: 'urlKey', label: 'url_key' },
   { key: 'baseImage', label: 'base_image' },
   { key: 'smallImage', label: 'small_image' },

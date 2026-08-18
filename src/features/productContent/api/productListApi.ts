@@ -5,7 +5,7 @@ import type { ProductListFilters, ProductListItem, ProductListResult, ProductLis
 
 interface ProductRow {
   sku: string;
-  name: string;
+  name_ja: string;
   brand: string | null;
   name_zh_tw: string | null;
   name_en: string | null;
@@ -55,7 +55,7 @@ function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryC
     id: row.sku,
     sku: row.sku,
     imageUrl: row.base_image ? getProductImageUrl(row.base_image) : undefined,
-    name: row.name,
+    name: row.name_ja,
     shortDescription: row.short_description ?? undefined,
     ingredients: row.ingredients ?? undefined,
     brand: row.brand ?? '',
@@ -114,7 +114,7 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   const search = filters.search.trim();
   if (search) {
     const pattern = toOrFilterValue(`%${search}%`);
-    query = query.or(`name.ilike.${pattern},short_description.ilike.${pattern},sku.ilike.${pattern}`);
+    query = query.or(`name_ja.ilike.${pattern},short_description.ilike.${pattern},sku.ilike.${pattern}`);
   }
   const sku = filters.sku.trim();
   if (sku) query = query.ilike('sku', `%${sku}%`);

@@ -22,7 +22,7 @@ const MERGEABLE_KEYS: (keyof ProductImportRow)[] = [
   'price',
   'ec_visibility',
   'short_description',
-  'description',
+  'description_ja',
   'ingredients',
   'usage_notes',
   'magento_entity_id',
@@ -30,9 +30,8 @@ const MERGEABLE_KEYS: (keyof ProductImportRow)[] = [
   'store_view_code',
   'store_view_name',
   'locale',
-  'meta_title',
-  'meta_description',
-  'meta_keyword',
+  'meta_title_ja',
+  'meta_description_ja',
   'url_key',
   'base_image',
   'small_image',
@@ -73,7 +72,7 @@ export async function countExistingSkus(skus: string[]): Promise<number> {
 // 取込ファイルで値が空だった列は、既存商品の値をそのまま維持する（意図せずNULLで
 // 上書きしてしまうのを防ぐ）。新規追加の商品でどちらの値も無い列はINSERT_DEFAULTSを使う。
 function mergeWithExisting(row: ProductImportRow, existing: Record<string, unknown> | undefined): Record<string, unknown> {
-  const merged: Record<string, unknown> = { sku: row.sku, name: row.name };
+  const merged: Record<string, unknown> = { sku: row.sku, name_ja: row.name_ja };
 
   for (const key of MERGEABLE_KEYS) {
     const value = row[key];
