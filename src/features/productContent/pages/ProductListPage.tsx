@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Download, Home, RefreshCw, Upload } from 'lucide-react';
+import { ChevronRight, Download, Home, RefreshCw, Sparkles, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductListToolbar from '../components/ProductListToolbar';
 import ProductSummaryCards from '../components/ProductSummaryCards';
@@ -66,6 +66,12 @@ export default function ProductListPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" asChild>
+            <Link to="/app/products/improvements">
+              <Sparkles size={14} />
+              改善候補
+            </Link>
+          </Button>
           <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => setImportOpen(true)}>
             <Upload size={14} />
             商品データ取込

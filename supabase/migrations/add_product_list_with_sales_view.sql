@@ -12,9 +12,18 @@
 -- security_invoker=true とし、products/product_sales のRLSをビュー越しでも
 -- 呼び出し元ロールの権限で評価させる（両テーブルとも「ログイン済みユーザー全体に
 -- 許可」のポリシーのため実質的な挙動差はないが、他テーブルと同じ安全側の設計に揃える）。
+--
+-- 「p.*」はビュー作成時点のproductsのカラム一覧に固定されるため、このビュー作成後に
+-- productsへカラムを追加しても自動反映されない（PostgRESTからは追加したカラムが
+-- 「存在しない」扱いになる）。CREATE OR REPLACE VIEWは列の追加・末尾への挿入はできても
+-- 既存列の間に割り込む形の変更（p.*の途中に新カラムが増える）はエラーになるため、
+-- DROP→CREATEで作り直す。productsにカラムを追加するマイグレーションを新設した際は、
+-- このファイルを再実行してビューを最新のカラム一覧に更新すること。
 -- =========================================================
 
-CREATE OR REPLACE VIEW public.product_list_with_sales
+DROP VIEW IF EXISTS public.product_list_with_sales;
+
+CREATE VIEW public.product_list_with_sales
 WITH (security_invoker = true) AS
 SELECT
   p.*,
