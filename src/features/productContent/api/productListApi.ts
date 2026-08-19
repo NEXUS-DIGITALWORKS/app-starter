@@ -124,6 +124,7 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   }
   const ingredient = filters.ingredient.trim();
   if (ingredient) query = query.ilike('ingredients', `%${ingredient}%`);
+  if (filters.skuList.length > 0) query = query.in('sku', filters.skuList);
   if (filters.shortDescriptionLengthMin != null) query = query.gte('short_description_length', filters.shortDescriptionLengthMin);
   if (filters.shortDescriptionLengthMax != null) query = query.lte('short_description_length', filters.shortDescriptionLengthMax);
   if (filters.descriptionLengthMin != null) query = query.gte('description_length', filters.descriptionLengthMin);

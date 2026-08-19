@@ -9,6 +9,7 @@ import {
   PaginationIconButton,
 } from '@/components/ui/pagination';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 const ELLIPSIS = 'ellipsis' as const;
 const LIMIT_OPTIONS = [20, 50, 100, 200];
@@ -33,16 +34,17 @@ interface ProductPaginationProps {
   total: number;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  className?: string;
 }
 
-export default function ProductPagination({ page, limit, total, onPageChange, onLimitChange }: ProductPaginationProps) {
+export default function ProductPagination({ page, limit, total, onPageChange, onLimitChange, className }: ProductPaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(total, page * limit);
   const pages = buildPageList(page, totalPages);
 
   return (
-    <div className="flex flex-col items-center justify-between gap-3 border-t border-[#EEF0F4] px-4 py-3 sm:flex-row">
+    <div className={cn('flex flex-col items-center justify-between gap-3 border-t border-[#EEF0F4] px-4 py-3 sm:flex-row', className)}>
       <div className="flex items-center gap-3">
         <p className="text-sm text-[#667085]">
           {total.toLocaleString()}件中 {start}〜{end}件を表示

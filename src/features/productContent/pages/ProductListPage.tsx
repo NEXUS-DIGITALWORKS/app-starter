@@ -21,6 +21,7 @@ export default function ProductListPage() {
     ingredientInput,
     setIngredientInput,
     filters,
+    setSkuList,
     toggleCategory,
     clearCategoryFilter,
     setTag,
@@ -108,6 +109,7 @@ export default function ProductListPage() {
         nameLocale={nameLocale}
         onNameLocaleChange={setNameLocale}
         onSingleStatusChange={setSingleStatus}
+        onSkuListChange={setSkuList}
         onTagChange={setTag}
         onToggleCategory={toggleCategory}
         onClearCategory={clearCategoryFilter}

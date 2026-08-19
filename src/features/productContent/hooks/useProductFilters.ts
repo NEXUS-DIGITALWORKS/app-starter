@@ -19,6 +19,7 @@ const DEFAULT_LIMIT = 20;
 const INITIAL_FILTERS: ProductListFilters = {
   search: '',
   ingredient: '',
+  skuList: [],
   status: [],
   categoryIds: [],
   tag: 'all',
@@ -131,6 +132,7 @@ export function useProductFilters() {
   }, [
     debouncedSearch,
     debouncedIngredient,
+    filters.skuList,
     filters.categoryIds,
     filters.tag,
     filters.updatedWithin,
@@ -171,6 +173,7 @@ export function useProductFilters() {
     syncCategoryParam([]);
   };
 
+  const setSkuList = (skuList: string[]) => setFilters((prev) => ({ ...prev, skuList }));
   const setTag = (tag: string) => setFilters((prev) => ({ ...prev, tag }));
   const setUpdatedWithin = (updatedWithin: UpdatedWithinFilter) => setFilters((prev) => ({ ...prev, updatedWithin }));
   const setShortDescriptionLengthMin = (value: number | null) => setFilters((prev) => ({ ...prev, shortDescriptionLengthMin: value }));
@@ -227,6 +230,7 @@ export function useProductFilters() {
     ingredientInput,
     setIngredientInput,
     filters,
+    setSkuList,
     toggleCategory,
     clearCategoryFilter,
     setTag,

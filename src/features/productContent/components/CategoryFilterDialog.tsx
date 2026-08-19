@@ -47,7 +47,7 @@ export default function CategoryFilterDialog({ categoryOptions, selectedIds, onT
           <ChevronDown size={14} className="shrink-0 text-[#98A2B3]" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
           <DialogTitle>カテゴリで絞り込み</DialogTitle>
         </DialogHeader>
@@ -63,7 +63,7 @@ export default function CategoryFilterDialog({ categoryOptions, selectedIds, onT
           />
         </div>
 
-        <div className="grid max-h-80 grid-cols-2 gap-x-4 gap-y-1 overflow-y-auto pr-1 sm:grid-cols-4">
+        <div className="grid max-h-80 grid-cols-1 gap-x-4 gap-y-1 overflow-y-auto pr-1 sm:grid-cols-3">
           {filteredOptions.length === 0 && (
             <p className="col-span-full py-6 text-center text-sm text-[#98A2B3]">該当するカテゴリがありません</p>
           )}
@@ -71,10 +71,11 @@ export default function CategoryFilterDialog({ categoryOptions, selectedIds, onT
             <label
               key={c.id}
               className="flex min-w-0 items-center gap-2 rounded-md px-1.5 py-1.5 text-sm text-[#344054] hover:bg-[#F8FAFC]"
+              title={`${c.code} ${getCategoryDisplayName(c)}`}
             >
               <Checkbox checked={selectedIds.includes(c.id)} onChange={() => onToggle(c.id)} />
               <span className="min-w-0 flex-1 truncate">
-                {c.code} {getCategoryDisplayName(c)}
+                <span className="text-[#98A2B3]">{c.code}</span> {getCategoryDisplayName(c)}
               </span>
             </label>
           ))}

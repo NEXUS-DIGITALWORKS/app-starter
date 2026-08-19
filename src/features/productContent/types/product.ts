@@ -46,8 +46,9 @@ export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
 export type ProductSortBy = 'updated_at' | 'sales_total_1y';
 
 export interface ProductListFilters {
-  search: string; // 商品名・説明・SKUを横断検索（SKU単独の検索欄は持たず、これに統合する）
+  search: string; // 商品名・説明・SKUを横断検索（部分一致）
   ingredient: string;
+  skuList: string[]; // SKU一括指定（完全一致・OR条件）。改行/カンマ区切りで貼り付けたSKU群を抽出する用途。空配列で絞り込みなし
   status: ProductStatus[];
   categoryIds: string[]; // categories.id の配列（複数選択・OR条件、空配列で絞り込みなし）。features/categories 側のマスタを参照する
   tag: string;

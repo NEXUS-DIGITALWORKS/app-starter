@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PRODUCT_STATUS_OPTIONS } from './ProductStatusBadge';
 import CategoryFilterDialog from './CategoryFilterDialog';
+import SkuListFilterDialog from './SkuListFilterDialog';
 import type { Category } from '../../categories/types';
 import type { NameLocale, ProductListFilters, ProductSortBy, ProductStatus, UpdatedWithinFilter } from '../types/product';
 
@@ -33,6 +34,7 @@ interface ProductListToolbarProps {
   nameLocale: NameLocale;
   onNameLocaleChange: (value: NameLocale) => void;
   onSingleStatusChange: (value: ProductStatus | 'all') => void;
+  onSkuListChange: (skus: string[]) => void;
   onTagChange: (value: string) => void;
   onToggleCategory: (categoryId: string) => void;
   onClearCategory: () => void;
@@ -91,7 +93,7 @@ function LengthRangeField({
 
 function FilterField({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex shrink-0 flex-col gap-1">
       <span className="text-xs font-medium text-[#667085]">{label}</span>
       {children}
     </div>
@@ -109,6 +111,7 @@ export default function ProductListToolbar({
   nameLocale,
   onNameLocaleChange,
   onSingleStatusChange,
+  onSkuListChange,
   onTagChange,
   onToggleCategory,
   onClearCategory,
@@ -193,6 +196,10 @@ export default function ProductListToolbar({
           </Select>
         </FilterField>
 
+        <FilterField label="SKU一括指定">
+          <SkuListFilterDialog value={filters.skuList} onApply={onSkuListChange} />
+        </FilterField>
+
         <FilterField label="カテゴリ（複数選択可）">
           <CategoryFilterDialog
             categoryOptions={categoryOptions}
@@ -233,7 +240,9 @@ export default function ProductListToolbar({
           onMinChange={onDescriptionLengthMinChange}
           onMaxChange={onDescriptionLengthMaxChange}
         />
+      </div>
 
+      <div className="flex items-end justify-between gap-3">
         <FilterField label="並び替え">
           <Select value={filters.sortBy} onValueChange={(v) => onSortByChange(v as ProductSortBy)}>
             <SelectTrigger className="h-9 w-[190px]" aria-label="並び替え">
@@ -249,12 +258,10 @@ export default function ProductListToolbar({
           </Select>
         </FilterField>
 
-        <div className="ml-auto flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={onClear} className="text-[#475467]">
-            <X size={14} />
-            検索条件をクリア
-          </Button>
-        </div>
+        <Button variant="ghost" size="sm" onClick={onClear} className="text-[#475467]">
+          <X size={14} />
+          検索条件をクリア
+        </Button>
       </div>
     </div>
   );

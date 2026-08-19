@@ -153,11 +153,16 @@ export default function ProductTable({
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white">
-      <div className="flex flex-wrap items-center gap-3 border-b border-[#EEF0F4] px-4 py-3">
-        <span className="text-sm font-medium text-[#344054]">{selectedIds.size}件選択</span>
+      <div className="flex flex-nowrap items-center gap-3 overflow-x-auto border-b border-[#EEF0F4] px-4 py-3">
+        <span className="shrink-0 text-sm font-medium text-[#344054]">{selectedIds.size}件選択</span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" disabled={selectedIds.size === 0} className="border-[#D0D5DD] text-[#475467]">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={selectedIds.size === 0}
+              className="shrink-0 border-[#D0D5DD] text-[#475467]"
+            >
               一括操作
             </Button>
           </DropdownMenuTrigger>
@@ -174,6 +179,17 @@ export default function ProductTable({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {!isLoading && !error && items.length > 0 && (
+          <ProductPagination
+            page={page}
+            limit={limit}
+            total={total}
+            onPageChange={onPageChange}
+            onLimitChange={onLimitChange}
+            className="ml-auto shrink-0 flex-nowrap border-t-0 p-0"
+          />
+        )}
       </div>
 
       <Table>
