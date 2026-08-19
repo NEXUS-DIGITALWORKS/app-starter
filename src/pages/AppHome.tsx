@@ -66,18 +66,9 @@ export default function AppHome() {
       <h1 className="m-0 text-2xl font-bold text-[#0F172A]">{name ? `ようこそ、${name}さん` : 'ホーム'}</h1>
 
       <section className="mt-8">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-semibold text-[#111827]">商品情報整備AI（Beta）</h2>
-            <p className="mt-1 text-sm text-[#667085]">SKU単位で商品情報を整理・翻訳・SEO整備します</p>
-          </div>
-          <Link
-            to="/app/products"
-            className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-[#3157E5] hover:text-[#2748C7]"
-          >
-            商品一覧を見る
-            <ArrowRight size={14} />
-          </Link>
+        <div>
+          <h2 className="text-lg font-semibold text-[#111827]">商品情報整備AI（Beta）</h2>
+          <p className="mt-1 text-sm text-[#667085]">SKU単位で商品情報を整理・翻訳・SEO整備します</p>
         </div>
         <div className="mt-4">
           <ProductSummaryCards summary={productSummary} />
