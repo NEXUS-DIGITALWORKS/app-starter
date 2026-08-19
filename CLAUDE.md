@@ -16,7 +16,7 @@ UI・スタイルを実装／変更する際は [DESIGN.md](DESIGN.md) を必ず
 npm install       # 依存関係のインストール
 ```
 
-`.env.example` を `.env` にコピーし、`VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` を設定する。`.env` 未設定でもアプリは起動できる（[src/lib/supabaseClient.ts](src/lib/supabaseClient.ts) がプレースホルダー値でクライアントを生成する）。`isSupabaseConfigured()` で設定有無を判定し、未設定時は各 `resultsRepo.ts` の保存/取得系関数が早期returnで何もしない。
+`.env.local.example` を `.env` にコピーし、`VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` を設定する。`.env` 未設定でもアプリは起動できる（[src/lib/supabaseClient.ts](src/lib/supabaseClient.ts) がプレースホルダー値でクライアントを生成する）。`isSupabaseConfigured()` で設定有無を判定し、未設定時は各 `resultsRepo.ts` の保存/取得系関数が早期returnで何もしない。
 
 ### Supabase セットアップ
 
