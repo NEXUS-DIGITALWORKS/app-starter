@@ -18,6 +18,7 @@ interface ProductRow {
   base_image: string | null;
   store_view_name: string | null;
   updated_at: string;
+  sales_total_1y: number;
 }
 
 // UI側(ProductStatus)とDB側(workflow_status)は別々の設計背景を持つ列挙値
@@ -75,6 +76,7 @@ function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryC
     tags,
     categoryIds,
     primaryCategoryId,
+    salesTotal1y: row.sales_total_1y ?? 0,
   };
 }
 
@@ -110,7 +112,10 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
     if (tagSkuFilter.length === 0) return { items: [], total: 0 };
   }
 
-  let query = supabase.from('products').select('*', { count: 'exact' });
+  // sales_total_1y（直近1年の累積売上）順ソートのため、products単体ではなく
+  // 集計済みビュー（product_list_with_sales）から取得する。他の絞り込み条件は
+  // productsと同じカラムを持つためそのまま適用できる。
+  let query = supabase.from('product_list_with_sales').select('*', { count: 'exact' });
 
   const search = filters.search.trim();
   if (search) {
@@ -134,7 +139,7 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
   }
 
   const start = (filters.page - 1) * filters.limit;
-  query = query.order('updated_at', { ascending: false }).range(start, start + filters.limit - 1);
+  query = query.order(filters.sortBy, { ascending: false }).range(start, start + filters.limit - 1);
 
   const { data, error, count } = await query;
   if (error || !data) return { items: [], total: 0 };
@@ -184,7 +189,7 @@ export async function fetchAvailableTags(): Promise<string[]> {
 // カテゴリ単位のCSV出力（src/features/categories）向け。指定SKU群の商品情報をまとめて取得する。
 export async function fetchProductsBySkus(skus: string[]): Promise<ProductListItem[]> {
   if (!isSupabaseConfigured() || skus.length === 0) return [];
-  const { data, error } = await supabase.from('products').select('*').in('sku', skus);
+  const { data, error } = await supabase.from('product_list_with_sales').select('*').in('sku', skus);
   if (error || !data) return [];
 
   const rows = data as ProductRow[];

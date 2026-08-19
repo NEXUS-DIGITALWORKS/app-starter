@@ -36,9 +36,14 @@ export interface ProductListItem {
   tags?: string[];
   categoryIds?: string[]; // features/categories の categories.id 群（多対多）
   primaryCategoryId?: string | null;
+  salesTotal1y: number; // 直近1年の累積売上（product_list_with_sales ビューの sales_total_1y）
 }
 
 export type UpdatedWithinFilter = 'all' | 'today' | '7d' | '30d';
+
+// 商品一覧の並び順。sales_total_1y は product_list_with_sales ビュー
+// （add_product_list_with_sales_view.sql参照）が持つ集計列。
+export type ProductSortBy = 'updated_at' | 'sales_total_1y';
 
 export interface ProductListFilters {
   search: string; // 商品名・説明・SKUを横断検索（SKU単独の検索欄は持たず、これに統合する）
@@ -51,6 +56,7 @@ export interface ProductListFilters {
   shortDescriptionLengthMax: number | null;
   descriptionLengthMin: number | null; // ディスクリプション（原文）の文字数の下限（未指定はnull）
   descriptionLengthMax: number | null;
+  sortBy: ProductSortBy;
   page: number;
   limit: number;
 }

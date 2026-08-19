@@ -3,7 +3,15 @@ import { useSearchParams } from 'react-router-dom';
 import { addTagToProducts, fetchAvailableTags, fetchProductListSummary, fetchProducts, removeTagFromProduct } from '../api/productListApi';
 import { fetchCategories } from '../../categories/api/categoriesApi';
 import type { Category } from '../../categories/types';
-import type { NameLocale, ProductListFilters, ProductListItem, ProductListSummary, ProductStatus, UpdatedWithinFilter } from '../types/product';
+import type {
+  NameLocale,
+  ProductListFilters,
+  ProductListItem,
+  ProductListSummary,
+  ProductSortBy,
+  ProductStatus,
+  UpdatedWithinFilter,
+} from '../types/product';
 
 const DEBOUNCE_MS = 350;
 const DEFAULT_LIMIT = 20;
@@ -19,6 +27,7 @@ const INITIAL_FILTERS: ProductListFilters = {
   shortDescriptionLengthMax: null,
   descriptionLengthMin: null,
   descriptionLengthMax: null,
+  sortBy: 'sales_total_1y',
   page: 1,
   limit: DEFAULT_LIMIT,
 };
@@ -133,6 +142,7 @@ export function useProductFilters() {
   ]);
 
   const setPage = (page: number) => setFilters((prev) => ({ ...prev, page }));
+  const setLimit = (limit: number) => setFilters((prev) => ({ ...prev, limit, page: 1 }));
 
   const syncCategoryParam = (categoryIds: string[]) => {
     setSearchParams(
@@ -167,6 +177,7 @@ export function useProductFilters() {
   const setShortDescriptionLengthMax = (value: number | null) => setFilters((prev) => ({ ...prev, shortDescriptionLengthMax: value }));
   const setDescriptionLengthMin = (value: number | null) => setFilters((prev) => ({ ...prev, descriptionLengthMin: value }));
   const setDescriptionLengthMax = (value: number | null) => setFilters((prev) => ({ ...prev, descriptionLengthMax: value }));
+  const setSortBy = (sortBy: ProductSortBy) => setFilters((prev) => ({ ...prev, sortBy, page: 1 }));
 
   const setSingleStatus = (status: ProductStatus | 'all') => setFilters((prev) => ({ ...prev, status: status === 'all' ? [] : [status] }));
 
@@ -225,7 +236,9 @@ export function useProductFilters() {
     setShortDescriptionLengthMax,
     setDescriptionLengthMin,
     setDescriptionLengthMax,
+    setSortBy,
     setPage,
+    setLimit,
     nameLocale,
     setNameLocale,
     clearFilters,

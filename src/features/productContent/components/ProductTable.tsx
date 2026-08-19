@@ -103,6 +103,7 @@ interface ProductTableProps {
   limit: number;
   total: number;
   onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
   onAddTag: (ids: string[], tag: string) => Promise<void>;
   onRemoveTag: (id: string, tag: string) => Promise<void>;
 }
@@ -122,6 +123,7 @@ export default function ProductTable({
   limit,
   total,
   onPageChange,
+  onLimitChange,
   onAddTag,
   onRemoveTag,
 }: ProductTableProps) {
@@ -328,7 +330,7 @@ export default function ProductTable({
       </Table>
 
       {!isLoading && !error && items.length > 0 && (
-        <ProductPagination page={page} limit={limit} total={total} onPageChange={onPageChange} />
+        <ProductPagination page={page} limit={limit} total={total} onPageChange={onPageChange} onLimitChange={onLimitChange} />
       )}
 
       <Dialog open={previewItem !== null} onOpenChange={(open) => !open && setPreviewItem(null)}>

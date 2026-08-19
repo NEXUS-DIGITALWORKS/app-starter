@@ -28,7 +28,9 @@ export default function ProductListPage() {
     setShortDescriptionLengthMax,
     setDescriptionLengthMin,
     setDescriptionLengthMax,
+    setSortBy,
     setPage,
+    setLimit,
     nameLocale,
     setNameLocale,
     clearFilters,
@@ -102,6 +104,7 @@ export default function ProductListPage() {
         onShortDescriptionLengthMaxChange={setShortDescriptionLengthMax}
         onDescriptionLengthMinChange={setDescriptionLengthMin}
         onDescriptionLengthMaxChange={setDescriptionLengthMax}
+        onSortByChange={setSortBy}
         onClear={clearFilters}
       />
 
@@ -122,6 +125,7 @@ export default function ProductListPage() {
         limit={filters.limit}
         total={total}
         onPageChange={setPage}
+        onLimitChange={setLimit}
         onAddTag={addTags}
         onRemoveTag={removeTag}
       />

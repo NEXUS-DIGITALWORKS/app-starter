@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PRODUCT_STATUS_OPTIONS } from './ProductStatusBadge';
 import CategoryFilterDialog from './CategoryFilterDialog';
 import type { Category } from '../../categories/types';
-import type { NameLocale, ProductListFilters, ProductStatus, UpdatedWithinFilter } from '../types/product';
+import type { NameLocale, ProductListFilters, ProductSortBy, ProductStatus, UpdatedWithinFilter } from '../types/product';
 
 const NAME_LOCALE_OPTIONS: { value: NameLocale; label: string }[] = [
   { value: 'ja', label: '日本語' },
@@ -16,6 +16,10 @@ const UPDATED_WITHIN_OPTIONS: { value: UpdatedWithinFilter; label: string }[] = 
   { value: 'today', label: '本日' },
   { value: '7d', label: '7日以内' },
   { value: '30d', label: '30日以内' },
+];
+const SORT_BY_OPTIONS: { value: ProductSortBy; label: string }[] = [
+  { value: 'updated_at', label: '更新日時順' },
+  { value: 'sales_total_1y', label: '累積売上（直近1年）順' },
 ];
 
 interface ProductListToolbarProps {
@@ -37,6 +41,7 @@ interface ProductListToolbarProps {
   onShortDescriptionLengthMaxChange: (value: number | null) => void;
   onDescriptionLengthMinChange: (value: number | null) => void;
   onDescriptionLengthMaxChange: (value: number | null) => void;
+  onSortByChange: (value: ProductSortBy) => void;
   onClear: () => void;
 }
 
@@ -112,6 +117,7 @@ export default function ProductListToolbar({
   onShortDescriptionLengthMaxChange,
   onDescriptionLengthMinChange,
   onDescriptionLengthMaxChange,
+  onSortByChange,
   onClear,
 }: ProductListToolbarProps) {
   return (
@@ -227,6 +233,21 @@ export default function ProductListToolbar({
           onMinChange={onDescriptionLengthMinChange}
           onMaxChange={onDescriptionLengthMaxChange}
         />
+
+        <FilterField label="並び替え">
+          <Select value={filters.sortBy} onValueChange={(v) => onSortByChange(v as ProductSortBy)}>
+            <SelectTrigger className="h-9 w-[190px]" aria-label="並び替え">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {SORT_BY_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FilterField>
 
         <div className="ml-auto flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={onClear} className="text-[#475467]">

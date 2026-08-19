@@ -8,8 +8,10 @@ import {
   PaginationEllipsis,
   PaginationIconButton,
 } from '@/components/ui/pagination';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const ELLIPSIS = 'ellipsis' as const;
+const LIMIT_OPTIONS = [20, 50, 100, 200];
 
 function buildPageList(current: number, totalPages: number): (number | typeof ELLIPSIS)[] {
   if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1);
@@ -30,9 +32,10 @@ interface ProductPaginationProps {
   limit: number;
   total: number;
   onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
 }
 
-export default function ProductPagination({ page, limit, total, onPageChange }: ProductPaginationProps) {
+export default function ProductPagination({ page, limit, total, onPageChange, onLimitChange }: ProductPaginationProps) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(total, page * limit);
@@ -40,9 +43,23 @@ export default function ProductPagination({ page, limit, total, onPageChange }: 
 
   return (
     <div className="flex flex-col items-center justify-between gap-3 border-t border-[#EEF0F4] px-4 py-3 sm:flex-row">
-      <p className="text-sm text-[#667085]">
-        {total.toLocaleString()}件中 {start}〜{end}件を表示
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-sm text-[#667085]">
+          {total.toLocaleString()}件中 {start}〜{end}件を表示
+        </p>
+        <Select value={String(limit)} onValueChange={(v) => onLimitChange(Number(v))}>
+          <SelectTrigger className="h-8 w-[110px]" aria-label="表示件数">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {LIMIT_OPTIONS.map((n) => (
+              <SelectItem key={n} value={String(n)}>
+                {n}件表示
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       <Pagination>
         <PaginationIconButton aria-label="最初のページ" onClick={() => onPageChange(1)} disabled={page === 1}>
