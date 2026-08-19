@@ -1,4 +1,4 @@
-import { parseCsv } from './parseCsv';
+import { parseCsv } from '../../../lib/csv';
 import type { ProductImportParseResult, ProductImportRow } from '../types/productImport';
 
 const EC_STATUS_VALUES = new Set(['enabled', 'disabled']);

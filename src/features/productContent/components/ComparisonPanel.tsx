@@ -18,7 +18,7 @@ export function ContentBlocks({ content }: { content: ProductContentText }) {
             {label}
             {showFieldCharCount && <span className="ml-1.5 font-normal text-[#98A2B3]">（{content[key].length}文字）</span>}
           </p>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[#344054]">{content[key]}</p>
+          <p className="whitespace-pre-line break-words text-sm leading-relaxed text-[#344054]">{content[key]}</p>
         </div>
       ))}
     </div>
@@ -76,7 +76,7 @@ function AiPanel({ title, content, editable, onRegenerate, onAdopt }: AiPanelPro
   };
 
   return (
-    <div className="flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
+    <div className="min-w-0 flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h3 className="text-sm font-semibold text-[#111827]">
           {title}
@@ -153,7 +153,7 @@ export default function ComparisonPanel({
 
   return (
     <div className="flex flex-col gap-4 lg:flex-row">
-      <div className="flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
+      <div className="min-w-0 flex-1 rounded-xl border border-[#E5E7EB] bg-white p-4 sm:p-5">
         <h3 className="mb-3 text-sm font-semibold text-[#111827]">
           {leftLabel}
           <CharCount content={leftContent} />

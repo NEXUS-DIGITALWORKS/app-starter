@@ -3,7 +3,8 @@ import { cn } from '@/lib/utils';
 import { CATEGORY_TYPE_LABEL } from '../lib/categoryName';
 import type { CategoryType } from '../types';
 
-const CATEGORY_TYPE_CLASS: Record<CategoryType, string> = {
+// カテゴリ名バッジ（商品一覧など）でも同じ色分けを使うため公開する。
+export const CATEGORY_TYPE_CLASS: Record<CategoryType, string> = {
   standard: 'border-transparent bg-[#EEF0F4] text-[#475467]',
   purpose: 'border-transparent bg-[#ECFDF5] text-[#059669]',
   feature: 'border-transparent bg-[#EAF1FF] text-[#3157E5]',

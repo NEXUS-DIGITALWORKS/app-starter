@@ -7,6 +7,24 @@ interface ProductPreviewProps {
   features: ExtractedFeature[];
 }
 
+const htmlBlockClass =
+  'min-w-0 break-words text-sm leading-relaxed text-[#344054] [&_img]:h-auto [&_img]:max-w-full [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto';
+
+// インポート元のデータが「&lt;div&gt;」のようにHTMLエンティティとしてエスケープされたまま
+// 保存されているケースがあり、そのままdangerouslySetInnerHTMLに渡すとタグ文字列が
+// そのまま画面に表示されてしまう。textareaのRCDATA解釈（実タグは作らずエンティティだけ
+// デコードする）を利用して、既に生のHTMLが入っているデータには影響を与えずデコードする。
+let decoderEl: HTMLTextAreaElement | null = null;
+function decodeHtmlEntities(html: string): string {
+  if (!decoderEl) decoderEl = document.createElement('textarea');
+  decoderEl.innerHTML = html;
+  return decoderEl.value;
+}
+
+function HtmlBlock({ html, className = '' }: { html: string; className?: string }) {
+  return <div className={`${htmlBlockClass} ${className}`} dangerouslySetInnerHTML={{ __html: decodeHtmlEntities(html) }} />;
+}
+
 export default function ProductPreview({ productName, productImage, content, features }: ProductPreviewProps) {
   return (
     <div className="mx-auto max-w-2xl rounded-xl border border-[#E5E7EB] bg-white p-5 sm:p-8">
@@ -19,14 +37,14 @@ export default function ProductPreview({ productName, productImage, content, fea
         />
         <div className="min-w-0">
           <h2 className="text-lg font-bold text-[#111827]">{productName}</h2>
-          <p className="mt-2 text-sm font-medium text-[#344054]">{content.shortDescription}</p>
+          <HtmlBlock html={content.shortDescription} className="mt-2 font-medium" />
         </div>
       </div>
 
       <div className="mt-6 space-y-5 border-t border-[#EEF0F4] pt-5">
         <section>
           <h3 className="mb-1 text-sm font-semibold text-[#111827]">商品説明</h3>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[#344054]">{content.description}</p>
+          <HtmlBlock html={content.description} />
         </section>
 
         {features.length > 0 && (
@@ -45,12 +63,12 @@ export default function ProductPreview({ productName, productImage, content, fea
 
         <section>
           <h3 className="mb-1 text-sm font-semibold text-[#111827]">成分</h3>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[#344054]">{content.ingredients}</p>
+          <HtmlBlock html={content.ingredients} />
         </section>
 
         <section>
           <h3 className="mb-1 text-sm font-semibold text-[#111827]">注意事項</h3>
-          <p className="whitespace-pre-line text-sm leading-relaxed text-[#344054]">{content.usageNotes}</p>
+          <HtmlBlock html={content.usageNotes} />
         </section>
       </div>
     </div>

@@ -30,7 +30,7 @@ export default function DiffViewer({ before, after, beforeLabel, afterLabel }: D
                 {label}
                 {!changed && <span className="text-xs font-normal text-[#98A2B3]">（変更なし）</span>}
               </p>
-              <p className="whitespace-pre-line text-sm leading-relaxed">
+              <p className="whitespace-pre-line break-words text-sm leading-relaxed">
                 {tokens.map((token, idx) => {
                   if (token.type === 'equal') {
                     return (

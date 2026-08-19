@@ -1,4 +1,4 @@
-import { AlertTriangle, Database, FileText, Home, Image, Search, Sparkles } from 'lucide-react';
+import { AlertTriangle, Database, FileText, Home, Image, Search, Sparkles, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { SectionKey } from './sectionKeys';
 
@@ -8,6 +8,7 @@ const SECTIONS: { key: SectionKey; label: string; icon: typeof Home }[] = [
   { key: 'ingredients', label: '成分・原材料', icon: FileText },
   { key: 'usage', label: '使用上の注意', icon: AlertTriangle },
   { key: 'seo', label: 'SEO情報', icon: Search },
+  { key: 'sales', label: '売上', icon: TrendingUp },
   { key: 'images', label: '画像', icon: Image },
   { key: 'metadata', label: '元データ', icon: Database },
 ];

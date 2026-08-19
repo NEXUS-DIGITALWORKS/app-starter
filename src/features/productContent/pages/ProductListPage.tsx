@@ -6,10 +6,12 @@ import ProductListToolbar from '../components/ProductListToolbar';
 import ProductSummaryCards from '../components/ProductSummaryCards';
 import ProductTable from '../components/ProductTable';
 import ProductImportDialog from '../components/ProductImportDialog';
+import ProductSalesImportDialog from '../../productSales/components/ProductSalesImportDialog';
 import { useProductFilters } from '../hooks/useProductFilters';
 
 export default function ProductListPage() {
   const [importOpen, setImportOpen] = useState(false);
+  const [salesImportOpen, setSalesImportOpen] = useState(false);
 
   const {
     searchInput,
@@ -66,6 +68,10 @@ export default function ProductListPage() {
             <Upload size={14} />
             商品データ取込
           </Button>
+          <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => setSalesImportOpen(true)}>
+            <Upload size={14} />
+            売上データ取込
+          </Button>
           <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => console.info('[products] エクスポート')}>
             <Download size={14} />
             エクスポート
@@ -121,6 +127,7 @@ export default function ProductListPage() {
       />
 
       <ProductImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={refresh} />
+      <ProductSalesImportDialog open={salesImportOpen} onOpenChange={setSalesImportOpen} onImported={refresh} />
     </div>
   );
 }

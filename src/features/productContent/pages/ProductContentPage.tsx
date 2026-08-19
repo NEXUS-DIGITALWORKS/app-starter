@@ -13,11 +13,14 @@ import MissingFieldsPanel from '../components/MissingFieldsPanel';
 import ExtractedFeaturesPanel from '../components/ExtractedFeaturesPanel';
 import ImagePanel from '../components/ImagePanel';
 import FieldComparisonCard from '../components/FieldComparisonCard';
+import ProductSalesPanel from '../../productSales/components/ProductSalesPanel';
 import type { SectionKey } from '../components/sectionKeys';
 import { addTagToProduct, fetchProductWorkspace, removeTagFromProduct, saveProductContent } from '../api/productContentApi';
+import { fetchProductSaleRecords } from '../../productSales/api/productSalesApi';
 import { translateProduct, improveProductDescription } from '../api/aiStub';
 import { useProductCategoryEditor } from '../../categories/hooks/useProductCategoryEditor';
 import type { ExtractedFeature, LocaleContent, LocaleSeo, ProductContentText, ProductWorkspace, SeoSuggestion, TargetLocale } from '../types';
+import type { ProductSaleRecord } from '../../productSales/types/productSales';
 
 type ProductNames = { name: string; nameZhHant: string; nameEn: string };
 type PageMode = 'view' | 'edit';
@@ -56,6 +59,17 @@ export default function ProductContentPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [section, setSection] = useState<SectionKey>('overview');
   const [isSaving, setIsSaving] = useState(false);
+  const [salesRecords, setSalesRecords] = useState<ProductSaleRecord[] | null | undefined>(undefined);
+
+  useEffect(() => {
+    let ignore = false;
+    fetchProductSaleRecords(sku).then((data) => {
+      if (!ignore) setSalesRecords(data);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [sku]);
 
   useEffect(() => {
     let ignore = false;
@@ -297,6 +311,8 @@ export default function ProductContentPage() {
               onChangeSuggestion={handleChangeSeoSuggestion}
             />
           )}
+
+          {section === 'sales' && <ProductSalesPanel records={salesRecords} />}
 
           {section === 'images' && <ImagePanel images={images} productName={product.name} />}
 

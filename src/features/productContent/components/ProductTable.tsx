@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Eye, ImageOff, MoreVertical, Pencil, RefreshCw, Tag, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +18,7 @@ import {
 import ProductStatusBadge from './ProductStatusBadge';
 import SeoScoreBadge from './SeoScoreBadge';
 import ProductPagination from './ProductPagination';
+import { CATEGORY_TYPE_CLASS } from '../../categories/components/CategoryBadge';
 import { getCategoryDisplayName } from '../../categories/lib/categoryName';
 import type { Category } from '../../categories/types';
 import type { NameLocale, ProductListItem } from '../types/product';
@@ -74,7 +76,10 @@ function ProductCategoryCell({ item, categoryMap }: { item: ProductListItem; cat
   return (
     <div className="flex max-w-[190px] flex-wrap items-center gap-1">
       {visible.map((c) => (
-        <span key={c.id} className="inline-flex items-center rounded-full bg-[#EEF0FE] px-2 py-0.5 text-xs font-medium text-[#3157E5]">
+        <span
+          key={c.id}
+          className={cn('inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium', CATEGORY_TYPE_CLASS[c.categoryType])}
+        >
           {getCategoryDisplayName(c)}
         </span>
       ))}
