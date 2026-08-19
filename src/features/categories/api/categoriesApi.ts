@@ -78,6 +78,21 @@ export async function fetchCategoryProductCounts(): Promise<Record<string, numbe
   return counts;
 }
 
+// category_actual_product_counts ビューを使い、products に実在するSKUのみを
+// 対象にしたカテゴリごとの商品件数を取得する（商品一覧側の実件数と一致する）。
+export async function fetchCategoryActualProductCounts(): Promise<Record<string, number>> {
+  if (!isSupabaseConfigured()) return {};
+
+  const { data, error } = await supabase.from('category_actual_product_counts').select('category_id, product_count');
+  if (error || !data) return {};
+
+  const counts: Record<string, number> = {};
+  for (const row of data as { category_id: string; product_count: number }[]) {
+    counts[row.category_id] = row.product_count;
+  }
+  return counts;
+}
+
 export async function fetchCategoryById(id: string): Promise<Category | null> {
   if (!isSupabaseConfigured()) return null;
 

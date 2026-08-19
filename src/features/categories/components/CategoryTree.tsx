@@ -2,9 +2,11 @@ import { Plus } from 'lucide-react';
 import { Tree } from '@/components/ui/tree';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CategoryTreeNode from './CategoryTreeNode';
 import CategorySearchBar from './CategorySearchBar';
 import CategoryFilters from './CategoryFilters';
+import type { CategoryCountMode } from '../hooks/useCategoryTree';
 import type { UseCategoryManagementReturn } from '../hooks/useCategoryManagement';
 
 interface CategoryTreeProps {
@@ -26,6 +28,8 @@ export default function CategoryTree({ state }: CategoryTreeProps) {
     selectedId,
     select,
     openCreate,
+    countMode,
+    setCountMode,
   } = state;
 
   return (
@@ -45,6 +49,19 @@ export default function CategoryTree({ state }: CategoryTreeProps) {
         isActive={filters.isActive}
         onIsActiveChange={setIsActive}
       />
+
+      <div className="flex items-center justify-between gap-2 text-xs text-[#667085]">
+        <span>商品数の表示</span>
+        <Select value={countMode} onValueChange={(v) => setCountMode(v as CategoryCountMode)}>
+          <SelectTrigger className="h-8 w-[168px] text-xs" aria-label="商品数の表示">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="linked">紐づけ件数</SelectItem>
+            <SelectItem value="actual">実件数（非公開を除く）</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto rounded-lg border border-[#EEF0F4]">
         {isLoading ? (

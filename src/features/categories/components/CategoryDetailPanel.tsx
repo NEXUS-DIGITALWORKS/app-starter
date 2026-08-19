@@ -12,7 +12,7 @@ interface CategoryDetailPanelProps {
 }
 
 export default function CategoryDetailPanel({ state }: CategoryDetailPanelProps) {
-  const { categories, selectedCategory, productCountOf, select, openCreate } = state;
+  const { categories, selectedCategory, productCountOf, select, openCreate, countMode } = state;
 
   if (!selectedCategory) {
     return (
@@ -74,7 +74,7 @@ export default function CategoryDetailPanel({ state }: CategoryDetailPanelProps)
         </dl>
       </div>
 
-      <CategoryProductCount category={selectedCategory} count={productCountOf(selectedCategory.id)} />
+      <CategoryProductCount category={selectedCategory} count={productCountOf(selectedCategory.id)} countMode={countMode} />
 
       <CategoryPathPreview categories={categories} categoryId={selectedCategory.id} />
 

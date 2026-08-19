@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
-import { fetchCategories, fetchCategoryProductCounts } from '../api/categoriesApi';
+import { fetchCategories, fetchCategoryActualProductCounts, fetchCategoryProductCounts } from '../api/categoriesApi';
 import { buildCategoryTree } from '../lib/categoryTree';
 import { DEFAULT_CATEGORY_FILTERS, getVisibleCategoryIds } from '../lib/categoryFilter';
 import type { Category, CategoryFilters, CategoryTreeNode } from '../types';
 
 const DEBOUNCE_MS = 300;
+
+// 'linked': product_categories の紐づけ行をそのままカウント（products に実在しないSKUへの
+// 紐づけも含む）。'actual': products に実在するSKUのみをカウントし、商品一覧側の実件数と一致させる。
+export type CategoryCountMode = 'linked' | 'actual';
 
 function useDebouncedValue<T>(value: T, delayMs: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -17,7 +21,9 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 
 export function useCategoryTree() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [productCounts, setProductCounts] = useState<Record<string, number>>({});
+  const [linkedProductCounts, setLinkedProductCounts] = useState<Record<string, number>>({});
+  const [actualProductCounts, setActualProductCounts] = useState<Record<string, number>>({});
+  const [countMode, setCountMode] = useState<CategoryCountMode>('linked');
   const [isLoading, setIsLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -30,16 +36,21 @@ export function useCategoryTree() {
   useEffect(() => {
     let ignore = false;
     setIsLoading(true);
-    Promise.all([fetchCategories(), fetchCategoryProductCounts()]).then(([cats, counts]) => {
-      if (ignore) return;
-      setCategories(cats);
-      setProductCounts(counts);
-      setIsLoading(false);
-    });
+    Promise.all([fetchCategories(), fetchCategoryProductCounts(), fetchCategoryActualProductCounts()]).then(
+      ([cats, linkedCounts, actualCounts]) => {
+        if (ignore) return;
+        setCategories(cats);
+        setLinkedProductCounts(linkedCounts);
+        setActualProductCounts(actualCounts);
+        setIsLoading(false);
+      },
+    );
     return () => {
       ignore = true;
     };
   }, [reloadKey]);
+
+  const productCounts = countMode === 'actual' ? actualProductCounts : linkedProductCounts;
 
   const activeFilters = useMemo<CategoryFilters>(() => ({ ...filters, search: debouncedSearch }), [filters, debouncedSearch]);
 
@@ -74,6 +85,8 @@ export function useCategoryTree() {
     categories,
     tree,
     productCounts,
+    countMode,
+    setCountMode,
     isLoading,
     reload,
     searchInput,
