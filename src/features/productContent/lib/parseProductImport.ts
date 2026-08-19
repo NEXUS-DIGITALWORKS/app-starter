@@ -93,10 +93,60 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
   return { rows, errors };
 }
 
+// Magentoエクスポートは文字列値中に生の改行・タブなどの制御文字がエスケープされずに
+// 含まれていることがあり、そのままではJSON.parseが「Bad control character」で失敗する。
+// 文字列リテラル内（エスケープ済みの\"は除く）に現れた制御文字だけをJSONエスケープに変換する。
+function sanitizeJsonControlChars(text: string): string {
+  let result = '';
+  let inString = false;
+  let escaped = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const code = text.charCodeAt(i);
+
+    if (!inString) {
+      result += ch;
+      if (ch === '"') inString = true;
+      continue;
+    }
+
+    if (escaped) {
+      result += ch;
+      escaped = false;
+      continue;
+    }
+    if (ch === '\\') {
+      result += ch;
+      escaped = true;
+      continue;
+    }
+    if (ch === '"') {
+      result += ch;
+      inString = false;
+      continue;
+    }
+    if (code < 0x20) {
+      switch (ch) {
+        case '\n': result += '\\n'; break;
+        case '\r': result += '\\r'; break;
+        case '\t': result += '\\t'; break;
+        case '\b': result += '\\b'; break;
+        case '\f': result += '\\f'; break;
+        default: result += `\\u${code.toString(16).padStart(4, '0')}`;
+      }
+      continue;
+    }
+    result += ch;
+  }
+
+  return result;
+}
+
 export function parseProductImportJson(text: string): ProductImportParseResult {
   let raw: unknown;
   try {
-    raw = JSON.parse(text);
+    raw = JSON.parse(sanitizeJsonControlChars(text));
   } catch (e) {
     return { rows: [], errors: [`JSONとして読み込めませんでした: ${(e as Error).message}`] };
   }
