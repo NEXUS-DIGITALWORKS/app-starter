@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Download, Home, RefreshCw, Sparkles, Upload } from 'lucide-react';
+import { CalendarRange, ChevronRight, Download, Home, RefreshCw, Sparkles, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductListToolbar from '../components/ProductListToolbar';
 import ProductSummaryCards from '../components/ProductSummaryCards';
 import ProductTable from '../components/ProductTable';
 import ProductImportDialog from '../components/ProductImportDialog';
 import ProductSalesImportDialog from '../../productSales/components/ProductSalesImportDialog';
+import SalesEventsManageDialog from '../../productSales/components/SalesEventsManageDialog';
 import { useProductFilters } from '../hooks/useProductFilters';
 
 export default function ProductListPage() {
   const [importOpen, setImportOpen] = useState(false);
   const [salesImportOpen, setSalesImportOpen] = useState(false);
+  const [salesEventsOpen, setSalesEventsOpen] = useState(false);
 
   const {
     searchInput,
@@ -80,6 +82,10 @@ export default function ProductListPage() {
             <Upload size={14} />
             売上データ取込
           </Button>
+          <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => setSalesEventsOpen(true)}>
+            <CalendarRange size={14} />
+            イベント管理
+          </Button>
           <Button variant="outline" size="sm" className="border-[#D0D5DD] text-[#475467]" onClick={() => console.info('[products] エクスポート')}>
             <Download size={14} />
             エクスポート
@@ -138,6 +144,7 @@ export default function ProductListPage() {
 
       <ProductImportDialog open={importOpen} onOpenChange={setImportOpen} onImported={refresh} />
       <ProductSalesImportDialog open={salesImportOpen} onOpenChange={setSalesImportOpen} onImported={refresh} />
+      <SalesEventsManageDialog open={salesEventsOpen} onOpenChange={setSalesEventsOpen} />
     </div>
   );
 }

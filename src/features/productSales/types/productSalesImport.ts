@@ -19,6 +19,7 @@ export interface ProductSalesImportRow {
 export interface ProductSalesImportParseResult {
   rows: ProductSalesImportRow[];
   errors: string[];
+  missingSkus: string[];
 }
 
 export interface ProductSalesImportBatchError {
@@ -32,4 +33,5 @@ export interface ProductSalesImportResult {
   failedCount: number;
   parseErrors: string[];
   batchErrors: ProductSalesImportBatchError[];
+  missingSkus: string[];
 }

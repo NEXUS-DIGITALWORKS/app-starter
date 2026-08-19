@@ -17,10 +17,12 @@ import ProductSalesPanel from '../../productSales/components/ProductSalesPanel';
 import type { SectionKey } from '../components/sectionKeys';
 import { addTagToProduct, fetchProductWorkspace, removeTagFromProduct, saveProductContent } from '../api/productContentApi';
 import { fetchProductSaleRecords } from '../../productSales/api/productSalesApi';
+import { fetchSalesEvents } from '../../productSales/api/salesEventsApi';
 import { translateProduct, improveProductDescription } from '../api/aiStub';
 import { useProductCategoryEditor } from '../../categories/hooks/useProductCategoryEditor';
 import type { ExtractedFeature, LocaleContent, LocaleSeo, ProductContentText, ProductWorkspace, SeoSuggestion, TargetLocale } from '../types';
 import type { ProductSaleRecord } from '../../productSales/types/productSales';
+import type { SalesEvent } from '../../productSales/types/salesEvents';
 
 type ProductNames = { name: string; nameZhHant: string; nameEn: string };
 type PageMode = 'view' | 'edit';
@@ -60,6 +62,7 @@ export default function ProductContentPage() {
   const [section, setSection] = useState<SectionKey>('overview');
   const [isSaving, setIsSaving] = useState(false);
   const [salesRecords, setSalesRecords] = useState<ProductSaleRecord[] | null | undefined>(undefined);
+  const [salesEvents, setSalesEvents] = useState<SalesEvent[]>([]);
 
   useEffect(() => {
     let ignore = false;
@@ -70,6 +73,17 @@ export default function ProductContentPage() {
       ignore = true;
     };
   }, [sku]);
+
+  // フェア・キャンペーン期間は特定商品に紐付かない店舗全体共通のマスタのため、skuに関係なく一度だけ取得する。
+  useEffect(() => {
+    let ignore = false;
+    fetchSalesEvents().then((data) => {
+      if (!ignore) setSalesEvents(data);
+    });
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   useEffect(() => {
     let ignore = false;
@@ -312,7 +326,7 @@ export default function ProductContentPage() {
             />
           )}
 
-          {section === 'sales' && <ProductSalesPanel records={salesRecords} />}
+          {section === 'sales' && <ProductSalesPanel records={salesRecords} events={salesEvents} />}
 
           {section === 'images' && <ImagePanel images={images} productName={product.name} />}
 

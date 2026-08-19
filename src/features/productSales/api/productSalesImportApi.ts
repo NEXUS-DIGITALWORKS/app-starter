@@ -39,21 +39,23 @@ async function fetchExistingSkus(skus: string[]): Promise<Set<string>> {
 function splitByExistingSku(
   rows: ProductSalesImportRow[],
   existingSkus: Set<string>,
-): { importableRows: ProductSalesImportRow[]; missingSkuError: string | null } {
-  const missingSkus = new Set<string>();
+): { importableRows: ProductSalesImportRow[]; missingSkuError: string | null; missingSkus: string[] } {
+  const missingSkuSet = new Set<string>();
   const importableRows = rows.filter((row) => {
     if (existingSkus.has(row.sku)) return true;
-    missingSkus.add(row.sku);
+    missingSkuSet.add(row.sku);
     return false;
   });
 
-  if (missingSkus.size === 0) return { importableRows, missingSkuError: null };
+  if (missingSkuSet.size === 0) return { importableRows, missingSkuError: null, missingSkus: [] };
 
+  const missingSkus = Array.from(missingSkuSet).sort();
   const skippedRowCount = rows.length - importableRows.length;
-  const sample = Array.from(missingSkus).slice(0, MAX_SAMPLE_SKUS).join(', ');
+  const sample = missingSkus.slice(0, MAX_SAMPLE_SKUS).join(', ');
   return {
     importableRows,
     missingSkuError: `商品マスタに未登録のSKUを含む行 ${skippedRowCount}件は取込対象外です（例: ${sample}）。先に商品データを取込んでください。`,
+    missingSkus,
   };
 }
 
@@ -69,8 +71,10 @@ export async function previewProductSalesImportFile(file: File): Promise<Product
   if (parsed.rows.length === 0) return parsed;
 
   const existingSkus = await fetchExistingSkus(parsed.rows.map((r) => r.sku));
-  const { missingSkuError } = splitByExistingSku(parsed.rows, existingSkus);
-  return missingSkuError ? { rows: parsed.rows, errors: [...parsed.errors, missingSkuError] } : parsed;
+  const { missingSkuError, missingSkus } = splitByExistingSku(parsed.rows, existingSkus);
+  return missingSkuError
+    ? { rows: parsed.rows, errors: [...parsed.errors, missingSkuError], missingSkus }
+    : parsed;
 }
 
 export async function importProductSalesFromFile(
@@ -85,7 +89,7 @@ export async function importProductSalesFromFile(
   const { rows: parsedRows, errors: parseErrors } = parseProductSalesImportCsv(text);
 
   const existingSkus = await fetchExistingSkus(parsedRows.map((r) => r.sku));
-  const { importableRows, missingSkuError } = splitByExistingSku(parsedRows, existingSkus);
+  const { importableRows, missingSkuError, missingSkus } = splitByExistingSku(parsedRows, existingSkus);
   const allParseErrors = missingSkuError ? [...parseErrors, missingSkuError] : parseErrors;
 
   const batches = chunk(importableRows, BATCH_SIZE);
@@ -110,5 +114,6 @@ export async function importProductSalesFromFile(
     failedCount: parsedRows.length - importedCount,
     parseErrors: allParseErrors,
     batchErrors,
+    missingSkus,
   };
 }

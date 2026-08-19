@@ -1,8 +1,9 @@
 import { useRef, useState } from 'react';
-import { AlertTriangle, CheckCircle2, Loader2, Upload } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, Loader2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { downloadTextFile } from '@/lib/utils';
 import {
   importProductSalesFromFile,
   previewProductSalesImportFile,
@@ -27,6 +28,7 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
   const [file, setFile] = useState<File | null>(null);
   const [rows, setRows] = useState<ProductSalesImportRow[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
+  const [missingSkus, setMissingSkus] = useState<string[]>([]);
   const [progress, setProgress] = useState<ImportProgress | null>(null);
   const [result, setResult] = useState<ProductSalesImportResult | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -37,10 +39,38 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
     setFile(null);
     setRows([]);
     setParseErrors([]);
+    setMissingSkus([]);
     setProgress(null);
     setResult(null);
     setLoadError(null);
   };
+
+  const handleDownloadMissingSkus = () => {
+    downloadTextFile('未登録SKU一覧.csv', ['sku', ...missingSkus].join('\n'), 'text/csv');
+  };
+
+  const missingSkusSection = missingSkus.length > 0 && (
+    <div className="rounded-lg border border-[#FEDF89] bg-[#FFFAEB] p-3 text-sm text-[#93370D]">
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-semibold">未登録SKU {missingSkus.length}件</p>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className="h-7 border-[#FEDF89] bg-transparent text-[#93370D] hover:bg-[#FEF0C7]"
+          onClick={handleDownloadMissingSkus}
+        >
+          <Download size={12} />
+          CSVでダウンロード
+        </Button>
+      </div>
+      <ul className="mt-2 max-h-40 space-y-0.5 overflow-y-auto rounded border border-[#FEDF89]/60 bg-white/60 p-2 font-mono text-xs">
+        {missingSkus.map((sku) => (
+          <li key={sku}>{sku}</li>
+        ))}
+      </ul>
+    </div>
+  );
 
   const handleOpenChange = (next: boolean) => {
     if (!next) reset();
@@ -56,6 +86,7 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
       const parsed = await previewProductSalesImportFile(selected);
       setRows(parsed.rows);
       setParseErrors(parsed.errors);
+      setMissingSkus(parsed.missingSkus);
       setStep('preview');
     } catch (e) {
       setLoadError(`ファイルを読み込めませんでした: ${(e as Error).message}`);
@@ -69,6 +100,7 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
     try {
       const res = await importProductSalesFromFile(file, setProgress);
       setResult(res);
+      setMissingSkus(res.missingSkus);
       setStep('done');
       if (res.importedCount > 0) onImported();
     } catch (e) {
@@ -132,6 +164,7 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
                 )}
               </div>
             )}
+            {step === 'preview' && missingSkusSection}
           </div>
         )}
 
@@ -171,6 +204,7 @@ export default function ProductSalesImportDialog({ open, onOpenChange, onImporte
                 ))}
               </ul>
             )}
+            {missingSkusSection}
           </div>
         )}
 
