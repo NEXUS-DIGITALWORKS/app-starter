@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { ListTree, SlidersHorizontal } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ListTree, Sparkles, SlidersHorizontal } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import CategoryTree from '../components/CategoryTree';
@@ -12,6 +13,22 @@ export default function CategoryManagementPage() {
   const state = useCategoryManagement();
   const [treeSheetOpen, setTreeSheetOpen] = useState(false);
   const [editorSheetOpen, setEditorSheetOpen] = useState(false);
+  const [searchParams] = useSearchParams();
+
+  // カテゴリ改善候補ページ（/app/categories/improvements）などから
+  // ?code=<カテゴリコード> でこの画面に来た場合、該当カテゴリを自動選択する。
+  const appliedCodeParam = useRef(false);
+  useEffect(() => {
+    if (appliedCodeParam.current) return;
+    const code = searchParams.get('code');
+    if (!code || state.categories.length === 0) return;
+    const target = state.categories.find((c) => c.code === code);
+    if (target) {
+      state.select(target.id);
+      appliedCodeParam.current = true;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, state.categories]);
 
   if (!isSupabaseConfigured()) {
     return (
@@ -26,17 +43,25 @@ export default function CategoryManagementPage() {
     <div className="flex h-[calc(100vh-6rem)] flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#111827]">カテゴリ管理</h1>
-        <div className="flex gap-2 lg:hidden">
-          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setTreeSheetOpen(true)}>
-            <ListTree size={14} />
-            カテゴリを選ぶ
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5 border-[#D0D5DD] text-[#475467]" asChild>
+            <Link to="/app/categories/improvements">
+              <Sparkles size={14} />
+              改善候補
+            </Link>
           </Button>
-          {state.selectedCategory && (
-            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditorSheetOpen(true)}>
-              <SlidersHorizontal size={14} />
-              編集
+          <div className="flex gap-2 lg:hidden">
+            <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setTreeSheetOpen(true)}>
+              <ListTree size={14} />
+              カテゴリを選ぶ
             </Button>
-          )}
+            {state.selectedCategory && (
+              <Button variant="outline" size="sm" className="gap-1.5" onClick={() => setEditorSheetOpen(true)}>
+                <SlidersHorizontal size={14} />
+                編集
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
