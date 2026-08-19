@@ -25,6 +25,17 @@ function toTimestampOrNull(value: unknown): string | null {
   return Number.isNaN(Date.parse(s)) ? null : s;
 }
 
+// 一部のエクスポートでは日本語版が無印キー（name/description等）ではなく
+// _jp付きキー（name_jp・namejpの表記ゆれ含む）に入っていることがあるため、
+// 存在する場合はそちらを優先し、無ければ無印キーにフォールバックする。
+function pickString(...values: unknown[]): string | null {
+  for (const value of values) {
+    const s = toStringOrNull(value);
+    if (s !== null) return s;
+  }
+  return null;
+}
+
 // JSON（オブジェクトの配列）・CSV（ヘッダー行からオブジェクト化した配列）共通の行バリデーション。
 function buildImportRows(entries: unknown[]): ProductImportParseResult {
   const rows: ProductImportRow[] = [];
@@ -38,7 +49,7 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
     }
     const obj = entry as Record<string, unknown>;
     const sku = toStringOrNull(obj.sku);
-    const name = toStringOrNull(obj.name);
+    const name = pickString(obj.namejp, obj.name_jp, obj.name);
 
     if (!sku) {
       errors.push(`${index + 1}件目: skuがありません（スキップ）`);
@@ -70,10 +81,10 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
         ecVisibilityRaw && EC_VISIBILITY_VALUES.has(ecVisibilityRaw)
           ? (ecVisibilityRaw as ProductImportRow['ec_visibility'])
           : null,
-      short_description: toStringOrNull(obj.short_description),
+      short_description: pickString(obj.short_description_jp, obj.short_description),
       short_description_zh_tw: toStringOrNull(obj.short_description_zh_tw),
       short_description_en: toStringOrNull(obj.short_description_en),
-      description_ja: toStringOrNull(obj.description),
+      description_ja: pickString(obj.description_jp, obj.description),
       description_zh_tw: toStringOrNull(obj.description_zh_tw),
       description_en: toStringOrNull(obj.description_en),
       ingredients: toStringOrNull(obj.ingredients),
@@ -87,13 +98,13 @@ function buildImportRows(entries: unknown[]): ProductImportParseResult {
       store_view_code: toStringOrNull(obj.store_view_code),
       store_view_name: toStringOrNull(obj.store_view_name),
       locale: toStringOrNull(obj.locale),
-      meta_title_ja: toStringOrNull(obj.meta_title),
+      meta_title_ja: pickString(obj.meta_title_jp, obj.meta_title),
       meta_title_zh_tw: toStringOrNull(obj.meta_title_zh_tw),
       meta_title_en: toStringOrNull(obj.meta_title_en),
-      meta_description_ja: toStringOrNull(obj.meta_description),
+      meta_description_ja: pickString(obj.meta_description_jp, obj.meta_description),
       meta_description_zh_tw: toStringOrNull(obj.meta_description_zh_tw),
       meta_description_en: toStringOrNull(obj.meta_description_en),
-      url_key: toStringOrNull(obj.url_key),
+      url_key: pickString(obj.url_key_jp, obj.url_key),
       base_image: toStringOrNull(obj.base_image),
       small_image: toStringOrNull(obj.small_image),
       thumbnail: toStringOrNull(obj.thumbnail),
