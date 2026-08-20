@@ -7,10 +7,15 @@ import type { CategoryType } from '../types';
 
 export type CategoryIssueType =
   | 'low_product_count'
-  | 'low_sales_1y'
+  | 'low_sales_2y'
   | 'missing_locale_name'
   | 'missing_description'
+  | 'wrong_translation'
   | 'orphaned_active_child';
+
+// 「課題の種類」複数選択時の絞り込み方式。'or'=いずれか1つでも該当（従来の挙動）、
+// 'and'=選択したすべての種類に該当。
+export type IssueMatchMode = 'and' | 'or';
 
 export interface CategoryIssueItem {
   id: string;
@@ -21,6 +26,6 @@ export interface CategoryIssueItem {
   categoryType: CategoryType;
   parentNameJa: string | null;
   productCount: number;
-  salesTotal1y: number;
+  salesTotal2y: number;
   issues: CategoryIssueType[];
 }

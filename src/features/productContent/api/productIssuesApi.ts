@@ -12,8 +12,8 @@ interface ProductIssueQueryRow extends ProductIssueRow {
 
 const SELECT_COLUMNS =
   'sku, name_ja, name_zh_tw, name_en, brand, base_image, ec_status, ' +
-  'short_description_zh_tw, short_description_en, short_description_length, ' +
-  'description_zh_tw, description_en, description_length, sales_total_1y';
+  'short_description, short_description_zh_tw, short_description_en, short_description_length, ' +
+  'description_zh_tw, description_en, description_length, sales_total_2y';
 
 // PostgRESTのデフォルト上限(1000件)を超えて全件評価できるよう、明示的にrangeを広げて取得する。
 // ルールがDB側では表現しにくい（言語判定・複合条件）ため、全件取得してクライアント側で評価する。
@@ -41,7 +41,7 @@ export async function fetchProductIssues(): Promise<ProductIssueItem[]> {
     brand: row.brand ?? '',
     shortDescriptionLength: row.short_description_length ?? 0,
     descriptionLength: row.description_length ?? 0,
-    salesTotal1y: row.sales_total_1y ?? 0,
+    salesTotal2y: row.sales_total_2y ?? 0,
     issues: evaluateProductIssues(row),
   }));
 

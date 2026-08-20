@@ -6,8 +6,15 @@ import ProductSummaryCards from '../features/productContent/components/ProductSu
 import { fetchProductListSummary } from '../features/productContent/api/productListApi';
 import { fetchProductIssues } from '../features/productContent/api/productIssuesApi';
 import { fetchCategories } from '../features/categories/api/categoriesApi';
+import { fetchHomeSalesSummary } from '../features/productSales/api/productSalesApi';
 import { fetchSavedDiagnosisHistory, fetchSavedSelectionHistory } from '../features/app-history/lib/resultsRepo';
 import type { ProductListSummary } from '../features/productContent/types/product';
+import type { HomeSalesSummary } from '../features/productSales/types/productSales';
+
+// 'YYYY-MM-DD' → 'YYYY/MM/DD'。ISO日付文字列にはハイフン以外の区切りが含まれないため単純置換で足りる。
+function formatDateSlash(isoDate: string): string {
+  return isoDate.split('-').join('/');
+}
 
 type OtherCounts = {
   categories: number;
@@ -34,12 +41,17 @@ export default function AppHome() {
 
   const [productSummary, setProductSummary] = useState<ProductListSummary | null>(null);
   const [otherCounts, setOtherCounts] = useState<OtherCounts | null>(null);
+  const [salesSummary, setSalesSummary] = useState<HomeSalesSummary | null>(null);
 
   useEffect(() => {
     let ignore = false;
 
     fetchProductListSummary().then((summary) => {
       if (!ignore) setProductSummary(summary);
+    });
+
+    fetchHomeSalesSummary().then((summary) => {
+      if (!ignore) setSalesSummary(summary);
     });
 
     Promise.all([
@@ -67,11 +79,28 @@ export default function AppHome() {
 
       <section className="mt-8">
         <div>
-          <h2 className="text-lg font-semibold text-[#111827]">商品情報整備AI（Beta）</h2>
+          <h2 className="text-lg font-semibold text-[#111827]">商品情報整備AI</h2>
           <p className="mt-1 text-sm text-[#667085]">SKU単位で商品情報を整理・翻訳・SEO整備します</p>
         </div>
         <div className="mt-4">
           <ProductSummaryCards summary={productSummary} />
+        </div>
+      </section>
+
+      <section className="mt-8">
+        <div>
+          <h2 className="text-lg font-semibold text-[#111827]">売上集計</h2>
+          <p className="mt-1 text-sm text-[#667085]">
+            {salesSummary
+              ? `${formatDateSlash(salesSummary.periodStart)}〜${formatDateSlash(salesSummary.periodEnd)}の累積売上`
+              : '2023/08/19〜2026/08/18の累積売上'}
+          </p>
+        </div>
+        <div className="mt-4 rounded-xl border border-[#E5E7EB] bg-white p-4">
+          <span className="text-xs font-medium text-[#667085]">累積売上</span>
+          <div className="mt-1.5 text-2xl font-bold text-[#111827]">
+            {salesSummary ? `¥${Math.round(salesSummary.totalSalesAmount).toLocaleString()}` : '—'}
+          </div>
         </div>
       </section>
 

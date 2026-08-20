@@ -5,8 +5,9 @@ import type { ProductIssueType } from '../types/productIssue';
 const ICON_BY_TYPE: Record<ProductIssueType, typeof AlertTriangle> = {
   name_en_has_cjk: Languages,
   name_zh_tw_same_as_en: Languages,
-  no_sales_1y: ShoppingCart,
+  no_sales_2y: ShoppingCart,
   short_description_locale_swap: Repeat,
+  short_description_ja_locale_wrong: Repeat,
   description_locale_swap: Repeat,
   short_description_too_short: Type,
   description_too_short: Type,

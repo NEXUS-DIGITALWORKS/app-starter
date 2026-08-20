@@ -20,7 +20,7 @@ const UPDATED_WITHIN_OPTIONS: { value: UpdatedWithinFilter; label: string }[] = 
 ];
 const SORT_BY_OPTIONS: { value: ProductSortBy; label: string }[] = [
   { value: 'updated_at', label: '更新日時順' },
-  { value: 'sales_total_1y', label: '累積売上（直近1年）順' },
+  { value: 'sales_total_2y', label: '累積売上（直近2年）順' },
 ];
 
 interface ProductListToolbarProps {

@@ -18,7 +18,7 @@ interface ProductRow {
   base_image: string | null;
   store_view_name: string | null;
   updated_at: string;
-  sales_total_1y: number;
+  sales_total_2y: number;
 }
 
 // UI側(ProductStatus)とDB側(workflow_status)は別々の設計背景を持つ列挙値
@@ -76,7 +76,7 @@ function mapRow(row: ProductRow, tags: string[], categoryIds: string[], primaryC
     tags,
     categoryIds,
     primaryCategoryId,
-    salesTotal1y: row.sales_total_1y ?? 0,
+    salesTotal2y: row.sales_total_2y ?? 0,
   };
 }
 
@@ -112,7 +112,7 @@ export async function fetchProducts(filters: ProductListFilters): Promise<Produc
     if (tagSkuFilter.length === 0) return { items: [], total: 0 };
   }
 
-  // sales_total_1y（直近1年の累積売上）順ソートのため、products単体ではなく
+  // sales_total_2y（直近2年の累積売上）順ソートのため、products単体ではなく
   // 集計済みビュー（product_list_with_sales）から取得する。他の絞り込み条件は
   // productsと同じカラムを持つためそのまま適用できる。
   let query = supabase.from('product_list_with_sales').select('*', { count: 'exact' });

@@ -1,12 +1,13 @@
-import { AlertTriangle, FileText, Languages, Package, TrendingDown, Unlink } from 'lucide-react';
+import { AlertTriangle, FileText, Languages, Package, Repeat, TrendingDown, Unlink } from 'lucide-react';
 import { CATEGORY_ISSUE_LABELS } from '../lib/categoryIssueRules';
 import type { CategoryIssueType } from '../types/categoryIssue';
 
 const ICON_BY_TYPE: Record<CategoryIssueType, typeof AlertTriangle> = {
   low_product_count: Package,
-  low_sales_1y: TrendingDown,
+  low_sales_2y: TrendingDown,
   missing_locale_name: Languages,
   missing_description: FileText,
+  wrong_translation: Repeat,
   orphaned_active_child: Unlink,
 };
 

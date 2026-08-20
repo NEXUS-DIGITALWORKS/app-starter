@@ -28,7 +28,7 @@ const INITIAL_FILTERS: ProductListFilters = {
   shortDescriptionLengthMax: null,
   descriptionLengthMin: null,
   descriptionLengthMax: null,
-  sortBy: 'sales_total_1y',
+  sortBy: 'sales_total_2y',
   page: 1,
   limit: DEFAULT_LIMIT,
 };

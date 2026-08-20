@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchProductIssues } from '../api/productIssuesApi';
 import { PRODUCT_ISSUE_TYPES } from '../lib/productIssueRules';
-import type { ProductIssueItem, ProductIssueType } from '../types/productIssue';
+import type { IssueMatchMode, ProductIssueItem, ProductIssueType } from '../types/productIssue';
 
 const DEFAULT_LIMIT = 20;
 
@@ -13,6 +13,7 @@ export function useProductIssues() {
 
   const [search, setSearch] = useState('');
   const [issueTypes, setIssueTypes] = useState<ProductIssueType[]>([]);
+  const [issueMatchMode, setIssueMatchMode] = useState<IssueMatchMode>('or');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
 
@@ -48,7 +49,11 @@ export function useProductIssues() {
   const filteredItems = useMemo(() => {
     const keyword = search.trim().toLowerCase();
     return allItems.filter((item) => {
-      if (issueTypes.length > 0 && !issueTypes.some((t) => item.issues.includes(t))) return false;
+      if (issueTypes.length > 0) {
+        const matches =
+          issueMatchMode === 'and' ? issueTypes.every((t) => item.issues.includes(t)) : issueTypes.some((t) => item.issues.includes(t));
+        if (!matches) return false;
+      }
       if (!keyword) return true;
       return (
         item.sku.toLowerCase().includes(keyword) ||
@@ -57,11 +62,11 @@ export function useProductIssues() {
         (item.nameEn ?? '').toLowerCase().includes(keyword)
       );
     });
-  }, [allItems, search, issueTypes]);
+  }, [allItems, search, issueTypes, issueMatchMode]);
 
   useEffect(() => {
     setPage(1);
-  }, [search, issueTypes]);
+  }, [search, issueTypes, issueMatchMode]);
 
   const pagedItems = useMemo(() => {
     const start = (page - 1) * limit;
@@ -74,6 +79,7 @@ export function useProductIssues() {
   const clearFilters = () => {
     setSearch('');
     setIssueTypes([]);
+    setIssueMatchMode('or');
   };
 
   const refresh = () => setReloadKey((n) => n + 1);
@@ -89,6 +95,8 @@ export function useProductIssues() {
     setSearch,
     issueTypes,
     toggleIssueType,
+    issueMatchMode,
+    setIssueMatchMode,
     clearFilters,
     page,
     limit,

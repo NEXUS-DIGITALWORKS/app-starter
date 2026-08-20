@@ -40,6 +40,19 @@ export default function CategoryIssueTable({
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white">
+      {!isLoading && !error && items.length > 0 && (
+        <div className="flex items-center justify-end border-b border-[#EEF0F4] px-4 py-3">
+          <CategoryPagination
+            page={page}
+            limit={limit}
+            total={total}
+            onPageChange={onPageChange}
+            onLimitChange={onLimitChange}
+            className="flex-nowrap border-t-0 p-0"
+          />
+        </div>
+      )}
+
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -47,7 +60,7 @@ export default function CategoryIssueTable({
             <TableHead className="min-w-[200px]">カテゴリ名</TableHead>
             <TableHead className="min-w-[110px]">種別</TableHead>
             <TableHead className="min-w-[110px] text-right">所属商品数</TableHead>
-            <TableHead className="min-w-[130px] text-right">直近1年売上</TableHead>
+            <TableHead className="min-w-[130px] text-right">直近2年売上</TableHead>
             <TableHead className="min-w-[260px]">検出された課題</TableHead>
             <TableHead className="min-w-[88px] text-right">アクション</TableHead>
           </TableRow>
@@ -102,7 +115,7 @@ export default function CategoryIssueTable({
                   <CategoryBadge categoryType={item.categoryType} />
                 </TableCell>
                 <TableCell className="text-right text-sm text-[#344054]">{item.productCount.toLocaleString()}</TableCell>
-                <TableCell className="text-right text-sm text-[#344054]">¥{Math.round(item.salesTotal1y).toLocaleString()}</TableCell>
+                <TableCell className="text-right text-sm text-[#344054]">¥{Math.round(item.salesTotal2y).toLocaleString()}</TableCell>
                 <TableCell onClick={(e) => e.stopPropagation()}>
                   <div className="flex flex-wrap gap-1">
                     {item.issues.map((issue) => (

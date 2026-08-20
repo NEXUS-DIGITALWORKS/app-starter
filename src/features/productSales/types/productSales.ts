@@ -26,3 +26,11 @@ export interface ProductSalesSummary {
   averageUnitPrice: number | null;
   dailySummaries: ProductSalePeriodSummary[];
 }
+
+// Home画面の売上集計カード用。home_sales_summary ビュー
+// （supabase/migrations/add_home_sales_summary_view.sql）が返す固定期間の累積売上。
+export interface HomeSalesSummary {
+  periodStart: string; // 'YYYY-MM-DD'
+  periodEnd: string;
+  totalSalesAmount: number;
+}

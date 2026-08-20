@@ -18,6 +18,8 @@ export default function CategoryImprovementsPage() {
     setSearch,
     issueTypes,
     toggleIssueType,
+    issueMatchMode,
+    setIssueMatchMode,
     clearFilters,
     page,
     limit,
@@ -63,6 +65,8 @@ export default function CategoryImprovementsPage() {
         onSearchChange={setSearch}
         issueTypes={issueTypes}
         onToggleIssueType={toggleIssueType}
+        issueMatchMode={issueMatchMode}
+        onIssueMatchModeChange={setIssueMatchMode}
         onClear={clearFilters}
       />
 

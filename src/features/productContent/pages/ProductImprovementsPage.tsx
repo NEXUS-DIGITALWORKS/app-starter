@@ -17,6 +17,8 @@ export default function ProductImprovementsPage() {
     setSearch,
     issueTypes,
     toggleIssueType,
+    issueMatchMode,
+    setIssueMatchMode,
     clearFilters,
     page,
     limit,
@@ -53,6 +55,8 @@ export default function ProductImprovementsPage() {
         onSearchChange={setSearch}
         issueTypes={issueTypes}
         onToggleIssueType={toggleIssueType}
+        issueMatchMode={issueMatchMode}
+        onIssueMatchModeChange={setIssueMatchMode}
         onClear={clearFilters}
       />
 

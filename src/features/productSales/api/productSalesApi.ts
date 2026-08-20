@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from '../../../lib/supabaseClient';
-import type { ProductSaleRecord } from '../types/productSales';
+import type { HomeSalesSummary, ProductSaleRecord } from '../types/productSales';
 
 interface ProductSaleRow {
   sale_date: string;
@@ -40,4 +40,26 @@ export async function fetchProductSaleRecords(sku: string): Promise<ProductSaleR
     unitPrice: row.unit_price,
     customerType: row.customer_type,
   }));
+}
+
+interface HomeSalesSummaryRow {
+  period_start: string;
+  period_end: string;
+  sales_total: number;
+}
+
+// Home画面の売上集計カード用。home_sales_summary ビューは常に1行を返す
+// （対象期間に売上が1件もなくてもCOALESCEで0行が返る）。
+export async function fetchHomeSalesSummary(): Promise<HomeSalesSummary | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  const { data, error } = await supabase.from('home_sales_summary').select('period_start, period_end, sales_total').single();
+  if (error || !data) return null;
+
+  const row = data as HomeSalesSummaryRow;
+  return {
+    periodStart: row.period_start,
+    periodEnd: row.period_end,
+    totalSalesAmount: row.sales_total,
+  };
 }

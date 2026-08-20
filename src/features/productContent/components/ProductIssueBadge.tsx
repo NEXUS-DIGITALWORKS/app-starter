@@ -5,8 +5,9 @@ import type { ProductIssueType } from '../types/productIssue';
 const STYLE: Record<ProductIssueType, string> = {
   name_en_has_cjk: 'text-[#6941C6] bg-[#F9F5FF]',
   name_zh_tw_same_as_en: 'text-[#6941C6] bg-[#F9F5FF]',
-  no_sales_1y: 'text-[#B54708] bg-[#FFF3E6]',
+  no_sales_2y: 'text-[#B54708] bg-[#FFF3E6]',
   short_description_locale_swap: 'text-[#B42318] bg-[#FEF3F2]',
+  short_description_ja_locale_wrong: 'text-[#B42318] bg-[#FEF3F2]',
   description_locale_swap: 'text-[#B42318] bg-[#FEF3F2]',
   short_description_too_short: 'text-[#B45309] bg-[#FFFBEB]',
   description_too_short: 'text-[#B45309] bg-[#FFFBEB]',

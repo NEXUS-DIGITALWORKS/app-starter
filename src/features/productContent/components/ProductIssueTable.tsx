@@ -56,6 +56,19 @@ export default function ProductIssueTable({
 
   return (
     <div className="rounded-xl border border-[#E5E7EB] bg-white">
+      {!isLoading && !error && items.length > 0 && (
+        <div className="flex items-center justify-end border-b border-[#EEF0F4] px-4 py-3">
+          <ProductPagination
+            page={page}
+            limit={limit}
+            total={total}
+            onPageChange={onPageChange}
+            onLimitChange={onLimitChange}
+            className="shrink-0 flex-nowrap border-t-0 p-0"
+          />
+        </div>
+      )}
+
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">

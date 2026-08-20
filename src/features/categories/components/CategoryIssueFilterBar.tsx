@@ -3,13 +3,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { CATEGORY_ISSUE_LABELS, CATEGORY_ISSUE_TYPES } from '../lib/categoryIssueRules';
-import type { CategoryIssueType } from '../types/categoryIssue';
+import type { CategoryIssueType, IssueMatchMode } from '../types/categoryIssue';
 
 interface CategoryIssueFilterBarProps {
   search: string;
   onSearchChange: (value: string) => void;
   issueTypes: CategoryIssueType[];
   onToggleIssueType: (type: CategoryIssueType) => void;
+  issueMatchMode: IssueMatchMode;
+  onIssueMatchModeChange: (mode: IssueMatchMode) => void;
   onClear: () => void;
 }
 
@@ -18,6 +20,8 @@ export default function CategoryIssueFilterBar({
   onSearchChange,
   issueTypes,
   onToggleIssueType,
+  issueMatchMode,
+  onIssueMatchModeChange,
   onClear,
 }: CategoryIssueFilterBarProps) {
   return (
@@ -35,6 +39,32 @@ export default function CategoryIssueFilterBar({
 
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-xs font-medium text-[#667085]">課題の種類（複数選択可）</span>
+
+        <div className="flex items-center rounded-full border border-[#D0D5DD] bg-white p-0.5 text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => onIssueMatchModeChange('or')}
+            className={cn(
+              'rounded-full px-2 py-0.5 transition-colors',
+              issueMatchMode === 'or' ? 'bg-[#EEF0FE] text-[#3157E5]' : 'text-[#667085] hover:bg-[#F8FAFC]',
+            )}
+            aria-pressed={issueMatchMode === 'or'}
+          >
+            OR（いずれか）
+          </button>
+          <button
+            type="button"
+            onClick={() => onIssueMatchModeChange('and')}
+            className={cn(
+              'rounded-full px-2 py-0.5 transition-colors',
+              issueMatchMode === 'and' ? 'bg-[#EEF0FE] text-[#3157E5]' : 'text-[#667085] hover:bg-[#F8FAFC]',
+            )}
+            aria-pressed={issueMatchMode === 'and'}
+          >
+            AND（すべて）
+          </button>
+        </div>
+
         {CATEGORY_ISSUE_TYPES.map((type) => {
           const active = issueTypes.includes(type);
           return (
