@@ -1,42 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchProductIssues } from '../api/productIssuesApi';
 import { PRODUCT_ISSUE_TYPES } from '../lib/productIssueRules';
-import type { IssueMatchMode, ProductIssueItem, ProductIssueType } from '../types/productIssue';
+import type { IssueMatchMode, ProductIssueType } from '../types/productIssue';
 
 const DEFAULT_LIMIT = 20;
 
 export function useProductIssues() {
-  const [allItems, setAllItems] = useState<ProductIssueItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [reloadKey, setReloadKey] = useState(0);
-
   const [search, setSearch] = useState('');
   const [issueTypes, setIssueTypes] = useState<ProductIssueType[]>([]);
   const [issueMatchMode, setIssueMatchMode] = useState<IssueMatchMode>('or');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
 
-  useEffect(() => {
-    let ignore = false;
-    setIsLoading(true);
-    setError(null);
-    fetchProductIssues()
-      .then((items) => {
-        if (ignore) return;
-        setAllItems(items);
-      })
-      .catch(() => {
-        if (ignore) return;
-        setError('改善候補商品を取得できませんでした');
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
+  const { data: allItems = [], isLoading, isError, refetch } = useQuery({
+    queryKey: ['productIssues'],
+    queryFn: fetchProductIssues,
+  });
+  const error = isError ? '改善候補商品を取得できませんでした' : null;
 
   const issueCounts = useMemo(() => {
     const counts = Object.fromEntries(PRODUCT_ISSUE_TYPES.map((t) => [t, 0])) as Record<ProductIssueType, number>;
@@ -82,7 +63,7 @@ export function useProductIssues() {
     setIssueMatchMode('or');
   };
 
-  const refresh = () => setReloadKey((n) => n + 1);
+  const refresh = () => refetch();
 
   return {
     items: pagedItems,

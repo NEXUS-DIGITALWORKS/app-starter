@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, FolderClock } from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '../hooks/useAuth'
 import { SaveMetaDialog, type SaveMetaState } from '../components/SaveMetaDialog'
 import { SavedHistoryToolbar } from '../features/app-history/components/SavedHistoryToolbar'
@@ -27,9 +28,21 @@ type EditTarget = { kind: 'diagnosis' | 'selection'; id: string } | null
 
 export default function AppHistory() {
   const { isAuthenticated } = useAuth()
-  const [diagnosisItems, setDiagnosisItems] = useState<AppHistoryDiagnosisEntry[]>([])
-  const [selectionItems, setSelectionItems] = useState<AppHistorySelectionEntry[]>([])
-  const [loading, setLoading] = useState(true)
+  const queryClient = useQueryClient()
+
+  const diagnosisQuery = useQuery({
+    queryKey: ['appHistory', 'diagnosis'],
+    queryFn: () => fetchSavedDiagnosisHistory(50),
+    enabled: isAuthenticated,
+  })
+  const selectionQuery = useQuery({
+    queryKey: ['appHistory', 'selection'],
+    queryFn: () => fetchSavedSelectionHistory(50),
+    enabled: isAuthenticated,
+  })
+  const diagnosisItems = diagnosisQuery.data ?? []
+  const selectionItems = selectionQuery.data ?? []
+  const loading = diagnosisQuery.isLoading || selectionQuery.isLoading
 
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<HistoryFilter>('all')
@@ -43,25 +56,25 @@ export default function AppHistory() {
   const [editMemo, setEditMemo] = useState('')
   const [editState, setEditState] = useState<SaveMetaState>('idle')
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setLoading(false)
-      return
-    }
+  const updateDiagnosisMutation = useMutation({
+    mutationFn: ({ id, title, memo }: { id: string; title: string; memo: string }) =>
+      updateSavedDiagnosisMeta(id, { title, memo }),
+    onSuccess: (_data, { id, title, memo }) => {
+      queryClient.setQueryData<AppHistoryDiagnosisEntry[]>(['appHistory', 'diagnosis'], (prev) =>
+        prev?.map((item) => (item.id === id ? { ...item, title: title.trim() || null, memo: memo.trim() || null } : item)),
+      )
+    },
+  })
 
-    async function load() {
-      setLoading(true)
-      const [diagnosis, selections] = await Promise.all([
-        fetchSavedDiagnosisHistory(50),
-        fetchSavedSelectionHistory(50),
-      ])
-      setDiagnosisItems(diagnosis)
-      setSelectionItems(selections)
-      setLoading(false)
-    }
-
-    load()
-  }, [isAuthenticated])
+  const updateSelectionMutation = useMutation({
+    mutationFn: ({ id, title, memo }: { id: string; title: string; memo: string }) =>
+      updateSavedSelectionMeta(id, { title, memo }),
+    onSuccess: (_data, { id, title, memo }) => {
+      queryClient.setQueryData<AppHistorySelectionEntry[]>(['appHistory', 'selection'], (prev) =>
+        prev?.map((item) => (item.id === id ? { ...item, title: title.trim() || null, memo: memo.trim() || null } : item)),
+      )
+    },
+  })
 
   const timeline = useMemo(() => buildHistoryTimeline(diagnosisItems, selectionItems), [diagnosisItems, selectionItems])
 
@@ -97,19 +110,9 @@ export default function AppHistory() {
     setEditState('saving')
     try {
       if (editTarget.kind === 'diagnosis') {
-        await updateSavedDiagnosisMeta(editTarget.id, { title: editTitle, memo: editMemo })
-        setDiagnosisItems((prev) =>
-          prev.map((item) =>
-            item.id === editTarget.id ? { ...item, title: editTitle.trim() || null, memo: editMemo.trim() || null } : item,
-          ),
-        )
+        await updateDiagnosisMutation.mutateAsync({ id: editTarget.id, title: editTitle, memo: editMemo })
       } else {
-        await updateSavedSelectionMeta(editTarget.id, { title: editTitle, memo: editMemo })
-        setSelectionItems((prev) =>
-          prev.map((item) =>
-            item.id === editTarget.id ? { ...item, title: editTitle.trim() || null, memo: editMemo.trim() || null } : item,
-          ),
-        )
+        await updateSelectionMutation.mutateAsync({ id: editTarget.id, title: editTitle, memo: editMemo })
       }
       setEditState('saved')
       setEditTarget(null)

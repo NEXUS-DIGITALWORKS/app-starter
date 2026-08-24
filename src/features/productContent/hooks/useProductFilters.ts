@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { addTagToProducts, fetchAvailableTags, fetchProductListSummary, fetchProducts, removeTagFromProduct } from '../api/productListApi';
 import { fetchCategories } from '../../categories/api/categoriesApi';
 import type { Category } from '../../categories/types';
@@ -7,7 +8,6 @@ import type {
   NameLocale,
   ProductListFilters,
   ProductListItem,
-  ProductListSummary,
   ProductSortBy,
   ProductStatus,
   UpdatedWithinFilter,
@@ -43,6 +43,7 @@ function useDebouncedValue<T>(value: T, delayMs: number): T {
 }
 
 export function useProductFilters() {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [searchInput, setSearchInput] = useState('');
@@ -53,11 +54,10 @@ export function useProductFilters() {
   // （/app/products?category=2510,2520 のようなディープリンクをカテゴリ管理画面等から使えるようにするため）。
   // filters.categoryIds はcategoryIdの配列、URLパラメータはcode(外部から読みやすい安定値)のカンマ区切りで持つ。
   // 一覧テーブルのカテゴリ列表示（categoryMap）にも同じ取得結果を流用する。
-  const [categoryOptions, setCategoryOptions] = useState<Category[]>([]);
-
-  useEffect(() => {
-    fetchCategories().then(setCategoryOptions);
-  }, []);
+  const { data: categoryOptions = [] } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: fetchCategories,
+  });
 
   const categoryMap = useMemo(() => new Map(categoryOptions.map((c) => [c.id, c])), [categoryOptions]);
 
@@ -77,16 +77,7 @@ export function useProductFilters() {
   const debouncedSearch = useDebouncedValue(searchInput, DEBOUNCE_MS);
   const debouncedIngredient = useDebouncedValue(ingredientInput, DEBOUNCE_MS);
 
-  const [items, setItems] = useState<ProductListItem[]>([]);
-  const [total, setTotal] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [summary, setSummary] = useState<ProductListSummary | null>(null);
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [reloadKey, setReloadKey] = useState(0);
 
   // 商品名の表示言語（絞り込みではなく、取得済みの商品名のどの言語カラムを表示するかの表示専用状態）。
   const [nameLocale, setNameLocale] = useState<NameLocale>('ja');
@@ -96,35 +87,25 @@ export function useProductFilters() {
     [filters, debouncedSearch, debouncedIngredient],
   );
 
-  useEffect(() => {
-    let ignore = false;
-    setIsLoading(true);
-    setError(null);
-    fetchProducts(queryFilters)
-      .then((res) => {
-        if (ignore) return;
-        setItems(res.items);
-        setTotal(res.total);
-      })
-      .catch(() => {
-        if (ignore) return;
-        setError('商品情報を取得できませんでした');
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [queryFilters, reloadKey]);
+  const productsQuery = useQuery({
+    queryKey: ['products', queryFilters],
+    queryFn: () => fetchProducts(queryFilters),
+  });
 
-  useEffect(() => {
-    fetchProductListSummary().then(setSummary);
-  }, [reloadKey]);
+  const items: ProductListItem[] = productsQuery.data?.items ?? [];
+  const total = productsQuery.data?.total ?? 0;
+  const isLoading = productsQuery.isLoading;
+  const error = productsQuery.isError ? '商品情報を取得できませんでした' : null;
 
-  useEffect(() => {
-    fetchAvailableTags().then(setAvailableTags);
-  }, [reloadKey]);
+  const { data: summary = null } = useQuery({
+    queryKey: ['productListSummary'],
+    queryFn: fetchProductListSummary,
+  });
+
+  const { data: availableTags = [] } = useQuery({
+    queryKey: ['availableTags'],
+    queryFn: fetchAvailableTags,
+  });
 
   // 検索条件が変わったらページを1に戻す
   useEffect(() => {
@@ -211,18 +192,37 @@ export function useProductFilters() {
 
   const clearSelection = () => setSelectedIds(new Set());
 
+  const invalidateProductQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['products'] });
+    queryClient.invalidateQueries({ queryKey: ['productListSummary'] });
+    queryClient.invalidateQueries({ queryKey: ['availableTags'] });
+  };
+
+  const addTagsMutation = useMutation({
+    mutationFn: ({ ids, tag }: { ids: string[]; tag: string }) => addTagToProducts(ids, tag),
+    onSuccess: () => {
+      invalidateProductQueries();
+      clearSelection();
+    },
+  });
+
+  const removeTagMutation = useMutation({
+    mutationFn: ({ id, tag }: { id: string; tag: string }) => removeTagFromProduct(id, tag),
+    onSuccess: invalidateProductQueries,
+  });
+
   const addTags = async (ids: string[], tag: string) => {
-    await addTagToProducts(ids, tag);
-    setReloadKey((n) => n + 1);
-    clearSelection();
+    await addTagsMutation.mutateAsync({ ids, tag });
   };
 
   const removeTag = async (id: string, tag: string) => {
-    await removeTagFromProduct(id, tag);
-    setReloadKey((n) => n + 1);
+    await removeTagMutation.mutateAsync({ id, tag });
   };
 
-  const refresh = () => setReloadKey((n) => n + 1);
+  const refresh = () => {
+    productsQuery.refetch();
+    invalidateProductQueries();
+  };
 
   return {
     searchInput,

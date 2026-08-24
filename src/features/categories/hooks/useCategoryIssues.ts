@@ -1,42 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { fetchCategoryIssues } from '../api/categoryIssuesApi';
 import { CATEGORY_ISSUE_TYPES } from '../lib/categoryIssueRules';
-import type { CategoryIssueItem, CategoryIssueType, IssueMatchMode } from '../types/categoryIssue';
+import type { CategoryIssueType, IssueMatchMode } from '../types/categoryIssue';
 
 const DEFAULT_LIMIT = 20;
 
 export function useCategoryIssues() {
-  const [allItems, setAllItems] = useState<CategoryIssueItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [reloadKey, setReloadKey] = useState(0);
-
   const [search, setSearch] = useState('');
   const [issueTypes, setIssueTypes] = useState<CategoryIssueType[]>([]);
   const [issueMatchMode, setIssueMatchMode] = useState<IssueMatchMode>('or');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(DEFAULT_LIMIT);
 
-  useEffect(() => {
-    let ignore = false;
-    setIsLoading(true);
-    setError(null);
-    fetchCategoryIssues()
-      .then((items) => {
-        if (ignore) return;
-        setAllItems(items);
-      })
-      .catch(() => {
-        if (ignore) return;
-        setError('改善候補カテゴリを取得できませんでした');
-      })
-      .finally(() => {
-        if (!ignore) setIsLoading(false);
-      });
-    return () => {
-      ignore = true;
-    };
-  }, [reloadKey]);
+  const { data: allItems = [], isLoading, isError, refetch } = useQuery({
+    queryKey: ['categoryIssues'],
+    queryFn: fetchCategoryIssues,
+  });
+  const error = isError ? '改善候補カテゴリを取得できませんでした' : null;
 
   const issueCounts = useMemo(() => {
     const counts = Object.fromEntries(CATEGORY_ISSUE_TYPES.map((t) => [t, 0])) as Record<CategoryIssueType, number>;
@@ -82,7 +63,7 @@ export function useCategoryIssues() {
     setIssueMatchMode('or');
   };
 
-  const refresh = () => setReloadKey((n) => n + 1);
+  const refresh = () => refetch();
 
   return {
     items: pagedItems,
