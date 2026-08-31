@@ -31,10 +31,10 @@ const TOOL_ENTRIES: ToolEntry[] = [
     icon: Sparkles,
   },
   {
-    id: 'tech-selector',
-    title: '技術要素セレクター',
-    desc: '使いたい技術を選んで、最適な構成パターンを探します。',
-    href: '/tools/tech-selector',
+    id: 'tech-diagnosis',
+    title: 'Tech診断',
+    desc: '作りたいものを自由に書くだけで、最適な技術構成をAIが診断します。',
+    href: '/tools/tech-diagnosis',
     icon: Layers,
   },
   {

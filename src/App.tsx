@@ -7,6 +7,7 @@ import './App.css';
 const ToolsHome = lazy(() => import('./pages/ToolsHome'));
 const DiagnosisIntro = lazy(() => import('./pages/DiagnosisIntro'));
 const DiagnosisFlow = lazy(() => import('./pages/DiagnosisFlow'));
+const TechDiagnosis = lazy(() => import('./pages/TechDiagnosis'));
 const TechStackSelector = lazy(() => import('./pages/TechStackSelector'));
 const TechGuide = lazy(() => import('./pages/TechGuide'));
 const PatternGuide = lazy(() => import('./pages/PatternGuide'));
@@ -52,6 +53,7 @@ export default function App() {
 
         <Route path="/tools/diagnosis" element={<DiagnosisIntro />} />
         <Route path="/tools/diagnosis/start" element={<DiagnosisFlow />} />
+        <Route path="/tools/tech-diagnosis" element={<TechDiagnosis />} />
         <Route path="/tools/tech-selector" element={<TechStackSelector />} />
         <Route path="/tools/tech-selector/report" element={<TechSelectorReport />} />
         <Route path="/tools/tech-guide" element={<TechGuide />} />
