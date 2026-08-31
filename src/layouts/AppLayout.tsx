@@ -78,7 +78,7 @@ function AppLayoutContent() {
 
   return (
     <div className="flex h-screen flex-col bg-[#F8FAFC]">
-      <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-[#D0D5DD] bg-white px-4 shadow-[0_1px_3px_rgba(16,24,40,0.06)]">
+      <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center justify-between border-b border-[#D0D5DD] bg-white px-4 shadow-[0_1px_3px_rgba(16,24,40,0.06)] sm:px-8">
         <div className="flex min-w-0 items-center gap-1">
           <button
             type="button"
@@ -89,7 +89,7 @@ function AppLayoutContent() {
             <Menu size={22} />
           </button>
           <Link to="/app" className="flex min-w-0 items-center gap-2">
-            <img src={logo} alt="BizTools" className="h-12 w-auto shrink-0" />
+            <img src={logo} alt="BizTools" className="brand-logo" />
           </Link>
         </div>
         <AccountMenu />
@@ -124,7 +124,7 @@ function AppLayoutContent() {
             />
             <aside className="absolute inset-y-0 left-0 flex w-[min(280px,84vw)] flex-col bg-[#FBFBFC] shadow-[0_0_24px_rgba(16,24,40,0.2)]">
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] px-4">
-                <img src={logo} alt="BizTools" className="h-12 w-auto shrink-0" />
+                <img src={logo} alt="BizTools" className="brand-logo" />
                 <button
                   type="button"
                   onClick={() => setMobileNavOpen(false)}

@@ -14,7 +14,7 @@ export function DiagnosisHeader() {
   const location = useLocation()
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white/75 px-5 backdrop-blur-[8px] sm:px-8 print:hidden">
+    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between border-b border-[#E5E7EB] bg-white/75 px-4 backdrop-blur-[8px] sm:px-8 print:hidden">
       <div className="flex shrink-0 items-center gap-3">
         <Link to="/" className="flex shrink-0 items-center gap-2">
           <img src={logo} alt="BizTools" className="brand-logo" />
