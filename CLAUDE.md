@@ -28,6 +28,30 @@ Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQL
 
 [src/hooks/useAuth.ts](src/hooks/useAuth.ts) には `.env` 未設定時のみ有効なローカル専用ログイン（`devSignIn`, `DEV_LOGIN_EMAIL`/`DEV_LOGIN_PASSWORD`）がある。Supabase接続情報が設定された瞬間に `isDevLoginAvailable()` が false になり機能しなくなる、バックエンドなしで `/app` 配下を検証するための迂回であり、本番の認証経路には影響しない。
 
+### Supabase Edge Functionsのセットアップ（AI Workflow Platform化・Phase1）
+
+`supabase/functions/` にClaude Message Batches API連携用のEdge Functions（Deno）がある。Claude API Keyはフロントエンドに一切置かず、Edge Function側のシークレットとしてのみ扱う。
+
+- `supabase/functions/_shared/anthropicClient.ts` — Batches APIへの薄いクライアント（`createBatch`/`retrieveBatch`/`fetchBatchResults`、raw fetch、Anthropic SDK未使用）
+- `supabase/functions/ai-batch-debug/index.ts` — 疎通確認専用エンドポイント（`batchId`クエリなしでバッチ作成、ありでステータス確認・結果取得）
+
+ローカル検証手順:
+1. [Supabase CLI](https://supabase.com/docs/guides/cli) をインストールし `supabase login` → `supabase link` でプロジェクトに接続
+2. `supabase/functions/.env.example` を同じディレクトリに `.env` としてコピーし、`ANTHROPIC_API_KEY` に実キーを設定（`.env` は `.gitignore` 済み）
+3. プロジェクトルートで `supabase functions serve` を起動
+4. 別ターミナルから疎通確認:
+   ```bash
+   curl -i -X POST 'http://localhost:54321/functions/v1/ai-batch-debug' \
+     --header "Authorization: Bearer <anon key>"
+   # → { "batch_id": "...", "processing_status": "in_progress" } が返る
+
+   curl "http://localhost:54321/functions/v1/ai-batch-debug?batchId=<batch_id>" \
+     --header "Authorization: Bearer <anon key>"
+   # → processing_status が ended になったら結果本文まで返る
+   ```
+
+本番デプロイ時は `supabase secrets set ANTHROPIC_API_KEY=sk-ant-...` でシークレット登録後、`supabase functions deploy ai-batch-debug` を実行する。
+
 ## コマンド
 
 ```bash
