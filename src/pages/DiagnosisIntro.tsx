@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import './DiagnosisIntro.css';
 

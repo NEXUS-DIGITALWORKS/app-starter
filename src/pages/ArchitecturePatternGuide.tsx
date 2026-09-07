@@ -4,7 +4,7 @@ import { ArrowRight, ChevronRight } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
 import { getArchitecturePatterns } from '../features/build-or-buy/data/architecturePatterns';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/pattern-guide.css';

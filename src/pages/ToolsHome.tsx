@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, BookOpen, ShieldCheck, Sparkles, Layers } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import './ToolsHome.css';
 
@@ -31,10 +31,10 @@ const TOOL_ENTRIES: ToolEntry[] = [
     icon: Sparkles,
   },
   {
-    id: 'tech-selector',
-    title: '技術要素セレクター',
-    desc: '使いたい技術を選んで、最適な構成パターンを探します。',
-    href: '/tools/tech-selector',
+    id: 'tech-diagnosis',
+    title: 'Tech診断',
+    desc: '作りたいものを自由に書くだけで、最適な技術構成をAIが診断します。',
+    href: '/tools/tech-diagnosis',
     icon: Layers,
   },
   {

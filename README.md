@@ -45,10 +45,10 @@ Build or Buy診断のロジック設計ドキュメントは [docs/build-or-buy-
    3. [supabase/migrations/setup_tech_selections.sql](supabase/migrations/setup_tech_selections.sql)
       技術要素セレクターの結果を保存する `tech_selections` テーブルが作られます（同様に本人のみ閲覧・削除可）。
 
-4. `.env.example` を `.env` にコピーし、`.env` にSupabaseの Settings > API にある値を設定する
+4. `.env.local.example` を `.env` にコピーし、`.env` にSupabaseの Settings > API にある値を設定する
 
    ```bash
-   cp .env.example .env
+   cp .env.local.example .env
    ```
 
    > VITE_SUPABASE_URL と VITE_SUPABASE_PUBLISHABLE_KEY は、WebアプリからSupabaseに接続するための情報です。ブラウザ上で使われることを前提としているため、利用者から見える状態になっても基本的には問題ありません。

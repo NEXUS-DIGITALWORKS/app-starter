@@ -6,7 +6,7 @@ import ToolsNav from '../components/ToolsNav';
 import ArchitecturePatternBody from '../features/build-or-buy/components/ArchitecturePatternBody';
 import { getArchitecturePattern } from '../features/build-or-buy/data/architecturePatterns';
 import { getStackProfiles } from '../features/build-or-buy/data/stackProfiles';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/pattern-guide.css';

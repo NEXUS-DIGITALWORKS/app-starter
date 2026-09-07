@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { TransitionEvent } from 'react';
 import { Link } from 'react-router-dom';
 import AuthWidget from '../features/auth/AuthWidget';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import './Home.css';
 

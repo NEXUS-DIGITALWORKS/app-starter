@@ -7,7 +7,7 @@ import { getCategories } from '../features/tech-stack-selector/data/categories';
 import { getElementDetails } from '../features/tech-stack-selector/data/elementDetails';
 import { getAllPatternIds, getPatternMap } from '../features/tech-stack-selector/data/patterns';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/tech-guide.css';

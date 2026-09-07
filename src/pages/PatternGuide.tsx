@@ -6,7 +6,7 @@ import ToolsNav from '../components/ToolsNav';
 import { getPatterns } from '../features/tech-stack-selector/data/patterns';
 import { getPatternDetails } from '../features/tech-stack-selector/data/patternDetails';
 import type { Pattern } from '../features/tech-stack-selector/types';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/pattern-guide.css';

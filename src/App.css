@@ -29,7 +29,7 @@
 }
 
 .brand-logo {
-  height: 26px;
+  height: 34px;
   width: auto;
   flex-shrink: 0;
   display: block;
@@ -329,6 +329,21 @@
   outline: none;
   border-color: var(--color-primary);
   background: #fff;
+}
+
+.auth-link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--color-primary);
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
 }
 
 .form-msg {

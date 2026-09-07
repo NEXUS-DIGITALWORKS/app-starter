@@ -8,7 +8,7 @@ import { getPatternMap } from '../features/tech-stack-selector/data/patterns';
 import { getPatternDetails } from '../features/tech-stack-selector/data/patternDetails';
 import { buildSelectionForPattern } from '../features/tech-stack-selector/lib/matchEngine';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
-import logo from '../assets/logo.svg';
+import logo from '../assets/logo.png';
 import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/pattern-guide.css';

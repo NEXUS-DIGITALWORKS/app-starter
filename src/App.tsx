@@ -8,6 +8,7 @@ import './App.css';
 const ToolsHome = lazy(() => import('./pages/ToolsHome'));
 const DiagnosisIntro = lazy(() => import('./pages/DiagnosisIntro'));
 const DiagnosisFlow = lazy(() => import('./pages/DiagnosisFlow'));
+const TechDiagnosis = lazy(() => import('./pages/TechDiagnosis'));
 const TechStackSelector = lazy(() => import('./pages/TechStackSelector'));
 const TechGuide = lazy(() => import('./pages/TechGuide'));
 const PatternGuide = lazy(() => import('./pages/PatternGuide'));
@@ -16,6 +17,7 @@ const ArchitecturePatternGuide = lazy(() => import('./pages/ArchitecturePatternG
 const ArchitecturePatternDetailPage = lazy(() => import('./pages/ArchitecturePatternDetailPage'));
 const TechSelectorReport = lazy(() => import('./pages/TechSelectorReport'));
 const RiskCheck = lazy(() => import('./pages/RiskCheck'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AppHome = lazy(() => import('./pages/AppHome'));
 const AppHistory = lazy(() => import('./pages/AppHistory'));
 const Account = lazy(() => import('./pages/Account'));
@@ -24,6 +26,11 @@ const RegistryCategories = lazy(() => import('./pages/RegistryCategories'));
 const RegistryTags = lazy(() => import('./pages/RegistryTags'));
 const RegistryStacks = lazy(() => import('./pages/RegistryStacks'));
 const RegistryRules = lazy(() => import('./pages/RegistryRules'));
+const ProductContent = lazy(() => import('./features/productContent').then((m) => ({ default: m.ProductContentPage })));
+const ProductList = lazy(() => import('./features/productContent').then((m) => ({ default: m.ProductListPage })));
+const ProductImprovements = lazy(() => import('./features/productContent').then((m) => ({ default: m.ProductImprovementsPage })));
+const CategoryManagement = lazy(() => import('./features/categories').then((m) => ({ default: m.CategoryManagementPage })));
+const CategoryImprovements = lazy(() => import('./features/categories').then((m) => ({ default: m.CategoryImprovementsPage })));
 
 // 旧URL（/tools, /diagnosis, /tech-selector, /tech-guide）のブックマーク・共有リンクの
 // 互換性維持のため、クエリ・ハッシュを保持したままリダイレクトする。
@@ -44,6 +51,11 @@ export default function App() {
 
         <Route path="/app" element={<AppLayout />}>
           <Route index element={<AppHome />} />
+          <Route path="products" element={<ProductList />} />
+          <Route path="products/improvements" element={<ProductImprovements />} />
+          <Route path="products/:sku" element={<ProductContent />} />
+          <Route path="categories" element={<CategoryManagement />} />
+          <Route path="categories/improvements" element={<CategoryImprovements />} />
           <Route
             path="history"
             element={
@@ -105,6 +117,7 @@ export default function App() {
             </RegistryGate>
           }
         />
+        <Route path="/tools/tech-diagnosis" element={<TechDiagnosis />} />
         <Route
           path="/tools/tech-selector"
           element={
@@ -162,6 +175,7 @@ export default function App() {
           }
         />
         <Route path="/tools/risk-check" element={<RiskCheck />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/tools" element={<RedirectTo path="/" />} />
         <Route path="/diagnosis" element={<RedirectTo path="/tools/diagnosis" />} />
