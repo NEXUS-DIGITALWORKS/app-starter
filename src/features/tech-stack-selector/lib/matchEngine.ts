@@ -1,10 +1,10 @@
-import { CATEGORIES } from '../data/categories';
-import { PATTERN_MAP } from '../data/patterns';
+import { getCategories } from '../data/categories';
+import { getPatternMap } from '../data/patterns';
 import type { PatternMatch, Selection, TechElement } from '../types';
 
 export function getSelectedElements(selection: Selection): TechElement[] {
   const elements: TechElement[] = [];
-  for (const category of CATEGORIES) {
+  for (const category of getCategories()) {
     const elementIds = selection[category.id] ?? [];
     for (const elementId of elementIds) {
       const element = category.elements.find((e) => e.id === elementId);
@@ -28,9 +28,10 @@ export function computePatternMatches(selection: Selection): PatternMatch[] {
     }
   }
 
+  const patternMap = getPatternMap();
   const matches: PatternMatch[] = [];
   for (const [patternId, matchedCount] of countByPatternId) {
-    const pattern = PATTERN_MAP[patternId];
+    const pattern = patternMap[patternId];
     if (!pattern) continue;
     matches.push({
       pattern,
@@ -52,7 +53,7 @@ export function countSelectedElements(selection: Selection): number {
 // そのパターンに関係しないカテゴリは未選択（空配列）になる。
 export function buildSelectionForPattern(patternId: string): Selection {
   const selection: Selection = {};
-  for (const category of CATEGORIES) {
+  for (const category of getCategories()) {
     selection[category.id] = category.elements
       .filter((element) => element.patternIds.includes(patternId))
       .map((element) => element.id);

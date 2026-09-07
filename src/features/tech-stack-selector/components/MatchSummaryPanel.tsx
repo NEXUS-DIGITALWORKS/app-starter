@@ -4,7 +4,7 @@ import { CheckCircle2, Copy, FileText, RotateCcw, Save, Sparkles } from 'lucide-
 import { isSupabaseConfigured } from '../../../lib/supabaseClient';
 import { useAuth } from '../../../hooks/useAuth';
 import { SaveMetaDialog } from '../../../components/SaveMetaDialog';
-import { CATEGORIES } from '../data/categories';
+import { getCategories } from '../data/categories';
 import { computePatternMatches, getSelectedElements } from '../lib/matchEngine';
 import { buildShareUrl, encodeSelectionToParam } from '../lib/shareLink';
 import { saveTechSelection } from '../lib/resultsRepo';
@@ -128,7 +128,7 @@ export default function MatchSummaryPanel({ selection, onReset, onApplyPattern }
             <p className="tss-summary-empty">まだ選択はありません。</p>
           ) : (
             <ul className="tss-selection-list">
-              {CATEGORIES.map((category) => {
+              {getCategories().map((category) => {
                 const elementIds = selection[category.id] ?? [];
                 if (elementIds.length === 0) return null;
                 const names = elementIds

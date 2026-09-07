@@ -1,0 +1,10 @@
+-- 自動生成ファイル。手編集禁止。
+-- 再生成: npm run registry:generate-seed （data/*.seed.ts を編集してから実行すること）
+
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('preferred_for_preset:m365_power_platform:P4', 1, 'preferred_for_preset', 'm365_power_platform', NULL, 'P4', NULL, NULL, 0);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:kintone', 1, 'answer_option_alias', 'kintone', NULL, NULL, 'q_existing_saas', 'kintone', 1);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:m365', 1, 'answer_option_alias', 'm365_power_platform', NULL, NULL, 'q_existing_saas', 'm365', 2);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:salesforce', 1, 'answer_option_alias', 'salesforce_sales_cloud', NULL, NULL, 'q_existing_saas', 'salesforce', 3);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:hubspot', 1, 'answer_option_alias', 'hubspot_crm', NULL, NULL, 'q_existing_saas', 'hubspot', 4);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:notion', 1, 'answer_option_alias', 'notion_qast', NULL, NULL, 'q_existing_saas', 'notion', 5);
+INSERT INTO registry_rules (id, release_id, rule_type, technology_id, tag_id, preset_id, condition_key, condition_value, sort_order) VALUES ('answer_option_alias:q_existing_saas:zendesk', 1, 'answer_option_alias', 'zendesk', NULL, NULL, 'q_existing_saas', 'zendesk', 6);

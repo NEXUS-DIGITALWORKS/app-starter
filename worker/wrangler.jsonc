@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "stack-registry-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "stack-registry-db",
+      "database_id": "723dea5f-1033-489e-b516-06c8ec3a45fe"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGIN": "http://localhost:5173"
+  }
+}

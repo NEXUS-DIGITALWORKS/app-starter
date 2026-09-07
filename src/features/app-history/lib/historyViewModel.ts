@@ -1,4 +1,4 @@
-import { CATEGORIES } from '../../tech-stack-selector/data/categories'
+import { getCategories } from '../../tech-stack-selector/data/categories'
 import { buildSelectionForPattern, getSelectedElements } from '../../tech-stack-selector/lib/matchEngine'
 import { encodeSelectionToParam } from '../../tech-stack-selector/lib/shareLink'
 import { buildDiagnosisSummary, countSelectedTechItems } from './historySummary'
@@ -32,7 +32,7 @@ export type SavedHistoryItem =
     }
 
 function buildTechByCategory(selection: Record<string, string[] | undefined>): TechCategoryGroup[] {
-  return CATEGORIES.map((category) => {
+  return getCategories().map((category) => {
     const elementIds = selection[category.id] ?? []
     const names = elementIds
       .map((id) => category.elements.find((e) => e.id === id)?.name)

@@ -58,9 +58,14 @@ Supabaseプロジェクトの SQL Editor で `supabase/migrations/` 配下のSQL
 npm run dev       # 開発サーバー起動（vite.config.ts で host: '0.0.0.0', port: 5173 を指定。同一LAN内の他端末からもアクセス可能）
 npm run build     # tsc -b && vite build（型チェック→ビルド）
 npm run preview   # ビルド成果物のプレビュー
+npm test          # vitest run
+
+npm run registry:generate-seed   # data/*.seed.ts から worker/migrations/0002_seed_release_v1.sql を再生成
+npm run worker:dev               # worker/ 配下で wrangler dev を起動（Registry API、http://localhost:8787）
+npm run worker:db:migrate:local  # D1ローカルにmigrationを適用
 ```
 
-テスト・lintのスクリプトは現状 package.json に定義されていない。型エラーの確認は `npm run build`（内部で `tsc -b` が走る）で行う。
+lintのスクリプトは現状 package.json に定義されていない。型エラーの確認は `npm run build`（内部で `tsc -b` が走る）で行う。
 
 ## アーキテクチャ
 
@@ -89,6 +94,26 @@ npm run preview   # ビルド成果物のプレビュー
 - 結果の永続化は [lib/resultsRepo.ts](src/features/tech-stack-selector/lib/resultsRepo.ts)（`tech_selections` テーブル）
 
 両featureとも `ArchitecturePatternId`（P1〜P9/P10）を共有概念として扱うが、型定義・データはfeatureごとに独立している（`build-or-buy/types.ts` と `tech-stack-selector/types.ts` は別物）。
+
+両featureの `data/architecturePatterns.ts` / `stackProfiles.ts` / `saasProducts.ts` / `categories.ts` / `patterns.ts` / `patternDetails.ts` / `elementDetails.ts` は、静的配列を直接exportする形から **Stack Registry（後述）から取得したデータを返すgetter関数**（`getArchitecturePatterns()` 等）に置き換わっている。診断アルゴリズム自体（`diagnosisEngine.ts` / `matchEngine.ts`）は変更していない。
+
+### Stack Registry（`worker/` + `src/lib/registry/`）
+
+技術スタック・カテゴリ・タグ・推奨構成（Stack Preset）・互換性ルールは、Cloudflare D1を中央DBとするStack Registryへ集約されている。診断アルゴリズム・スコアリング・画面ロジックはコード側（`data/questions.ts` 等）に残したまま、**マスターデータのみ**をRegistry参照に切り替える設計。
+
+- `worker/` — Registry API用のCloudflare Worker（独立npmパッケージ、`cd worker && npm test`でvitest実行）。`src/index.ts` → `routes/` → `services/registryService.ts`（読み取り専用） / `services/adminService.ts`（管理API） → `repositories/`(D1依存を隔離) → `mappers/` の構成。`GET /api/v1/registry` が最重要API（Registry全体をversion付きで返す）
+- `worker/migrations/0001_init_schema.sql` — D1スキーマ本体。`0002_add_technology_scores.sql` は評価値（security/cost/development_speed/ai_coding/scalability_score）・status・notes列の追加。`0003_seed_release_v1_NNN.sql`（複数ファイル）は自動生成物（**手編集禁止**、`npm run registry:generate-seed` で再生成する）。D1リモートAPIは1リクエストのペイロードサイズに上限があり明示的な`BEGIN TRANSACTION`/`COMMIT`も使えないため、テーブルごと・バイト数ベースで複数ファイルに分割している（`scripts/registry-seed/toSql.ts`）。スキーマ変更（0002）はseed（0003）より前の番号にすること（seedのINSERT文が新列を参照するため）
+- 本番Worker: `stack-registry-worker`（アカウント `yoshinori.nakamura@nexus-digitalworks.com`）としてデプロイ済み。URL: `https://stack-registry-worker.stack-registry-worker.workers.dev`。D1データベース`stack-registry-db`（database_id: `723dea5f-1033-489e-b516-06c8ec3a45fe`、`worker/wrangler.jsonc`に記載）にmigration適用済み。再デプロイは`cd worker && npx wrangler deploy`、リモートDBへのmigration適用は`npx wrangler d1 migrations apply stack-registry-db --remote`。`ALLOWED_ORIGIN`（`wrangler.jsonc`の`vars`）は現状`http://localhost:5173`固定（フロントエンド未デプロイのため）。フロントを実際にデプロイする際はここを更新すること
+- `POST/PATCH/DELETE /api/v1/admin/{technologies,categories,tags,stacks,rules}` — Registry管理画面（`/app/registry/*`、`src/features/registry-admin/`）用のCRUD API。現在唯一のpublished releaseを直接編集する（Draft/Publish運用は未実装）。削除時はTechnology/Category/Stack Presetが他から参照されていればブロックし、Technology/Tag/Stack Preset自身が持つ子レコード（タグ付け・items・関連ルール）はcascade削除する（詳細は`worker/src/services/adminService.ts`）。**認証チェックなし**（ローカル開発限定・未デプロイのため。Cloudflare Access統合は未実装）
+- 管理画面での変更後は `useRegistry().refresh()`（`RegistryProvider.tsx`）を呼び、Registryキャッシュを再取得する。これにより診断ページ側の表示も同時に最新化される
+- `scripts/registry-seed/fromSource.ts` — 各featureの `data/*.seed.ts`（Registry化前の元データをリネームして温存したもの）から `RegistryData` を組み立てる純粋関数。D1 seed生成（`toSql.ts`）とvitestのフィクスチャ（`src/test/registryFixture.ts`）の両方がこれを単一ソースとして参照し、シードとテストのドリフトを防ぐ
+- `src/lib/registry/registryCache.ts` — アプリ起動時に `GET /api/v1/registry` を1回fetchしてモジュール単位に保持するキャッシュ。`getRegistrySync()` で同期取得できるため、既存の `diagnose()` / `computePatternMatches()` 等の同期関数シグネチャは変更していない
+- `src/lib/registry/RegistryProvider.tsx` / `RegistryGate.tsx` — Registry依存ページ（`/tools/diagnosis/start`, `/tools/tech-selector`, `/tools/tech-selector/report`, `/tools/tech-guide`, `/tools/patterns`, `/app/history`）のみ `<RegistryGate>` でラップし、ロード完了後にmountする
+- `src/lib/registry/selectors.ts` — `RegistryData` → 各featureの既存ドメイン型（`ArchitecturePattern` / `StackProfile` / `TechCategory` 等）への変換
+- ローカル開発: `npm run worker:dev`（別ターミナル）→ `npm run dev`。`.env.local` に `VITE_REGISTRY_API_BASE_URL=http://localhost:8787` を設定する（`.env.local.example` 参照）
+- `build-or-buy` 用の「P1〜P9」アーキテクチャパターン体系と、`tech-stack-selector` 用の「WEB-01等」技術構成パターン体系は統合せず、`registry_stack_presets.preset_type`（`architecture_pattern` / `tech_pattern`）で区別したまま共存させている
+
+現状はSupabase・Cloudflare Registryの両方が並行して存在する（Supabaseは未接続のまま、認証・診断結果の保存にのみ使用）。Supabase撤去は別フェーズ。
 
 ### 認証（[src/hooks/useAuth.ts](src/hooks/useAuth.ts)）
 

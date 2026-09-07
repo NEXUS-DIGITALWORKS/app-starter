@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { badgeVariants } from '../../../components/ui/badge';
 import { cn } from '../../../lib/utils';
-import { CATEGORIES } from '../data/categories';
+import { getCategories } from '../data/categories';
 import type { Selection } from '../types';
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -37,7 +37,7 @@ type Props = {
 };
 
 export default function SelectedTechnologyList({ selection, selectedCount }: Props) {
-  const categoriesWithSelection = CATEGORIES.map((category) => {
+  const categoriesWithSelection = getCategories().map((category) => {
     const elementIds = selection[category.id] ?? [];
     const elements = elementIds
       .map((id) => category.elements.find((e) => e.id === id))

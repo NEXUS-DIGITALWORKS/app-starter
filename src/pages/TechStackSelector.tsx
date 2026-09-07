@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
 import CategorySection from '../features/tech-stack-selector/components/CategorySection';
 import MatchSummaryPanel from '../features/tech-stack-selector/components/MatchSummaryPanel';
-import { CATEGORIES } from '../features/tech-stack-selector/data/categories';
+import { getCategories } from '../features/tech-stack-selector/data/categories';
 import { buildSelectionForPattern } from '../features/tech-stack-selector/lib/matchEngine';
 import { readSelectionFromLocation } from '../features/tech-stack-selector/lib/shareLink';
 import type { Selection } from '../features/tech-stack-selector/types';
@@ -14,6 +14,7 @@ import '../App.css';
 import '../features/tech-stack-selector/tech-stack-selector.css';
 
 export default function TechStackSelector() {
+  const categories = useMemo(() => getCategories(), []);
   const [selection, setSelection] = useState<Selection>(() => readSelectionFromLocation());
 
   const handleToggle = (categoryId: string, elementId: string) => {
@@ -58,7 +59,7 @@ export default function TechStackSelector() {
 
       <div className="tss-layout">
         <div className="tss-categories">
-          {CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <CategorySection
               key={category.id}
               category={category}

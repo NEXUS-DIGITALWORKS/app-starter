@@ -11,9 +11,9 @@ import type {
   StackProfile,
 } from '../types'
 import { appTypes } from '../data/appTypes'
-import { architecturePatterns, getArchitecturePattern } from '../data/architecturePatterns'
+import { getArchitecturePattern, getArchitecturePatterns } from '../data/architecturePatterns'
 import { findStackProfile } from '../data/stackProfiles'
-import { existingSaasOptionToProductId, estimateSaasMonthlyCost, findSaasProducts, type SaasProduct } from '../data/saasProducts'
+import { getExistingSaasOptionToProductId, estimateSaasMonthlyCost, findSaasProducts, type SaasProduct } from '../data/saasProducts'
 import { questions } from '../data/questions'
 import { scoringRules } from '../data/scoringRules'
 import { exclusionRules } from '../data/exclusionRules'
@@ -218,6 +218,7 @@ export function computeBuildOrBuy(
 type BuildOrBuyComputed = ReturnType<typeof computeBuildOrBuy>
 
 export function computeArchitectureScores(answers: Answers) {
+  const architecturePatterns = getArchitecturePatterns()
   const excludedIds = new Set<ArchitecturePatternId>()
   const exclusionReasons: { patternId: ArchitecturePatternId; reason: string }[] = []
 
@@ -311,6 +312,7 @@ function resolveSaasSelection(
 
   const existingSaasSelected = getAnswer(answers, 'q_existing_saas').filter((value) => value !== 'none')
   const existingSaasOtherText = getSingle(answers, 'q_existing_saas_other')?.trim()
+  const existingSaasOptionToProductId = getExistingSaasOptionToProductId()
   const existingProductIds = new Set(
     existingSaasSelected.map((value) => existingSaasOptionToProductId[value]).filter((id): id is string => Boolean(id)),
   )

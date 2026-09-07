@@ -5,8 +5,8 @@ import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import SelectedTechnologyList from '../features/tech-stack-selector/components/SelectedTechnologyList';
-import { PATTERNS, PATTERN_MAP } from '../features/tech-stack-selector/data/patterns';
-import { PATTERN_DETAILS, type PatternDetail } from '../features/tech-stack-selector/data/patternDetails';
+import { getPatternMap, getPatterns } from '../features/tech-stack-selector/data/patterns';
+import { getPatternDetails, type PatternDetail } from '../features/tech-stack-selector/data/patternDetails';
 import { buildSelectionForPattern, countSelectedElements } from '../features/tech-stack-selector/lib/matchEngine';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
 import type { Pattern } from '../features/tech-stack-selector/types';
@@ -27,10 +27,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 type PatternGroup = { prefix: string; label: string; patterns: Pattern[] };
 
-function groupPatterns(): PatternGroup[] {
+function groupPatterns(patterns: Pattern[]): PatternGroup[] {
   const order: string[] = [];
   const groups = new Map<string, Pattern[]>();
-  for (const pattern of PATTERNS) {
+  for (const pattern of patterns) {
     const prefix = pattern.id.split('-')[0];
     if (!groups.has(prefix)) {
       groups.set(prefix, []);
@@ -101,10 +101,13 @@ function PatternDetailBody({ pattern, detail }: { pattern: Pattern; detail: Patt
 }
 
 export default function PatternGuide() {
-  const groups = useMemo(groupPatterns, []);
+  const patterns = useMemo(() => getPatterns(), []);
+  const patternMap = useMemo(() => getPatternMap(), []);
+  const patternDetails = useMemo(() => getPatternDetails(), []);
+  const groups = useMemo(() => groupPatterns(patterns), [patterns]);
   const [openPatternId, setOpenPatternId] = useState<string | null>(null);
 
-  const activePattern = openPatternId ? PATTERN_MAP[openPatternId] : null;
+  const activePattern = openPatternId ? patternMap[openPatternId] : null;
   const activeSelection = useMemo(
     () => (openPatternId ? buildSelectionForPattern(openPatternId) : {}),
     [openPatternId],
@@ -126,7 +129,7 @@ export default function PatternGuide() {
         <span className="tss-eyebrow">リファレンス</span>
         <h1>構成パターンガイド</h1>
         <p>
-          技術要素セレクターが判定する、全{PATTERNS.length}件の構成パターン（WEB / MOB / DESK / BIZ / AI / INF）を一覧で解説します。
+          技術要素セレクターが判定する、全{patterns.length}件の構成パターン（WEB / MOB / DESK / BIZ / AI / INF）を一覧で解説します。
           <br />
           パターンを開くと、右側にそのパターンで使う技術要素が表示されます。
           <Link to="/tools/tech-selector" className="tss-inline-link">
@@ -160,7 +163,7 @@ export default function PatternGuide() {
 
                 <div className="pg-item-list">
                   {group.patterns.map((pattern) => {
-                    const detail = PATTERN_DETAILS[pattern.id];
+                    const detail = patternDetails[pattern.id];
                     if (!detail) return null;
 
                     return (

@@ -1,10 +1,11 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ExternalLink } from 'lucide-react';
 import AuthWidget from '../features/auth/AuthWidget';
 import ToolsNav from '../components/ToolsNav';
-import { CATEGORIES } from '../features/tech-stack-selector/data/categories';
-import { ELEMENT_DETAILS } from '../features/tech-stack-selector/data/elementDetails';
-import { ALL_PATTERN_IDS, PATTERN_MAP } from '../features/tech-stack-selector/data/patterns';
+import { getCategories } from '../features/tech-stack-selector/data/categories';
+import { getElementDetails } from '../features/tech-stack-selector/data/elementDetails';
+import { getAllPatternIds, getPatternMap } from '../features/tech-stack-selector/data/patterns';
 import { encodeSelectionToParam } from '../features/tech-stack-selector/lib/shareLink';
 import logo from '../assets/logo.svg';
 import '../App.css';
@@ -12,6 +13,11 @@ import '../features/tech-stack-selector/tech-stack-selector.css';
 import '../features/tech-stack-selector/tech-guide.css';
 
 export default function TechGuide() {
+  const CATEGORIES = useMemo(() => getCategories(), []);
+  const ELEMENT_DETAILS = useMemo(() => getElementDetails(), []);
+  const ALL_PATTERN_IDS = useMemo(() => getAllPatternIds(), []);
+  const PATTERN_MAP = useMemo(() => getPatternMap(), []);
+
   return (
     <div className="page tools-scope">
       <header className="site-header">

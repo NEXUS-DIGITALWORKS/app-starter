@@ -16,7 +16,7 @@ import ExpectedFeatures from '../features/tech-stack-selector/components/Expecte
 import SuitabilityComparison from '../features/tech-stack-selector/components/SuitabilityComparison';
 import SelectedTechnologyList from '../features/tech-stack-selector/components/SelectedTechnologyList';
 import ReportNextActions from '../features/tech-stack-selector/components/ReportNextActions';
-import { PATTERN_DETAILS } from '../features/tech-stack-selector/data/patternDetails';
+import { getPatternDetails } from '../features/tech-stack-selector/data/patternDetails';
 import { saveTechSelection } from '../features/tech-stack-selector/lib/resultsRepo';
 import { computePatternMatches, getSelectedElements } from '../features/tech-stack-selector/lib/matchEngine';
 import { encodeSelectionToParam, readSelectionFromLocation } from '../features/tech-stack-selector/lib/shareLink';
@@ -43,6 +43,7 @@ export default function TechSelectorReport() {
     () => `/tools/tech-selector?s=${encodeSelectionToParam(selection)}`,
     [selection],
   );
+  const patternDetails = useMemo(() => getPatternDetails(), []);
 
   const supabaseConfigured = isSupabaseConfigured();
   const saveDisabledReason = !supabaseConfigured
@@ -104,7 +105,7 @@ export default function TechSelectorReport() {
           <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_340px] xl:items-start">
             <div className="flex min-w-0 flex-col gap-8">
               {perfectMatches.map((m, index) => {
-                const detail = PATTERN_DETAILS[m.pattern.id];
+                const detail = patternDetails[m.pattern.id];
                 if (!detail) return null;
                 const isLast = index === perfectMatches.length - 1;
                 return (

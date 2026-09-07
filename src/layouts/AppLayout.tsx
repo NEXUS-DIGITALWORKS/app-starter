@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ChevronLeft, FileText, Home, Menu, Wrench, X } from 'lucide-react';
+import { ChevronLeft, Database, FileText, Home, Menu, Wrench, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import RequireAuth from '../features/auth/RequireAuth';
 import AccountMenu from '../features/auth/AccountMenu';
@@ -9,6 +9,7 @@ import logo from '../assets/logo.svg';
 const NAV_ITEMS = [{ to: '/app', label: 'ホーム', icon: Home, end: true }];
 
 const HISTORY_ITEM = { to: '/app/history', label: '保存済み一覧', icon: FileText, end: false };
+const REGISTRY_ITEM = { to: '/app/registry', label: 'Registry管理', icon: Database, end: false };
 
 function AppLayoutContent() {
   const [collapsed, setCollapsed] = useState(false);
@@ -67,6 +68,22 @@ function AppLayoutContent() {
         >
           <HISTORY_ITEM.icon size={18} className="shrink-0" />
           {(!collapsed || onNavigate) && <span>{HISTORY_ITEM.label}</span>}
+        </NavLink>
+        <NavLink
+          to={REGISTRY_ITEM.to}
+          end={REGISTRY_ITEM.end}
+          onClick={onNavigate}
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors',
+              isActive
+                ? 'bg-[#EEF0FE] text-[#3157E5]'
+                : 'text-[#475467] hover:bg-[#F8FAFC] hover:text-[#111827]',
+            )
+          }
+        >
+          <REGISTRY_ITEM.icon size={18} className="shrink-0" />
+          {(!collapsed || onNavigate) && <span>{REGISTRY_ITEM.label}</span>}
         </NavLink>
       </div>
     </>
