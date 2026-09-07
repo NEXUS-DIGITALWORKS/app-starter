@@ -11,6 +11,9 @@ const DiagnosisFlow = lazy(() => import('./pages/DiagnosisFlow'));
 const TechStackSelector = lazy(() => import('./pages/TechStackSelector'));
 const TechGuide = lazy(() => import('./pages/TechGuide'));
 const PatternGuide = lazy(() => import('./pages/PatternGuide'));
+const PatternDetailPage = lazy(() => import('./pages/PatternDetailPage'));
+const ArchitecturePatternGuide = lazy(() => import('./pages/ArchitecturePatternGuide'));
+const ArchitecturePatternDetailPage = lazy(() => import('./pages/ArchitecturePatternDetailPage'));
 const TechSelectorReport = lazy(() => import('./pages/TechSelectorReport'));
 const RiskCheck = lazy(() => import('./pages/RiskCheck'));
 const AppHome = lazy(() => import('./pages/AppHome'));
@@ -131,6 +134,30 @@ export default function App() {
           element={
             <RegistryGate>
               <PatternGuide />
+            </RegistryGate>
+          }
+        />
+        <Route
+          path="/tools/patterns/:patternId"
+          element={
+            <RegistryGate>
+              <PatternDetailPage />
+            </RegistryGate>
+          }
+        />
+        <Route
+          path="/tools/architecture-patterns"
+          element={
+            <RegistryGate>
+              <ArchitecturePatternGuide />
+            </RegistryGate>
+          }
+        />
+        <Route
+          path="/tools/architecture-patterns/:patternId"
+          element={
+            <RegistryGate>
+              <ArchitecturePatternDetailPage />
             </RegistryGate>
           }
         />

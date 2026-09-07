@@ -5,6 +5,12 @@ export const TOOLS_NAV_ITEMS = [
   { id: 'tech-selector', label: '技術要素セレクター', to: '/tools/tech-selector', match: '/tools/tech-selector' },
   { id: 'tech-guide', label: 'テックガイド', to: '/tools/tech-guide', match: '/tools/tech-guide' },
   { id: 'patterns', label: 'パターンガイド', to: '/tools/patterns', match: '/tools/patterns' },
+  {
+    id: 'architecture-patterns',
+    label: 'アーキテクチャパターン',
+    to: '/tools/architecture-patterns',
+    match: '/tools/architecture-patterns',
+  },
   { id: 'risk-check', label: 'リスクチェック55', to: '/tools/risk-check', match: '/tools/risk-check' },
 ] as const;
 

@@ -1,35 +1,10 @@
 import { Link } from 'react-router-dom';
-import type { LucideIcon } from 'lucide-react';
-import {
-  Database,
-  FolderArchive,
-  Layers3,
-  Monitor,
-  Palette,
-  Rocket,
-  Server,
-  ShieldCheck,
-  Sparkles,
-  Wrench,
-} from 'lucide-react';
+import { Layers3 } from 'lucide-react';
 import { badgeVariants } from '../../../components/ui/badge';
 import { cn } from '../../../lib/utils';
 import { getCategories } from '../data/categories';
+import { CATEGORY_ICONS } from '../lib/categoryIcons';
 import type { Selection } from '../types';
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  frontend: Monitor,
-  'mobile-desktop': Layers3,
-  backend: Server,
-  database: Database,
-  orm: Wrench,
-  auth: ShieldCheck,
-  storage: FolderArchive,
-  ai: Sparkles,
-  hosting: Rocket,
-  'dev-approach': Wrench,
-  'ui-design': Palette,
-};
 
 type Props = {
   selection: Selection;
