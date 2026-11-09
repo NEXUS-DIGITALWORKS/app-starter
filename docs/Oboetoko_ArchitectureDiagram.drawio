@@ -1,0 +1,170 @@
+<mxfile host="app.diagrams.net" agent="ChatGPT" pages="2">
+  <diagram name="01_運用アーキテクチャ" id="01_運用アーキテクチャ">
+    <mxGraphModel dx="2049" dy="1077" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1650" pageHeight="970" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=#0F172A;fontColor=#FFFFFF;fontSize=29;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Oboetoko｜システム構成図" vertex="1">
+          <mxGeometry height="58" width="950" x="40" y="24" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#E2E8F0;fontColor=#475569;fontSize=13;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="更新日：2026-11-09　｜　青：アプリ　緑：データ　紫：外部サービス　｜　破線：未確認・補助経路" vertex="1">
+          <mxGeometry height="50" width="605" x="1005" y="28" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F1F5F9;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="利用者&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Webブラウザ / スマートフォン&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="195" x="50" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#FB923C;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Cloudflare&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DNS / ドメインの名前解決&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="215" x="300" y="265" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#60A5FA;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Vercel&lt;br&gt;&lt;b&gt;Vite + React + TypeScript&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;フロントエンド配信 / Git連携&lt;/font&gt;" vertex="1">
+          <mxGeometry height="140" width="295" x="580" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#34D399;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Supabase&lt;br&gt;&lt;b&gt;Auth / PostgreSQL / Storage&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Email + Password / RLS確認&lt;/font&gt;" vertex="1">
+          <mxGeometry height="140" width="315" x="970" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#A78BFA;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Resend&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;認証メール配信 (SMTP)&lt;/font&gt;" vertex="1">
+          <mxGeometry height="92" width="210" x="1380" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#FB923C;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="ConoHa&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ドメイン取得 / 通常メール&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="215" x="300" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#A78BFA;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="n8n&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;サポートメール受信・転送&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="260" x="655" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="n10" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#A78BFA;fontColor=#0F172A;fontSize=17;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Chatwork&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;サポート通知&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="245" x="1080" y="515" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;dashed=1;" value="OpenAI / AI連携&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;呼び出し経路・実装状態 要確認&lt;/font&gt;" vertex="1">
+          <mxGeometry height="95" width="210" x="1380" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#64748B;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n4" value="DNS参照">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="n4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#2563EB;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n5" value="Webアクセス">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="n5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#16A34A;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n6" value="API / 認証">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="n6" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n7" value="認証メール">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="n8" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n9" value="IMAP / SMTP">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" edge="1" parent="1" source="n9" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#7C3AED;strokeWidth=2;fontSize=13;fontColor=#334155;" target="n10" value="API通知">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" edge="1" parent="1" source="n5" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeColor=#94A3B8;strokeWidth=2;fontSize=13;fontColor=#334155;dashed=1;dashPattern=5 5;" target="n11" value="実装未確認">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="920" y="315" />
+              <mxPoint x="920" y="430" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="n19" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=#0F172A;fontColor=#FFFFFF;fontSize=20;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="運用上の注意" vertex="1">
+          <mxGeometry height="48" width="220" x="50" y="710" as="geometry" />
+        </mxCell>
+        <mxCell id="n20" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#CBD5E1;fontColor=#334155;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="Vercel・Cloudflare・Supabase の正確なプラン / 利用中バージョン / 各設定値は実環境で確認。&lt;br&gt;React・Vite等の依存パッケージは GitHub の package-lock.json（または使用ロックファイル）を一次情報とする。" vertex="1">
+          <mxGeometry height="62" width="1290" x="290" y="704" as="geometry" />
+        </mxCell>
+        <mxCell id="n21" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#FBBF24;fontColor=#92400E;fontSize=15;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" value="凡例：ConoHaからのドメイン取得、Cloudflare DNS、Vercel、Supabase、Resend、n8n→Chatworkは既存資料で確認。AI実行経路は未確認。&lt;br&gt;線は論理的な関係を表し、通信経路やセキュリティ設定を保証するものではありません。" vertex="1">
+          <mxGeometry height="70" width="1530" x="50" y="807" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="02_開発と脆弱性の影響範囲" id="02_開発と脆弱性の影響範囲">
+    <mxGraphModel dx="1500" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1650" pageHeight="970" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n22" value="Oboetoko｜依存技術・脆弱性の影響範囲" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=#0F172A;fontColor=#FFFFFF;fontSize=27;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="1540" height="58" as="geometry" />
+        </mxCell>
+        <mxCell id="n23" value="フロントエンド / ビルド" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;fontColor=#0F172A;fontSize=19;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="112" width="325" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n24" value="BaaS / データ" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#0F172A;fontSize=19;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="112" width="325" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n25" value="外部SaaS / 配信" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontColor=#0F172A;fontSize=19;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="850" y="112" width="325" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n26" value="運用 / 自動化" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;fontColor=#0F172A;fontSize=19;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="112" width="325" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="n27" value="&lt;b&gt;React 18 / React DOM&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;UI / XSS / 依存ライブラリ&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;要：package-lock確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="190" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n28" value="&lt;b&gt;Vite / TypeScript&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ビルド・開発ツール&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;要：lockfile確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="290" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n29" value="&lt;b&gt;React Router v7&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ルーティング / 認可境界&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;要：lockfile確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="390" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n30" value="&lt;b&gt;Tailwind CSS / shadcn/ui&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;UI / 生成コード&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;要：実装・依存確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#3B82F6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="490" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n31" value="&lt;b&gt;Supabase Auth&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ログイン・リセット&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;設定 / SDKを確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="190" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n32" value="&lt;b&gt;PostgreSQL + RLS&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;データ・アクセス権限&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;RLS / SQLを確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="290" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n33" value="&lt;b&gt;Supabase Storage&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;アップロードと公開範囲&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;Bucket / Policy確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="390" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n34" value="&lt;b&gt;Supabase JS SDK&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;APIクライアント&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;要：lockfile確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#10B981;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="455" y="490" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n35" value="&lt;b&gt;Vercel&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;Webホスティング・CI/CD&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;デプロイ/環境変数確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="850" y="190" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n36" value="&lt;b&gt;Cloudflare&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;DNS / TLS / WAF&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;設定とプランを確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="850" y="290" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n37" value="&lt;b&gt;Resend&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;認証メール送信&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;SPF / DKIM等確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="850" y="390" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n38" value="&lt;b&gt;ConoHa WING&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ドメイン・メール&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;契約 / メール設定確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F3FF;strokeColor=#8B5CF6;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="850" y="490" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n39" value="&lt;b&gt;n8n&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;メールワークフロー&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;バージョン / 実行環境確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="190" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n40" value="&lt;b&gt;Chatwork API&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;通知先 / APIトークン&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;スコープ等確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="290" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n41" value="&lt;b&gt;Node.js / GitHub&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;ビルド・リポジトリ&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;バージョン / Actions確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF7ED;strokeColor=#F97316;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="390" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n42" value="&lt;b&gt;OpenAI&lt;/b&gt;&lt;br&gt;&lt;font style=&quot;font-size:12px&quot;&gt;AI機能（構想）&lt;/font&gt;&lt;br&gt;&lt;font color=&quot;#64748B&quot; style=&quot;font-size:11px&quot;&gt;実装・SDK有無を確認&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1245" y="490" width="325" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n43" value="脆弱性ニュースを見たら" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0F172A;strokeColor=#0F172A;fontColor=#FFFFFF;fontSize=19;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="654" width="300" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="n44" value="① 名称 / CVE / 影響バージョン" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="737" width="288" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n45" value="② 台帳で対象サービスを検索" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="365" y="737" width="288" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n46" value="③ lockfile・管理画面で実バージョン照合" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="670" y="737" width="288" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n47" value="④ 公開範囲・利用機能を確認" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="975" y="737" width="288" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n48" value="⑤ 対応・検証・記録" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#94A3B8;fontColor=#0F172A;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="737" width="288" height="72" as="geometry" />
+        </mxCell>
+        <mxCell id="n49" value="台帳「技術・依存関係」：検索可能なキーワード・利用バージョン・CVE・確認先・影響判定を管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#34D399;fontColor=#065F46;fontSize=16;fontFamily=Arial;align=center;verticalAlign=middle;spacing=8;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="60" y="845" width="1515" height="54" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
